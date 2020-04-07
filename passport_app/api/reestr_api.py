@@ -1,8 +1,8 @@
 from urllib.parse import urlencode
 import requests
 import json
-from passport_app.api.ru.rosreestr_5kk import rosreestr_details_5kk
-from passport_app.api.ru.googlemaps_api import google_search
+#from passport_app.api.ru.rosreestr_5kk import rosreestr_details_5kk
+#from passport_app.api.ru.googlemaps_api import google_search
 from passport_app.parser.ru.rosreestr_net_parser import search_by_cn
 
 REQ_TIMEOUT = 10

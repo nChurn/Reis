@@ -891,11 +891,10 @@ class SearchView(FormView):
             #start_search_info(real_estate.address, real_estate)
 
             launcher = DataSourcesLauncher(real_estate)
-            search_history = RealEstate.objects
-                .filter(user=current_user, address=real_estate.address)
-                .values('address')
-                .order_by('address')
-                .annotate(count=Count('address'))
+            launcher.start_parsing()
+            
+            search_history = RealEstate.objects.filter(user=current_user, 
+                address=real_estate.address).values('address').order_by('address').annotate(count=Count('address'))
         except Exception as e:
             PrintException()
 
