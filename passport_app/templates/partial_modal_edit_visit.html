@@ -1,0 +1,67 @@
+<div class="modal" tabindex="-1" role="dialog" id="visit-edit-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Тип недвижимости</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!--<p>Modal body text goes here.</p>-->
+                <form action="/groupvisits/" method="put" id="visit-edit-form">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div>
+                        <label> Количество запросов </label> <input type="text" name="request_count" id="request-count" value="{{data_field.name}}"/>
+                    </div>
+                    <div>
+                        <label> Период</label> <input type="text" name="day_period" id="day-period" value="{{data_field.point}}"/>
+                    </div>
+                    <input type="text" name="modal-id" id="modal-id" hidden value="{{data_field.id}}"/>
+                    <input type="text" name="modal-id" id="group-id" hidden value="{{data_field.group.id}}"/>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% block javascript %}
+<script>
+    $('#visit-edit-form').on('submit', function(event){
+        event.preventDefault();
+        var form = $(this);        
+        var id = $(this).find('#modal-id').val();
+        var editParam = $(form).serialize();
+        $.ajax({
+            headers: { "X-CSRFToken": '{{csrf_token}}' },
+            url : "/groupvisits/"+id+'/', // the endpoint
+            type : "PUT", // http method
+            data : editParam, // data sent with the post request
+
+            // handle a successful response
+            success : function(json) {
+                let id = json['id'];
+                let row = $('#'+id);
+                let request_count = json['request_count'];
+                let day_period = json['day_period'];
+                row.find('#visit-request-count').text(request_count);
+                row.find('#visit-day-period').text(day_period);
+                $('#visit-edit-modal').modal('hide');
+
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+            }
+        });
+    });
+
+</script>
+{% endblock %}
+

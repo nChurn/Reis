@@ -1,0 +1,59 @@
+<div class="modal" tabindex="-1" role="dialog" id="classifier-list-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Разделы</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="classifier-form-list">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                    <button type="button" class="btn btn-primary" id="classifier-accept">Применить</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% block javascript %}
+<script>
+    function addClassifierLiItem(name, id) {
+
+        $("#classifier").append("<li id=\""+id+"\" class='classifier'>"+name+"<span style=\"cursor: pointer\" class=\"add-field\" id = \""+id+"\">"+
+            "<i class=\"fa fa-pencil pl-1 pr-1 \"></i></span><span style=\"cursor: pointer\" class=\"remove-classifier\" id = \""+id+"\">" +
+            "<i class=\"fa fa-trash  pl-1 pr-1 \"></i></span><ul id=\"field-container-"+id+"\"></ul></li>");
+
+    }
+
+    $('#classifier-list-modal').on('shown.bs.modal', function () {
+        $('#classifier-accept').on('click', function(event){
+            $("#classifier").find('.classifier').remove().end();
+
+            var checkboxes = $('#classifier-list-modal').find("input:checked");
+
+            for (var i = 0; i<checkboxes.length; i++)
+            {
+                var id = checkboxes[i].id;
+
+                var label = $('#classifier-list-modal').find("#label-"+id);
+                var labelText = label.html();
+
+                addClassifierLiItem(labelText, id);
+            }
+            $('#classifier-list-modal').modal('hide');
+        });
+    });
+
+    $('#classifier-list-modal').on('hide.bs.modal', function () {
+        $("#classifier-form-list").find('div').remove().end();
+        $('#classifier-accept').prop("onclick", null).off("click");
+    });
+
+</script>
+{% endblock %}

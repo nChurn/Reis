@@ -1,0 +1,108 @@
+<div class="modal" tabindex="-1" role="dialog" id="subtypeofrealestate-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Подкатегория недвижимости</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="/subtypes/" method="post" id="form-subtypeofrealestate-add">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div>
+                    <label> Название(en) </label> <input type="text" name="name" id="name" value="{{data_field.value}}"/>
+                    </div>
+                    <div>
+                    <label> Заголовок(en) </label> <input type="text" name="title_rus" id="title_rus" value="{{data_field.rate}}"/>
+                    </div>
+                    <div>
+                    <label> Заголовок </label> <input type="text" name="title" id="title" value="{{data_field.rate}}"/>
+                    </div>
+                    <div>
+                    <label> Тип недвижимости </label>
+                        <select class="custom-select" name="type" id="type_select" disabled>
+
+                        </select>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% block javascript %}
+<script>
+
+    $('#form-subtypeofrealestate-add').on('submit', function(event){
+        event.preventDefault();
+        var form = $(this);
+        var selected_type = $('#type_select option:selected').text();        
+        var editParam = $(form).serialize();
+        var token = jQuery("[name=csrfmiddlewaretoken]").val();
+        $.ajax({
+            headers: { "X-CSRFToken": token },
+            url : "/subtypes/", // the endpoint
+            type : "POST", // http method
+            data : editParam, // data sent with the post request
+
+            // handle a successful response
+            success : function(json) {
+                form.find('input').val('');
+
+//                $("#manage_subtypeofrealestates table > tbody").append("<tr id=\""+json['id']+"\"><td id=\"field-name\">"+json['name']+
+//                    "</td><td id=\"field-title-rus\">"+json['title_rus']+
+//                    "</td><td id=\"field-title\">"+json['title']+"</td><td>"+selected_type+
+//                    "<td><button class=\"btn btn-light btn-edit\" value=\""+json['id']+"\" id=\"btn-edit\"><i class=\"fa fa-pencil\"></i></button></td>"+
+//                    "<td><button class=\"btn btn-light btn-delete\" value=\""+json['id']+"\" id=\"btn-delete\"><i class=\"fa fa-trash\"></i></button></td></tr>");
+
+                $('#subtypeofrealestate-modal').modal('hide');
+                updateSubtypesList();
+
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+
+            }
+        });
+    });
+
+
+    function initTypes() {
+        $.ajax({
+
+            url : "/types/", // the endpoint
+            type : "GET", // http method
+
+            // handle a successful response
+            success : function(data) {
+                let type_select = $("#type_select");
+                type_select.find('option').remove().end();
+                for(var i = 0; i < data.length; i++)
+                {
+                    type_select.append(new Option(data[i]['title_rus'], data[i]['id']));
+
+                }
+                type_select.removeAttr('disabled');
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+            }
+        });
+
+    }
+
+    $('#subtypeofrealestate-modal').on('shown.bs.modal', function () {
+
+        initTypes();
+    });
+</script>
+{% endblock %}

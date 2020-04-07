@@ -1,0 +1,53 @@
+<div class="accordion" id="accordion-{{category_item.category.name}}">
+    <div class="card">
+        <div class="card-header" id="card-{{category_item.category.name}}">
+            <h2 class="mb-0 button-label-color">
+                <button class="btn btn-link" style="color: #006c32;width:100%" type="button" data-toggle="collapse" 
+                    data-target="#collapse-{{category_item.category.name}}" aria-expanded="true" aria-controls="collapseOne">
+                    <div class="row" style="white-space: normal important!">
+                        <div class="col-md-4">
+                                {{ category_item.category.name_ru }}
+                        </div>
+                        <div class="col-md-4">
+
+                        </div>
+                        <div class="col-md-2">
+                                Рейтинг по разделу:
+                        </div>
+                        <div class="col-md-2">
+                                0.0
+                        </div>           
+                    </div>    
+                </button>
+            </h2>
+        </div>
+
+        <div id="collapse-{{category_item.category.name}}" class="collapse" aria-labelledby="headingOne" data-parent="#accordion-{{category_item.category.name}}">
+            <div class="card-body">
+
+                {% for child_item in category_item.categories %}                    
+                    {%with category_item=child_item parent_item_id=category_item.id template_name="passport/category_node.html" %}
+                        {%include template_name%}
+                    {%endwith%}
+                {% endfor %}
+
+                {% if category_item.parameters %}
+                    <table class="table">
+                            <tr>                                    
+                                    <th>Название</th>
+                                    <th>Значение</th>
+                                    <th>Вес</th>
+                                    <th>Рейтинг</th>
+                                    <th></th>
+                                </tr>
+                        {% for parameter in category_item.parameters %}
+                            {%with parameter_item=parameter template_name="passport/passport_parameter_detail.html" %}
+                                {%include template_name%}
+                            {%endwith%}
+                        {% endfor %}
+                    </table>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

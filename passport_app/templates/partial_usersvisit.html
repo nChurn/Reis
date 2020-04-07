@@ -1,0 +1,27 @@
+<div id="manage_usersvisit">
+    <div class="table-responsive">
+        <table class="table ">
+            <thead>
+            <tr>
+                <th style="width: 5%"></th>
+                <th style="width: 30%">Группа</th>
+                <th style="width: 10%">Количество запросов</th>
+                <th style="width: 20%">Сутки</th>
+
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for data_field in visits %}
+            <tr id="{{data_field.id}}">
+                <td ><button class="btn btn-light btn-edit cursor" value="{{data_field.id}}" id="btn-edit"><i class="fa fa-pencil"></i></button></td>
+                <td id="visit-name">{{ data_field.group }}</td>
+                <td id="visit-request-count">{{ data_field.request_count }}</td>
+                <td id="visit-day-period">{{ data_field.day_period }}</td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>

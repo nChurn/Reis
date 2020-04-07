@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block constructor %}
+
+{% include 'modal_form/modal_form.html' %}
+
+<div class="row mt-2">
+    <div class="col-2">
+        <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+            <a class="nav-link active" id="v-pills-home-tab" data-toggle="pill" href="#v-pills-home" role="tab"
+                aria-controls="v-pills-home" aria-selected="true">Справочник форм</a>
+
+            {% if user.is_superuser or user.groups.all.0|stringformat:"s" == "SystemAdministrator" %}
+            <a class="nav-link" id="v-pills-category-tab" data-toggle="pill" href="#v-pills-category" role="tab"
+                aria-controls="v-pills-category" aria-selected="false">Справочник элементов</a>
+            <a class="nav-link" id="v-pills-parameter-tab" data-toggle="pill" href="#v-pills-parameter" role="tab"
+                aria-controls="v-pills-parameter" aria-selected="false">Справочник параметров</a>
+            <a class="nav-link" id="v-pills-unit-tab" data-toggle="pill" href="#v-pills-unit" role="tab"
+                aria-controls="v-pills-unit" aria-selected="false">Единицы измерения</a>
+            <a class="nav-link" id="v-pills-typeofvalue-tab" data-toggle="pill" href="#v-pills-typeofvalue" role="tab"
+                aria-controls="v-pills-typeofvalue" aria-selected="false">Справочник значений рейтинга</a>
+            <a class="nav-link" id="v-pills-parser-parameters-tab" data-toggle="pill" href="#v-pills-parser-parameters"
+                role="tab" aria-controls="v-pills-parser-parameters" aria-selected="false">Справочник источников парсинга</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-10">
+        <div class="tab-content" id="v-pills-tabContent">
+            <div class="tab-pane fade show active" id="v-pills-home" role="tabpanel" aria-labelledby="v-pills-home-tab">
+                {% include 'search_form/form_container.html' %}
+            </div>
+            {% if user.is_superuser or user.groups.all.0|stringformat:"s" == "SystemAdministrator" %}
+            <div class="tab-pane fade" id="v-pills-category" role="tabpanel" aria-labelledby="v-pills-category-tab">
+                {% include 'category/category_container.html' %}
+            </div>
+            <div class="tab-pane fade" id="v-pills-parameter" role="tabpanel" aria-labelledby="v-pills-parameter-tab">
+                {% include 'parameter/parameter_container.html' %}
+            </div>
+            <div class="tab-pane fade" id="v-pills-unit" role="tabpanel" aria-labelledby="v-pills-unit-tab">
+                {% include 'unit/unit_container.html' %}
+            </div>
+            <div class="tab-pane fade" id="v-pills-typeofvalue" role="tabpanel"
+                aria-labelledby="v-pills-typeofvalue-tab">
+                {% include 'type_of_value/typeofvalue_container.html' %}
+            </div>
+            <div class="tab-pane fade" id="v-pills-parser-parameters" role="tabpanel"
+                aria-labelledby="v-pills-parser-parameters-tab">
+                {% include 'parser/parser_container.html' %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script>
+    function updateParserTypesList() {
+        $.ajax({
+            url: "parsertypes/",
+            type: "GET",
+            success: function (data) {
+                $('#v-pills-parser-parameters').html(data);
+            },
+            error: function (xhr, errmsg, err) {
+
+            }
+        });
+    }
+
+    function updateUnitList() {
+        $.ajax({
+            url: "units/",
+            type: "GET",
+            success: function (data) {
+                $('#v-pills-unit').html(data);
+            },
+            error: function (xhr, errmsg, err) {
+
+            }
+        });
+    }
+
+    function updateFormsList() {
+        $.ajax({
+            url: "forms/",
+            type: "GET",
+            success: function (data) {
+                //$('#div-form-list-table').html(data);
+                $('#v-pills-home').html(data);
+            },
+            error: function (xhr, errmsg, err) {
+
+            }
+        });
+    }
+
+    function updateTypesOfValuesList() {
+        $.ajax({
+            url: "typesofvalues/",
+            type: "GET",
+            success: function (data) {
+                $('#v-pills-typeofvalue').html(data);
+            },
+            error: function (xhr, errmsg, err) {
+
+            }
+        });
+    }
+
+    function updateCategory() {
+        $.ajax({
+            url: "categories/",
+            type: "GET",
+            success: function (data) {
+                $('#v-pills-category').html(data);
+            },
+            error: function (xhr, errmsg, err) {
+
+            }
+        });
+    }
+
+    function updateParameterList() {
+        $.ajax({
+            url: "parameters/",
+            type: "GET",
+            success: function (data) {
+                $('#v-pills-parameter').html(data);
+            },
+            error: function (xhr, errmsg, err) {
+
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        updateFormsList();
+
+        $('#v-pills-home-tab').on('click', function (e) {
+            updateFormsList();
+        });
+
+        $('#v-pills-parameter-tab').on('click', function (e) {
+            updateParameterList();
+        });
+
+        $('#v-pills-category-tab').on('click', function (e) {
+            updateCategory();
+        });
+
+        $('#v-pills-unit-tab').on('click', function (e) {
+            updateUnitList();
+        });
+
+        $('#v-pills-typeofvalue-tab').on('click', function (e) {
+            updateTypesOfValuesList();
+        });
+
+        $('#v-pills-parser-parameters-tab').on('click', function (e) {
+            updateParserTypesList();
+        });
+
+        let selectedTab = window.location.hash;
+        $('.nav-link[href="' + selectedTab + '"]').trigger('click');
+    });
+</script>
+{% endblock %}

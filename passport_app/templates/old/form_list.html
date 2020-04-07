@@ -1,0 +1,39 @@
+<div class="table-responsive">
+    <table class="table ">
+        <thead>
+        <tr>
+            <th style="width: 5%"></th>
+            <th style="width: 5%"></th>
+            <th style="width: 5%"></th>
+
+            <th style="width: 42%">Название(en)</th>
+            <th style="width: 42%">Название(ру)</th>
+
+        </tr>
+        </thead>
+        <tbody>
+
+        {% for data_field in forms %}
+        {% if data_field.is_default %}
+        <tr id="{{data_field.id}}" class="table-primary">
+            {% else %}
+        <tr id="{{data_field.id}}">
+            {% endif %}
+            <td ><a class="btn btn-light btn-edit cursor" value="{{data_field.id}}" id="btn-edit" href="/constructor/form_edit?id={{data_field.id}}"><i class="fa fa-pencil"></i></a></td>
+            <td ><a class="btn btn-light btn-view cursor" value="{{data_field.id}}" id="btn-view" href="/constructor/form_view?id={{data_field.id}}"><i class="fa fa-eye"></i></a></td>
+            <td >
+                {% if not data_field.is_default %}
+                <button class="btn btn-light btn-delete cursor" value="{{data_field.id}}" id="btn-delete">
+                    <i class="fa fa-trash"></i>
+                </button>
+                {% endif %}
+            </td>
+            <td id="field-name">{{ data_field.name }}</td>
+            <td id="field-name-ru">{{ data_field.name_ru }}</td>
+
+        </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+</div>

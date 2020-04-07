@@ -1,0 +1,110 @@
+
+<div class="accordion" id="accordion-{{parser_type.id}}">
+    <div class="card">
+        <div class="card-header" id="card-{{parser_type.id}}">
+            <h2 class="mb-0 button-label-color">
+                <button class="btn"  id="btn-edit"  value="{{parser_type.id}}"><i class="fa fa-pencil"></i></button>
+                <button class="btn"  id="btn-remove"  value="{{parser_type.id}}"><i class="fa fa-trash"></i></button>
+                <button class="btn btn-link" style="color: #006c32;" type="button" data-toggle="collapse" data-target="#collapse-{{parser_type.id}}" aria-expanded="true" 
+                aria-controls="collapseOne">
+                    {{ parser_type.name_ru }}
+                </button>
+            </h2>
+        </div>
+
+        <div id="collapse-{{parser_type.id}}" class="collapse" aria-labelledby="headingOne" data-parent="#accordion-{{parser_type.id}}">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                            параметры: <button class="btn btn-success pull-right button-orange m-1"  id="btn-parameter-add" value="{{parser_type.id}}">Добавить параметр <i class="fa fa-plus"></i></button>
+                    </div>
+                    {% if parser_parameters and parser_parameters.count > 0 %}  
+                    <div class="col-md-12">
+                        <table class="table ">
+                            <thead>
+                            <tr>                                
+                                <th style="width: 5%"></th>
+                                <th style="width: 5%"></th>                                
+                                <!-- <th style="width: 5%"></th> -->
+                                <!-- <th style="width: 42%">Название(en)</th> -->
+                                <th style="width: 80%">Название(ру)</th> 
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for parser_parameter_item in parser_parameters.all %}                            
+                            {% ifequal parser_parameter_item.parser_type.id|slugify parser_type.id|slugify %}
+                                {%with parser_parameter_item=parser_parameter_item parser_type=parser_type template_name="parser/partial_table_item.html" %}
+                                    {%include template_name%}
+                                {%endwith%}
+                            {% endifequal %}
+                            {% endfor %}    
+                            </tbody>
+                        </table> 
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% block javascript %}
+<script>
+
+    $(document).ready(function() {
+        var parser_type_id = '{{parser_type.id}}';
+        var parser_type_name = '{{parser_type.name}}';
+        
+        $("#collapse-"+parser_type_id).on("click", '#btn-parameter-add', function(value) 
+        {          
+            $('#parser-parameter-modal').modal('show');
+        });
+
+        $("#card-"+parser_type_id).on("click", '#btn-edit', function(value) 
+        {                      
+            let id = $(this).attr('value');            
+            $.ajax({
+                headers: { "X-CSRFToken": '{{csrf_token}}' },
+                url : "/parsertype/"+id+"/", // the endpoint
+                type : "GET", // http method request
+
+                // handle a successful response
+                success : function(data) {
+                    $('#modal-body').html(data);
+                    $('#modal-title').text('Изменить источник парсинга');
+                    $('#modal-form').modal('show');
+                },
+
+                // handle a non-successful response
+                error : function(xhr,errmsg,err) {
+
+                }
+            });
+
+        });
+
+        $("#card-"+parser_type_id).on("click", '#btn-remove', function(value) 
+        {          
+            let id = $(this).attr('value');
+            
+            $.ajax({
+                url : "/parsertype/"+id+"/delete/", // the endpoint
+                type : "GET", // http method request
+
+                // handle a successful response
+                success : function(data) {
+                    $('#modal-body').html(data);
+                    $('#modal-title').text('');
+                    $('#modal-form').modal('show');
+                },
+
+                // handle a non-successful response
+                error : function(xhr,errmsg,err) {
+
+                }
+            });
+
+        });
+
+    });
+</script>
+{% endblock %}

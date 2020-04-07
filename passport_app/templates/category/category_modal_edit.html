@@ -1,0 +1,50 @@
+{% load static %}
+{% block style %}
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>    
+    <link rel="stylesheet" type="text/css" href="{% static 'css/modal_select2.css' %}">
+{% endblock %}
+
+{% load crispy_forms_tags %}
+<form action="/category/{{id}}/" method="post">
+    {% csrf_token %}
+    <div class="form-row">
+        <label>Названиие (en)*</label>
+    </div>            
+    <div class="form-row">                        
+        {{ form.name }}                        
+    </div>
+
+    <div class="form-row">
+        <label>Названиие (ру)</label>
+    </div>  
+    <div class="form-row">
+        {{ form.name_ru }}                        
+    </div>
+
+    <div class="form-row">
+        <label>Пункт</label>
+    </div>  
+    <div class="form-row">
+        {{ form.point }}                        
+    </div>
+
+    <div class="form-row">
+            <label>Описание</label>
+    </div>  
+    <div class="form-row">
+        {{ form.comment }}
+    </div>
+
+    <div class="form-row">
+        <label>Вышестоящий элемент</label>
+    </div>  
+    <div class="form-row">
+        {{ form.parent_categories }}                        
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </div>
+</form>
+<script src="{% static 'django_select2/django_select2.js' %}"></script>

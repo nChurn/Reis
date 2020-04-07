@@ -1,0 +1,74 @@
+<div class="row">
+    <div class="col">
+        <button class="btn btn-success pull-right button-orange m-1"  id="btn-add">Создать категорию <i class="fa fa-plus"></i></button>
+        <button class="btn  pull-right m-1"  id="btn-edit-category"><i class="fa fa-pencil"></i></button>
+    </div>
+    
+</div>
+
+
+{% if category %}
+<div class="row">
+    <div class="col">
+            <p> Название(en): </p> <label> {{ category.name }} </label> 
+            <p> Название: </p> <label> {{ category.name_ru }} </label>
+            <p> Пункт: </p> <label> {{ category.point }} </label>
+            <p> Комментарий: </p> <label> {{ category.comment }} </label>
+            <p> Подкатегории: </p>
+                {% if category.categories and category.categories.all.count > 0 %}
+                <ul id = "details-categories">
+                    {% for category_child in category.categories.all %}
+                        <li id = "{{category_child.id}}">
+                            {{category_child.name_ru}}                            
+                        </li>        
+                    {% endfor %}
+                </ul>
+                {% endif %}
+    </div>
+
+</div>
+<button class="btn btn-success pull-right button-orange m-1"  id="btn-add-parameter">Создать параметр <i class="fa fa-plus"></i></button>
+<p> Параметры: </p>
+    {% if category.parameters and category.parameters.all.count > 0 %}
+    <ul id = "details-categories">
+        {% for parameter in category.parameters.all %}
+            <li id = "{{category_child.id}}">
+                {{parameter.name_ru}}
+                <button class="btn pull-right m-1"  id="btn-edit-parameter"><i class="fa fa-pencil"></i></button>
+            </li>        
+        {% endfor %}
+    </ul>
+    {% endif %}
+{% endif %}
+
+{% block javascript %}
+<script>
+
+    $(document).ready(function() {
+        var category_id = '{{category.id}}';
+        
+        $('#btn-edit-category').on('click', function(event){
+
+            $.ajax({
+            url : "/category/"+category_id, // the endpoint
+            type : "GET", // http method request
+
+            // handle a successful response
+            success : function(data) {                
+                $('#modal-body').html(data);
+                $('#category-edit-modal').modal('show');
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+
+            }
+        });
+
+        });
+
+
+    })
+
+</script>
+{% endblock %}

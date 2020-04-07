@@ -1,0 +1,105 @@
+<div class="modal" tabindex="-1" role="dialog" id="subtypeofrealestates-edit-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Подкатегория недвижимости</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!--<p>Modal body text goes here.</p>-->
+                <form action="/subtypeofrealestate/" method="put" id="subtypeofrealestate-edit-form">
+                    {% csrf_token %}
+                    <div>
+                    <label> Название(en) </label> <input type="text" name="name" id="name" value="{{data_field.name}}"/>
+                    </div>
+                    <div>
+                    <label> Заголовок (ру)</label> <input type="text" name="title_rus" id="title_rus" value="{{data_field.point}}"/>
+                    </div>
+                    <div>
+                    <label> Заголовок </label> <input type="text" name="title" id="title" value="{{data_field.descr}}"/>
+                    </div>
+                    <div>
+                    <label> Тип недвижимости </label>
+                        <select class="custom-select" name="type" id="type" disabled>
+
+                        </select>
+                    </div>
+                    <input type="text" name="modal-id" id="modal-id" hidden value="{{data_field.id}}"/>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% block javascript %}
+<script>
+    function initTypesList() {
+        $.ajax({
+            url : "/types/", // the endpoint
+            type : "GET", // http method
+
+            // handle a successful response
+            success : function(data) {
+                let classifier_select = $("#type");
+                classifier_select.find('option').remove().end();
+                for(var i = 0; i < data.length; i++)
+                {
+                    classifier_select.append(new Option(data[i]['title_rus'], data[i]['id']));
+
+                }
+                classifier_select.removeAttr('disabled');
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+            }
+        });
+
+    }
+
+    $('#subtypeofrealestate-edit-form').on('submit', function(event){
+
+        event.preventDefault();
+        var form = $(this);        
+        var id = $(this).find('#modal-id').val();
+        var editParam = $(form).serialize();
+        var token = jQuery("[name=csrfmiddlewaretoken]").val();
+        $.ajax({
+            headers: { "X-CSRFToken": token },
+            url : "/subtypes/"+id+'/', // the endpoint
+            type : "PUT", // http method
+            data : editParam, // data sent with the post request
+
+            // handle a successful response
+            success : function(json) {
+//                let id = json['id'];
+//                let row = $('#'+id);
+//                let field_name = json['name'];
+//                let field_title_rus = json['title_rus'];
+//                let field_title = json['title'];
+//                row.find('#field-name').text(field_name);
+//                row.find('#field-title-rus').text(field_title_rus);
+//                row.find('#field-title').text(field_title);
+                $('#subtypeofrealestates-edit-modal').modal('hide');
+                updateSubtypesList();
+
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+            }
+        });
+    });
+
+    $('#subtypeofrealestates-edit-modal').on('shown.bs.modal', function () {
+
+        initTypesList();
+    });
+</script>
+{% endblock %}

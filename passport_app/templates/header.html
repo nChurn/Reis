@@ -1,0 +1,47 @@
+<div>
+    <nav class="navbar navbar-expand-lg navbar-dark passport-header-bg">
+        <a href="/" class="navbar-brand mr-5">Passport</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+            aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <div class="row container-fluid">
+                <div class="col-auto">
+                    <ul class="navbar-nav">
+                        {% if user.groups.all.0|stringformat:"s" == "SystemAdministrator" or user.is_superuser  %}
+                        <li class="nav-item active mr-5">
+                            <a class="nav-link" href='/constructor/' alt="конструктор"><i class="fa fa-wrench"></i></a>
+                        </li>
+                        {% endif %}
+
+                        {% if user.groups.all.0|stringformat:"s" == "SystemAdministrator" or user.is_superuser  %}
+                        <li class="nav-item active mr-5">
+                            <a class="nav-link" href="/users_list" alt="пользователи"><i class="fa fa-users"></i></a>
+                        </li>
+                        {% endif %}
+
+                        {% if user.is_authenticated and user.is_superuser %}
+                        <li class="nav-item active mr-5">
+                            <a class="nav-link" href="/search_settings/" alt="настройки"><i class="fa fa-cog"></i></a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <div class="col ml-3 text-left">
+                    <h4 class=" d-inline-block align-middle m-0">Название услуги: {{ title }}</h4>
+                </div>
+            </div>
+        </div>
+
+        <div class="my-lg-0">
+            {% if user.is_authenticated %}
+            <label class="mr-2"> {{ user.username }} </label>
+            <a href="/accounts/logout" alt="выход"><i class="fa fa-sign-out"></i></a>
+            {% else %}
+            <a href="/accounts/login" alt="вход"><i class="fa fa-sign-in"></i></a>
+            {% endif %}
+        </div>
+    </nav>
+</div>

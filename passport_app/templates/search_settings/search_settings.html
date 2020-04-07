@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<form action="/search_settings/" method="post">
+    {% csrf_token %}
+    {{ form|crispy}}
+    <button type="submit"  class="btn btn-primary pull-right button-orange mt-3 mb-3 pl-4 pr-4" >
+        Сохранить
+    </button>
+</form>
+
+{% endblock %}

@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  postgres-compose:
+    image: postgres
+    networks:
+      - postgres-compose-network
+  web:
+    environment:
+      - RUN_MODE=local
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    # command: python manage.py migrate
+    volumes:
+      - .:/property_passport
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres-compose
+    networks:
+      - postgres-compose-network
+
+  pgadmin-compose:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "postgres"
+      PGADMIN_DEFAULT_PASSWORD: "postgres"
+    ports:
+      - "16543:80"
+    depends_on:
+      - postgres-compose
+    networks:
+      - postgres-compose-network
+
+networks: 
+  postgres-compose-network:
+    driver: bridge

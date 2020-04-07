@@ -1,0 +1,55 @@
+<tr id="searchform-{{search_form.id}}">
+    <td><button class="btn btn-light btn-edit" value="{{search_form.id}}" id="btn-edit"><i class="fa fa-pencil"></i></button></td>
+    <td><button class="btn btn-light btn-delete" value="{{search_form.id}}" id="btn-delete"><i class="fa fa-trash"></i></button></td>
+    <td id="field-name">{{ search_form.name }}</td>
+    <td id="field-title-rus">{{ search_form.name_ru }}</td>
+</tr>
+{% block javascript %}
+<script>
+
+    $(document).ready(function() {
+        var form_id = '{{search_form.id}}';
+        
+        $('#searchform-'+'{{search_form.id}}').on("click", ".btn-edit", function(event){
+
+            $.ajax({
+            url : "/forms/"+form_id, // the endpoint
+            type : "GET", // http method request
+
+            // handle a successful response
+            success : function(data) {
+                $('#modal-body').html(data);
+                $('#modal-form').modal('show');
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+
+                }
+            });
+
+        });
+
+        $('#searchform-'+'{{search_form.id}}').on("click", ".btn-delete", function(event){
+
+            $.ajax({
+                headers: { "X-CSRFToken": '{{csrf_token}}' },
+                url : "/forms/"+form_id+"/delete/", // the endpoint
+                type : "DELETE", // http method request
+
+                // handle a successful response
+                success : function(data) {
+                    updateFormsList();
+                },
+
+                // handle a non-successful response
+                error : function(xhr,errmsg,err) {
+
+                    }
+            });
+
+        });
+    })
+
+</script>
+{% endblock %}

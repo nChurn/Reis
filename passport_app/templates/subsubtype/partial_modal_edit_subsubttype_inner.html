@@ -1,0 +1,69 @@
+{% load crispy_forms_tags %}
+
+<div class="modal" tabindex="-1" role="dialog" id="subsubtypeofrealestates-edit-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Тип недвижимости</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form action="subsubtypes/edit/{{subsubitem.id}}/" method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <input type="text" name="id" id="modal-id" hidden />
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% block javascript %}
+<script>
+
+    $(document).ready(function() {
+        $('#subsubtypeofrealestates-edit-modal').on('submit', function(event){
+            event.preventDefault();
+            var form = $(this);
+            var item_id = form.find('#modal-id').val();            
+            var formParam = $(form).serialize();
+            var form_name = '#subsubtypeofrealestates-edit-modal form';
+            var modal_name = '#subsubtypeofrealestates-edit-modal';
+
+            $.ajax({
+                headers: { "X-CSRFToken": '{{csrf_token}}' },
+                url : "subsubtypes/edit/"+item_id+"/", // the endpoint
+                data : formParam,
+                type : "POST", // http method request
+
+                // handle a successful response
+                success : function(xhr, ajaxOptions, thrownError) {                    
+                    if ( $(xhr).find('.has-error').length > 0 ) {
+                                             $(form_name).find('.modal-body').html(xhr);
+                                             formAjaxSubmit(form_name, modal_name);
+                                         } else {
+                                             $(form_name).modal('hide');
+                                         }
+                    //$('#subsubtypeofrealestates-edit-modal').modal('hide');
+                    //updateSubsubtypesList();
+                },
+
+                // handle a non-successful response
+                error : function(xhr,errmsg,err) {
+
+                }
+            });
+
+        });
+
+
+    })
+
+</script>
+{% endblock %}

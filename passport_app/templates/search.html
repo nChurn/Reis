@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if error == '' %}
+        <ul class="list-group list-group-flush">
+            {% for RealEstate in real_property_list %}
+            <li class="list-group-item">
+                <a href="/details?id={{RealEstate.id}}">
+                    <p>{{RealEstate.kadastr_number}} - {{RealEstate.address}}</p>
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>{{error}}</p>
+    {% endif %}
+{% endblock %}

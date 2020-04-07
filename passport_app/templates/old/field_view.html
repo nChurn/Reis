@@ -1,0 +1,134 @@
+
+
+<div id="manage_field">
+    <button class="btn btn-success pull-right button-orange m-1" value="{{data_field.id}}" id="btn-add"><i class="fa fa-plus"></i></button>
+    <!--<div class="table-responsive">-->
+        <table class="table field-table">
+            <thead>
+            <tr>
+                <th style="width: 5%"></th>
+                <th style="width: 5%"></th>
+                <th style="width: 20%">Название(en)</th>
+                <th style="width: 20%">Заголовок</th>
+                <th style="width: 20%">Заголовок(ру)</th>
+                <th style="width: 10%">Пункт</th>
+                <th style="width: 20%">Классификатор</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for data_field in fields %}
+            <tr id="{{data_field.id}}">
+                <td><button class="btn btn-light btn-edit" value="{{data_field.id}}" id="btn-edit"><i class="fa fa-pencil"></i></button></td>
+                <td><button class="btn btn-light btn-delete" value="{{data_field.id}}" id="btn-delete"><i class="fa fa-trash"></i></button></td>
+                <td id="field-name">{{ data_field.name }}</td>
+                <td id="field-title">{{ data_field.title }}</td>
+                <td id="field-title-rus">{{ data_field.title_rus }}</td>
+                <td id="field-point">{{ data_field.point }}</td>
+                <td id="field-classifier-{{data_field.classifier.id}}">{{ data_field.classifier.name_ru }}</td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    <!--</div>-->
+</div>
+    {% include 'partial_modal_add_field_view.html' %}
+    {% include 'partial_modal_edit_field_view.html' %}
+
+
+
+{% block javascript %}
+<script>
+
+    function initFieldItem(field_id) {
+
+        $.ajax({
+            url : "/fields/"+field_id+"/", // the endpoint
+            type : "GET", // http method
+
+            // handle a successful response
+            success : function(data) {
+                $('#field-edit-modal').find('#name').val(data['name']);
+                $('#field-edit-modal').find('#point').val(data['point']);
+                $('#field-edit-modal').find('#title').val(data['title']);
+                $('#field-edit-modal').find('#title_rus').val(data['title_rus']);
+                $('#field-edit-modal').find('#modal-id').val(data['id']);
+                $('#field-edit-modal').modal('show');
+                $('#field-edit-modal').find("#classifier_id").val(data['classifier']);
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+            }
+        });
+
+    }
+
+    function initClassifiersList(field_id) {
+        $.ajax({
+            url : "/classifiers/", // the endpoint
+            type : "GET", // http method
+
+            // handle a successful response
+            success : function(data) {
+                let classifier_select = $('#field-edit-modal').find("#classifier_id");
+                classifier_select.find('option').remove().end();
+                for(var i = 0; i < data.length; i++)
+                {
+                    classifier_select.append(new Option(data[i]['name_ru'], data[i]['id']));
+
+                }
+                classifier_select.removeAttr('disabled');
+                initFieldItem(field_id);
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+            }
+        });
+
+    }
+
+$(document).ready(function() {
+
+    $('#manage_field').find('#btn-add').on('click', function(event){
+        $('#field-modal').modal('show');
+    });
+
+    $('#manage_field').on("click", ".btn-edit",  function (value) {
+
+        let id = $(this).val();
+        initClassifiersList(id);
+
+    });
+
+    $('#manage_field').on("click", ".btn-delete", function(){
+        var selectedTR = $(this).parents("tr");
+        var trID = $(this).parents("tr").attr('id');
+        var token = jQuery("[name=csrfmiddlewaretoken]").val();
+        $.ajax({
+            headers: { "X-CSRFToken": token },
+            url : "/fields/"+trID, // the endpoint
+            type : "DELETE", // http method request
+
+            // handle a successful response
+            success : function(json) {
+                selectedTR.remove();
+
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+
+            }
+        });
+
+    });
+
+
+})
+
+</script>
+{% endblock %}
+

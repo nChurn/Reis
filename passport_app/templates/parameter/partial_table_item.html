@@ -1,0 +1,52 @@
+<tr id="parameter-{{parameter.id}}">
+    <td><button class="btn btn-light btn-edit" value="{{parameter.id}}"><i class="fa fa-pencil"></i></button></td>
+    <td><button class="btn btn-light btn-delete" value="{{parameter.id}}"><i class="fa fa-trash"></i></button></td>
+    <td>{{ parameter.name }}</td>
+    <td>{{ parameter.name_ru }}</td>
+    <td>{{ unit.is_load_file }}</td>
+    <td>{{ unit.is_comment }}</td>
+    <td>{{ parameter.unit.name }}</td>
+</tr>
+
+{% block javascript %}
+<script>
+    $(document).ready(function() {
+        var parameter_id = '{{parameter.id}}';
+        
+        $('#parameter-{{parameter.id}}').on("click", ".btn-edit", function(event){
+            $.ajax({
+            url : "/parameter/"+parameter_id,
+            type : "GET",
+            success : function(data) {
+                $('#modal-body').html(data);
+                $('#modal-title').text('Изменить элемент для парсинга');
+                $('#modal-form').modal('show');
+
+                //$("#parametr-modal").css('overflow-y', 'auto !important;');
+
+                // $(".parameter-modal-body").html(data);
+                // $('.parameter-modal-title').text('Изменить элемент для парсинга');
+                // $("#parametr-modal").modal('show');
+            },
+            error : function(xhr,errmsg,err) {
+
+                }
+            });
+        });
+
+        $('#parameter-'+'{{parameter.id}}').on("click", ".btn-delete", function(event){
+            $.ajax({
+                headers: { "X-CSRFToken": '{{csrf_token}}' },
+                url : "/parameter/"+parameter_id+"/delete/",
+                type : "DELETE",
+                success : function(data) {
+                    updateParameterList();
+                },
+                error : function(xhr,errmsg,err) {
+
+                }
+            });
+        });
+    })
+</script>
+{% endblock %}

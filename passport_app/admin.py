@@ -1,0 +1,28 @@
+from django.contrib import admin
+from .models import*
+# Register your models here.
+
+admin.site.register(Owner)
+admin.site.register(Country)
+admin.site.register(Region)
+admin.site.register(District)
+admin.site.register(TypeOfLocality)
+admin.site.register(Locality)
+admin.site.register(TypeOfStreet)
+admin.site.register(Street)
+admin.site.register(Classifier)
+admin.site.register(TypeOfValue)
+admin.site.register(Unit)
+admin.site.register(Field)
+admin.site.register(DataField)
+admin.site.register(RealEstate)
+admin.site.register(SearchForm)
+admin.site.register(GroupVisit)
+admin.site.register(UserVisit)
+admin.site.register(UserUser)
+admin.site.register(NotLoginUserVisit)
+admin.site.register(TypeOfRealEstate)
+admin.site.register(SubtypeOfRealEstate)
+admin.site.register(SubsubtypeOfRealEstate)
+admin.site.register(SearchConfig)
+admin.site.register(SubsubsubtypeOfRealEstate)

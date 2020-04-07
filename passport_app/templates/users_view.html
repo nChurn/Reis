@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="mt-2">
+    <form method="GET">
+        <div class="form-group has-search">
+            <span class="fa fa-search form-control-feedback"></span>
+            <input type="text" class="form-control" placeholder="Найти пользователя"
+                name="q"
+                {% if query %}
+                value="{{ query }}"
+                {% endif %}
+                >
+        </div>
+    </form>
+
+    <ul class="nav nav-tabs" id="searchTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+                aria-selected="true">Список пользователей</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile"
+                aria-selected="false">Регистрация пользователя</a>
+        </li>
+        {% if user.is_superuser %}
+        <li class="nav-item">
+            <a class="nav-link" id="visit-tab" data-toggle="tab" href="#visit" role="tab" aria-controls="visit"
+                aria-selected="false">Категории пользователей</a>
+        </li>
+        {% endif %}
+    </ul>
+    <div class="tab-content" id="searchTabContent">
+        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+            <div class="table-responsive" style=" width: 100%" id="manage-users">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th style="width: 10%"></th>
+                            <!--<th style="width: 5%"></th>-->
+                            <th style="width: 10%">Login</th>
+                            <th style="width: 65%">Имя</th>
+                            <th style="width: 10%">Фамилия</th>
+                            <th style="width: 10%">Email</th>
+                            <th style="width: 10%">Уровень доступа</th>
+
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in users %}
+                        <tr id="{{data_field.id}}">
+                            <td><button class="btn btn-light btn-edit" value="{{item.id}}"><i
+                                        class="fa fa-pencil"></i></button></td>
+                            <!--<td><button class="btn btn-light btn-delete" value="{{item.id}}"><i class="fa fa-trash"></i></button></td>-->
+                            <td id="username">{{ item.username }}</td>
+                            <td id="first-name">{{ item.first_name }}</td>
+                            <td id="last-name">{{ item.last_name }}</td>
+                            <td id="email">{{ item.email }}</td>
+                            <td id="group">{{ item.groups.all.0 }}</td>
+
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+            {% include 'partial_register.html' %}
+        </div>
+        {% if user.is_superuser %}
+        <div class="tab-pane fade" id="visit" role="tabpanel" aria-labelledby="visit-tab">
+            {% include 'partial_usersvisit.html' %}
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% include 'partial_modal_user_edit.html' %}
+{% include 'partial_modal_edit_visit.html' %}
+
+{% endblock %}
+
+{% block javascript %}
+<script>
+
+    $(document).ready(function () {
+        $('#manage_usersvisit').on("click", ".btn-edit", function (value) {
+
+            let id = $(this).attr('value');
+            let row = $(this).closest('tr');
+            let visit_name = row.find('#visit-name').text();
+            let request_count = row.find('#visit-request-count').text();
+            let day_period = row.find('#visit-day-period').text();
+
+            $('#visit-edit-modal').find('#request-count').val(request_count);
+            $('#visit-edit-modal').find('#day-period').val(day_period);
+            $('#visit-edit-modal').find('#modal-id').val(id);
+            $('#visit-edit-modal').modal('show');
+
+        });
+
+        $('#manage-users').on("click", ".btn-edit", function (value) {
+
+            let id = $(this).attr('value');
+            $('#user-edit-modal').find('#modal-id').val(id);
+            $('#user-edit-modal').modal('show');
+
+        });
+
+        $("#manage-users").on("click", ".btn-delete", function () {
+            var selectedTR = $(this).parents("tr");
+            var trID = $(this).parents("tr").attr('id');
+            $.ajax({
+                headers: { "X-CSRFToken": '{{csrf_token}}' },
+                url: "/users/" + trID, // the endpoint
+                type: "DELETE", // http method request
+
+                // handle a successful response
+                success: function (json) {
+                    selectedTR.remove();
+
+                },
+
+                // handle a non-successful response
+                error: function (xhr, errmsg, err) {
+
+                }
+            });
+
+        });
+
+
+    })
+
+</script>
+{% endblock %}

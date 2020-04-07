@@ -1,0 +1,10 @@
+{% load crispy_forms_tags %}
+
+<form action="/category/{{id}}/" method="post">
+    {% csrf_token %}
+    {{ form|crispy }}
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </div>
+</form>

@@ -1,0 +1,60 @@
+<div class="modal" tabindex="-1" role="dialog" id="type-list-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Типы недвижимости</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="type-form-list">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                    <button type="button" class="btn btn-primary" id="type-accept">Применить</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% block javascript %}
+<script>
+    function addLiTypeItem(name, id) {
+
+        $("#type").append("<li id=\""+id+"\" class='type'>"+name+"<span style=\"cursor: pointer\" class=\"add-subtype\" id = \""+id+"\">"+
+            "<i class=\"fa fa-pencil pl-1 pr-1 \"></i></span><span style=\"cursor: pointer\" class=\"remove-type\" id = \""+id+"\">" +
+            "<i class=\"fa fa-trash  pl-1 pr-1 \"></i></span><ul id=\"subtype-container-"+id+"\"></ul></li>");
+
+    }
+
+    $('#type-list-modal').on('shown.bs.modal', function () {
+
+        $('#type-accept').on('click', function(event){
+            var checkboxes = $('#type-list-modal').find("input:checked");
+            $("#type").find('.type').remove().end();
+
+            for (var i = 0; i<checkboxes.length; i++)
+            {
+                var id = checkboxes[i].id;
+
+                var label = $('#type-list-modal').find("#label-"+id);
+                var labelText = label.html();
+
+                addLiTypeItem(labelText, id);
+            }
+            $('#type-list-modal').modal('hide');
+        });
+    });
+
+    $('#type-list-modal').on('hide.bs.modal', function () {
+        $("#type-form-list").find('div').remove().end();
+        $('#type-accept').prop("onclick", null).off("click");
+    });
+
+</script>
+{% endblock %}
+

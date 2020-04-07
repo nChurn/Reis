@@ -1,0 +1,103 @@
+
+
+<div id="manage_typeofrealestate">
+    <button class="btn btn-success pull-right button-orange m-1" value="{{data_field.id}}" id="btn-add"><i class="fa fa-plus"></i></button>
+<table class="table ">
+  <thead>
+    <tr>
+        <th style="width: 5%"></th>
+        <th style="width: 5%"></th>
+      <th style="width: 30%">Название(en)</th>
+      <th style="width: 30%">Заголовок(ру)</th>
+      <th style="width: 30%">Заголовок(en)</th>
+
+    </tr>
+  </thead>
+  <tbody>
+
+  {% for data_field in types %}
+    <tr id="{{data_field.id}}">
+        <td><button class="btn btn-light btn-edit" value="{{data_field.id}}" id="btn-edit"><i class="fa fa-pencil"></i></button></td>
+        <td><button class="btn btn-light btn-delete" value="{{data_field.id}}" id="btn-delete"><i class="fa fa-trash"></i></button></td>
+
+        <td id="field-name">{{ data_field.name }}</td>
+        <td id="field-title-rus">{{ data_field.title_rus }}</td>
+        <td id="field-title">{{ data_field.title }}</td>
+
+    </tr>
+  {% endfor %}
+
+  </tbody>
+</table>
+</div>
+{% include 'partial_modal_add_typeofrealestate_view.html' %}
+{% include 'partial_modal_edit_typeofrealestate_view.html' %}
+
+
+{% block javascript %}
+<script>
+
+    function initTypeItem(type_id) {
+
+        $.ajax({
+            url : "/types/"+type_id+"/", // the endpoint
+            type : "GET", // http method
+
+            // handle a successful response
+            success : function(data) {
+                $('#typeofrealestate-edit-modal').find('#name').val(data['name']);
+                $('#typeofrealestate-edit-modal').find('#title_rus').val(data['title_rus']);
+                $('#typeofrealestate-edit-modal').find('#title').val(data['title']);
+                $('#typeofrealestate-edit-modal').find('#modal-id').val(type_id);
+                $('#typeofrealestate-edit-modal').modal('show');
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+            }
+        });
+
+    }
+
+$(document).ready(function() {
+
+    $('#manage_typeofrealestate').find('#btn-add').on('click', function(event){
+        $('#typeofrealestate-modal').modal('show');
+    });
+
+    $('#manage_typeofrealestate').on("click", ".btn-edit", function (value) {
+
+        let id = $(this).attr('value');
+        initTypeItem(id);
+
+    });
+
+    $("#manage_typeofrealestate").on("click", ".btn-delete", function(){
+        var selectedTR = $(this).parents("tr");
+        var trID = $(this).parents("tr").attr('id');
+        var token = jQuery("[name=csrfmiddlewaretoken]").val();
+        $.ajax({
+            headers: { "X-CSRFToken": token },
+            url : "/types/"+trID, // the endpoint
+            type : "DELETE", // http method request
+
+            // handle a successful response
+            success : function(json) {
+                selectedTR.remove();
+
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+
+            }
+        });
+
+    });
+
+
+})
+
+</script>
+{% endblock %}
+

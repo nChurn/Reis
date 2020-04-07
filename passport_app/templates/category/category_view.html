@@ -1,0 +1,23 @@
+<div class="row" style="margin-top: 100px;">
+    <div class="col-2">
+        <li class="nav-item">
+            <a href="javascript:;" class="nav-link nav-link-parent">
+                 Категории
+            </a>
+            <ul class="menu-siderbar-child nav flex-column" id = "category-list">
+                    
+            </ul>
+        </li>
+    </div>
+</div>
+
+{% block javascript %}
+<script>
+
+
+   
+    $(document).ready(function() {
+        updateCategory();
+    });
+</script>
+{% endblock %}

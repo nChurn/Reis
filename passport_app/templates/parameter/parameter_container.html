@@ -1,0 +1,46 @@
+<div class="col-10" id="manage_parameters">
+    <form>
+        {% csrf_token %}
+
+        <div class="form-group row">
+            <div class="col">
+                <input class="form-control" type="text" name="form_name" id="form_name" />
+            </div>
+            <button class="btn btn-light"><i class="fa fa-search"></i></i></button>
+            <a class="btn btn-success pull-right button-orange m-1" id="btn-add"><i class="fa fa-plus"></i></a>
+        </div>
+    </form>
+
+    <table class="table ">
+        <thead>
+            <tr>
+                <th style="width: 5%"></th>
+                <th style="width: 5%"></th>
+                <th style="width: 18%">Название(en)</th>
+                <th style="width: 18%">Название(ру)</th>
+                <th style="width: 18%">Загрузка файла</th>
+                <th style="width: 18%">Комментарий</th>
+                <th style="width: 18%">Единица измерения(en)</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            {% for item in parameters %}
+            {% include 'parameter/partial_table_item.html' with parameter=item %}
+            {% endfor %}
+
+        </tbody>
+    </table>
+</div>
+
+{% include 'parameter/partial_modal_add.html' %}
+
+{% block javascript %}
+<script>
+    $(document).ready(function () {
+        $('#manage_parameters').find('#btn-add').on('click', function (event) {
+            $('#parametr-modal').modal('show');
+        });
+    });
+</script>
+{% endblock %}

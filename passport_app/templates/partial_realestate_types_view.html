@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% if error == '' %}
+
+<form action="/fields/" method="put" id="constructor-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="input-group mb-3">
+        <div class="input-group-prepend">
+            <label class="input-group-text" for="type_realestate">Типы недвижимости</label>
+        </div>
+        <select class="custom-select" id="type_realestate">
+
+            {% for item in realestate_types %}
+            <tr>
+                <option value="{{item.id}}">{{ item.title_rus }}</option>
+            </tr>
+            {% endfor %}
+        </select>
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <label class="input-group-text" for="subtype_realestate">Значения</label>
+            </div>
+            <select class="custom-select" id="subtype_realestate" disabled>
+
+            </select>
+        </div>
+
+        <div id = "field-info" style="width: 100%">
+            <div class="form-group row">
+                <label for="title" class="col col-lg-2">Название(en)</label>
+                <div class="col">
+                    <input type="text" class="form-control" id="title" value="" style="width: 100%">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="title_rus" class="col col-lg-2">Название</label>
+                <div class="col">
+                    <input type="text" class="form-control" id="title_rus" value="" style="width: 100%">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="point" class="col col-lg-2">Пункт</label>
+                <div class="col">
+                    <input type="text" class="form-control" id="point" value="" style="width: 100%">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button type="button" class="btn btn-primary" id="btn-save-field">
+        Сохранить
+    </button>
+    <input type="text" class="form-control" id="field-id" value="" style="display: none">
+    <input type="text" class="form-control" id="field-name" value="" style="display: none">
+</form>
+{% else %}
+<p>{{error}}</p>
+{% endif %}
+
+{% endblock %}
+
+{% block javascript %}
+<script>
+
+</script>
+{% endblock %}
+
+

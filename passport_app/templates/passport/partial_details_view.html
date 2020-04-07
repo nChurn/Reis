@@ -1,0 +1,30 @@
+{% comment %}
+{% for category in real_property.categories.all %}
+<div class="accordion" id="accordion-{{data_item.classifier.name}}">
+    <div class="card">
+        <div class="card-header" id="card-{{data_item.classifier.name}}">
+            <h2 class="mb-0 button-label-color">
+                <button class="btn btn-link" style="color: #006c32;" type="button" data-toggle="collapse" data-target="#collapse-{{data_item.classifier.name}}" aria-expanded="true" aria-controls="collapseOne">
+                    {{ category.name_ru }}
+                </button>
+            </h2>
+        </div>
+
+        <div id="collapse-{{data_item.classifier.name}}" class="collapse" aria-labelledby="headingOne" data-parent="#accordion-{{data_item.classifier.name}}">
+            <div class="card-body">
+                {% if category.parameters.count > 0 %}
+                    {% for parameter in category.parameters.all %}
+                        {% with parameter_item=parameter template_name="passport/passport_parameter_detail.html" %}
+                            {%include template_name%}
+                        {%endwith%}
+                    {% endfor %}
+                {% endif %}
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endcomment %}
+
+{% include 'passport/category_tree.html' %}

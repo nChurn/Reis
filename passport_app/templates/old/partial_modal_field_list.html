@@ -1,0 +1,62 @@
+<div class="modal" tabindex="-1" role="dialog" id="field-list-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Элементы</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="field-form-list">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                    <button type="button" class="btn btn-primary" id="field-accept">Применить</button>
+                </div>
+                <input type="text" hidden id="classifier-id"/>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% block javascript %}
+<script>
+    function addFieldLiItem(name, id, container_name) {
+        $('#'+container_name).append("<li id=\""+id+"\" class='field'>"+name+"</li>");
+    }
+
+    $('#field-list-modal').on('shown.bs.modal', function () {
+
+        $('#field-accept').on('click', function(event){
+
+            var classifierID = $('#field-list-modal').find('#classifier-id').val();
+            var checkboxes = $('#field-list-modal').find("input:checked");
+            var containerName = 'field-container-'+classifierID;
+
+            $('#'+containerName).find('.field').remove().end();            
+
+            for (var i = 0; i<checkboxes.length; i++)
+            {
+                var id = checkboxes[i].id;
+
+                var label = $('#field-list-modal').find("#label-"+id);
+                var labelText = label.html();
+
+                addFieldLiItem(labelText, id, containerName);
+            }
+            $('#field-list-modal').modal('hide');
+        });
+    });
+
+    $('#field-list-modal').on('hide.bs.modal', function () {
+
+        $("#field-form-list").find('div').remove().end();
+        $('#field-accept').prop("onclick", null).off("click");
+
+    });
+
+</script>
+{% endblock %}

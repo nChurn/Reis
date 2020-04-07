@@ -1,0 +1,73 @@
+
+
+
+{% load static %}
+{% block style %}
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>    
+    <link rel="stylesheet" type="text/css" href="{% static 'css/modal_select2.css' %}">
+{% endblock %}
+
+{% load crispy_forms_tags %}
+
+<div class="modal" tabindex="-1" role="dialog" id="category-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Категория</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form action="/category/add/" method="post">
+                    {% csrf_token %}
+                    <div class="form-row">
+                            <label>Названиие (en)*</label>
+                    </div>            
+                    <div class="form-row">                        
+                        {{ form.name }}                        
+                    </div>
+
+                    <div class="form-row">
+                        <label>Названиие (ру)</label>
+                    </div>  
+                    <div class="form-row">
+                        {{ form.name_ru }}                        
+                    </div>
+
+                    <div class="form-row">
+                        <label>Пункт</label>
+                    </div>  
+                    <div class="form-row">
+                        {{ form.point }}                        
+                    </div>
+
+                    <div class="form-row">
+                            <label>Комментарий</label>
+                    </div>  
+                    <div class="form-row">
+                        {{ form.comment }}
+                    </div>
+
+                    <div class="form-row">
+                        <label>Предок</label>
+                    </div>  
+                    <div class="form-row">
+                        {{ form.parent_categories }}                        
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<script src="{% static 'django_select2/django_select2.js' %}"></script>

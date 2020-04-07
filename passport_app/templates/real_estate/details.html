@@ -1,0 +1,45 @@
+{% for data_item in data %}
+<div class="accordion" id="accordion-{{data_item.classifier.name}}">
+    <div class="card">
+        <div class="card-header" id="card-{{data_item.classifier.name}}">
+            <h2 class="mb-0 button-label-color">
+                <button class="btn btn-link" style="color: #006c32;" type="button" data-toggle="collapse" data-target="#collapse-{{data_item.classifier.name}}" aria-expanded="true" aria-controls="collapseOne">
+                    {{ data_item.classifier.name_ru }}
+                </button>
+            </h2>
+        </div>
+
+        <div id="collapse-{{data_item.classifier.name}}" class="collapse" aria-labelledby="headingOne" data-parent="#accordion-{{data_item.classifier.name}}">
+            <div class="card-body">
+                <div class="table-responsive" style=" width: 100%">
+                    <table class="table" id="details-table">
+                        <thead>
+                            <tr>
+                              <th style="width: 10%">Пункт</th>
+                              <th style="width: 65%">Название</th>
+                              <th style="width: 10%">Значение</th>
+                              <th style="width: 10%">Вес</th>
+                              <th style="width: 5%"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for data_field in data_item.data_fields %}
+                            <tr id="{{data_field.id}}">
+                                <td id="field-point">{{ data_field.field.point }}</td>
+                                <td id="field-title">{{ data_field.field.title_rus }}</td>
+                                <td id="field-value">{{ data_field.value }}</td>
+                                <td id="field-rate">{{ data_field.rate }}</td>
+                                {% if user.groups.all.0|stringformat:"s" == "SystemAdministrator" or user.groups.all.0|stringformat:"s" == "Administrator" or user.is_superuser %}
+                                <td><button class="btn btn-light btn-edit" value="{{data_field.id}}" id="field-btn"><i class="fa fa-pencil"></i></button></td>
+                                {% endif %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}

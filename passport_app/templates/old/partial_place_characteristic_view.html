@@ -1,0 +1,30 @@
+<div class="accordion" id="accordion-place-characteristic">
+  <div class="card">
+    <div class="card-header" id="headingOne">
+      <h2 class="mb-0">
+        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse-place-characteristic" aria-expanded="true" aria-controls="collapseOne">
+          Характеристики местоположения
+        </button>
+      </h2>
+    </div>
+
+    <div id="collapse-place-characteristic" class="collapse" aria-labelledby="headingOne" data-parent="#accordion-place-characteristic">
+      <div class="card-body">
+
+          <table class="table-striped" style="display: block;">
+              {% for data_field in data_fields.place_info %}
+            <tr id="{{data_field.id}}">
+                <td id="field-point">{{ data_field.field.point }}<td>
+                <td id="field-title">{{ data_field.field.title_rus }}<td>
+                <td id="field-value">{{ data_field.value }}<td>
+                <td id="field-rate">{{ data_field.rate }}<td>
+                <td><button class="btn-edit" value="{{data_field.id}}" id="field-btn"><i class="fa fa-pencil"></i></button><td>
+            </tr>
+              {% endfor %}
+        </table>
+
+
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,5 @@
+<ul id = id_categories>
+    {% for category in root_categories %}
+        {% include "search_form/category_view_form/form_category_child.html" with category_item=category parent_item_id='' parent_cclass_id='' %}
+    {% endfor %}
+</ul>

@@ -1,0 +1,150 @@
+<div class="col-10" id="manage-category">
+    <form>
+        {% csrf_token %}
+
+        <div class="form-group row">
+            <div class="col">
+                <input class="form-control" type="text" name="form_name" id="form_name" />
+            </div>
+            <button class="btn btn-light"><i class="fa fa-search"></i></i></button>
+            <a class="btn btn-success pull-right m-1 button-orange" id="btn-new">
+                <i class="fa fa-plus"></i>
+                Создать справочник
+            </a>
+        </div>
+    </form>
+    <div role="tablist" aria-multiselectable="true">
+        {% for category_item in categories %}
+        {% include "category/category_list_node_view.html" with category_item=category_item parent_item_id="" %}
+        {% endfor %}
+    </div>
+</div>
+
+{% include 'category/category_modal_add.html' %}
+
+{% block javascript %}
+<script>
+    $(document).ready(function () {
+        var category_id = '{{category_item.id}}';
+        var parent_id = '{{parent_item_id}}';
+
+        $('body').on("click", '#btn-parameter-add', function (value) {
+            let id = $(this).attr('value');
+            $.ajax({
+                url: "parameters-add/" + id, 
+                type: "GET", 
+                success: function (data) {
+                    $('.modal-title').text("Парсер");
+                    $('#modal-body').html(data);
+                    $('#modal-form').modal('show');
+                },
+                error: function (xhr, errmsg, err) {
+
+                }
+            });
+        });
+
+        $('body').on("click", '#btn-category-add', function (value) {
+            let id = $(this).attr('value');
+            $.ajax({
+                headers: { "X-CSRFToken": '{{csrf_token}}' },
+                url: "categories-add/" + id + "/", 
+                type: "GET", 
+                success: function (data) {
+                    $('.modal-title').text("Создать элемент");
+                    $('#modal-body').html(data);
+                    $('#modal-form').modal('show');
+                },
+                error: function (xhr, errmsg, err) {
+
+                }
+            });
+        });
+
+        $('body').on("click", '#btn-edit', function (value) {
+            let id = $(this).attr('value');
+            $.ajax({
+                headers: { "X-CSRFToken": '{{csrf_token}}' },
+                url: "/category/" + id + "/", 
+                type: "GET", 
+                success: function (data) {
+                    $('.modal-title').text("Изменить элемент");
+                    $('#modal-body').html(data);
+                    $('#modal-form').modal('show');
+                },
+                error: function (xhr, errmsg, err) {
+
+                }
+            });
+        });
+
+        $('body').on("click", '#btn-remove', function (value) {
+            let id = $(this).attr('value');
+            $.ajax({
+                url: "/category/" + id + "/delete/",
+                type: "GET",
+                success: function (data) {
+                    $('#modal-body').html(data);
+                    $('#modal-title').text('');
+                    $('#modal-form').modal('show');
+                },
+                error: function (xhr, errmsg, err) {
+
+                }
+            });
+        });
+
+        $('body').on("click", '#btn-minus', function (value) {
+            let id = $(this).attr('value');
+            $.ajax({
+                headers: { "X-CSRFToken": '{{csrf_token}}' },
+                url: "/constructor/categories-delete/" + parent_id + "/" + id + "/", 
+                type: "POST", 
+                success: function (data) {
+                    window.location = '/constructor/#v-pills-category';
+                },
+                error: function (xhr, errmsg, err) {
+
+                }
+            });
+
+        });
+
+        $('body').on('shown.bs.collapse', function () {
+            $.ajax({
+                headers: { "X-CSRFToken": '{{csrf_token}}' },
+                url: "/constructor/categories/" + category_id + "/", 
+                type: "GET", 
+                success: function (data) {
+                    $('#child-categories-' + parent_id + '-' + category_id).html(data);
+                },
+                error: function (xhr, errmsg, err) {
+
+                }
+            });
+        })
+    });
+</script>
+
+<script>
+    function showCategoryDetail(category_id) {
+        $.ajax({
+            url: "category/" + category_id,
+            type: "GET",
+            success: function (data) {
+                $('#category-detail').html(data);
+            },
+            error: function (xhr, errmsg, err) {
+
+            }
+        });
+    }
+
+    $(document).ready(function () {
+        $('#manage-category').find('#btn-new').on('click', function (event) {
+            $(".modal-title").text("Создать справочник")
+            $('#category-modal').modal('show');
+        });
+    });
+</script>
+{% endblock %}

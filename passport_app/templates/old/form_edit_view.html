@@ -1,0 +1,312 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<form action="/form_new/" method="post" id="post-form">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="form-group row">
+        <label for="form-name" class="col-sm-2 col-form-label">Название(en)</label>
+        <div class="col-sm-10" id="form-name">
+            <input class="form-control" name="name" id="name" value="{{form.name}}"/>
+        </div>
+    </div>
+    <div class="form-group row">
+        <label for="form-name-ru" class="col-sm-2 col-form-label">Название</label>
+        <div class="col-sm-10" id="form-name-ru">
+            <input class="form-control" name="name_ru" id="name_ru" value="{{form.name_ru}}"/>
+        </div>
+    </div>
+    <div id="manage-form-type">
+
+        <ul class="form-tree">
+            <li><i class="fa fa-angle-right rotate"></i>
+                Категории недвижимости
+                <span style="cursor: pointer" id="add-type"><i class="fa fa-pencil"></i></span>
+                <ul id="type">
+                    {% for type in config.types %}
+                        <li id= "{{ type.type.id }}" class='type'>
+                            {{ type.type.title_rus }}
+                            <span style="cursor: pointer" class="add-subtype" id="{{ type.type.id }}">
+                                <i class="fa fa-pencil pl-1 pr-1 "></i>
+                            </span>
+                            <span style="cursor: pointer" class="remove-type" id="{{ type.type.id }}">
+                                <i class="fa fa-trash pr-1 pl-1"></i>
+                            </span>
+
+                            <ul id="subtype-container-{{ type.type.id }}">
+
+                                {% for subtype in type.subtypes %}
+                                    <li id="{{subtype.id}}" class='subtype'>{{ subtype.title_rus }}</li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+        </ul>
+
+        <ul class="form-tree">
+            <li><i class="fa fa-angle-right rotate"></i>
+                Разделы
+                <span style="cursor: pointer" id="add-classifier"><i class="fa fa-pencil"></i></span>
+
+                <ul id="classifier">
+                    {% for classifier in config.classifiers %}
+                        <li id= "{{ classifier.classifier.id }}" class='classifier'>
+                            {{ classifier.classifier.name_ru }}
+                            <span style="cursor: pointer" class="add-field" id="{{ classifier.classifier.id }}">
+                                <i class="fa fa-pencil pl-1 pr-1 "></i>
+                            </span>
+                            <span style="cursor: pointer" class="remove-classifier" id="{{ classifier.classifier.id }}">
+                                <i class="fa fa-trash pr-1 pl-1"></i>
+                            </span>
+
+                            <ul id="field-container-{{ classifier.classifier.id }}">
+                                {% for field in classifier.fields %}
+                                    <li id="{{field.id}}" class='field'>>{{ field.title_rus }}</li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </li>
+        </ul>
+    </div>
+
+    <div class="pull-right">
+        <div class="row">
+            <div class="form-check pt-1 pl-1 pr-3">
+                <input class="form-check-input" type="checkbox" value="" id="is_default" name="is_default">
+                <label class="form-check-label" for="is_default">
+                    Стандартная форма
+                </label>
+            </div>
+            <button type="submit" class="btn btn-primary button-orange pull-right" id = "btn-save-form" value="{{ form.is_default }}">Сохранить</button>
+        </div>
+
+    </div>
+
+</form>
+{% include 'partial_modal_classifier_list.html' %}
+{% include 'partial_modal_field_list.html' %}
+{% include 'partial_model_type_list.html' %}
+{% include 'partial_modal_subtype_list.html' %}
+{% endblock %}
+
+{% block javascript %}
+<script>
+    function addClassifierFormLiItem(name, id) {
+
+        $("#classifier").append("<li id=\""+id+"\" class='classifier'>"+name+"<span style=\"cursor: pointer\" class=\"add-field\" id = \""+id+"\">"+
+            "<i class=\"fa fa-pencil pl-1 pr-1 \"></i></span><span style=\"cursor: pointer\" class=\"remove-classifier\" id = \""+id+"\">" +
+            "<i class=\"fa fa-trash pr-1 pl-1 \"></i></span><ul id=\"field-container-"+id+"\"></ul></li>");
+
+    }
+
+
+    function editForm(form_id){
+        var json = {};
+        json['classifiers'] = {};
+        json['types'] = {};
+
+        var classifiers = $("#classifier").find(".classifier");
+        for (var i = 0; i < classifiers.length; i++){
+            
+            var cl_id = classifiers[i].id;
+            json['classifiers'][cl_id] = [];
+            
+            var fields = $(classifiers[i]).find(".field");
+            for (var j = 0; j < fields.length; j++){
+                var f_id = fields[j].id;
+                json['classifiers'][cl_id].push(f_id);
+            }
+        }
+
+        var types = $("#type").find(".type");
+        for (var i = 0; i < types.length; i++){
+            var cl_id = types[i].id;
+            json['types'][cl_id] = [];
+            var subtypes = $(types[i]).find(".subtype");
+            for (var j = 0; j < subtypes.length; j++){
+                var f_id = subtypes[j].id;
+                json['types'][cl_id].push(f_id);
+            }
+        }
+
+        var name = $("#name").val();
+        var name_ru = $("#name_ru").val();
+        var is_default = $('#is_default').prop("checked") == true;
+        
+        $.ajax({
+            headers: { "X-CSRFToken": '{{csrf_token}}' },
+            url : "/forms/"+form_id+"/", // the endpoint
+            type : "PUT", // http method
+            data: {
+                user: '{{user.id}}',
+                name: name,
+                name_ru: name_ru,
+                is_default: is_default,
+                config: JSON.stringify(json),
+            },
+            // handle a successful response
+            success : function(data) {
+
+                location.href='/constructor/';
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+
+            }
+        });
+    }
+
+    function addCheckbox(name, id, container_name) {
+       var container = $('#'+container_name);
+
+        var last_div = $('<div class="form-check" ></div>').appendTo(container);
+
+        $('<input />', { type: 'checkbox', id: id, value: name, class: "form-check-input", checked: 'true' }).appendTo(last_div);
+        $('<label />', { 'for': id, text: name, id: "label-"+id, class: "form-check-label" }).appendTo(last_div);
+    }
+
+    function getClassifierList(){
+        $.ajax({
+            url : "/classifiers/", // the endpoint
+            type : "GET", // http method
+
+            // handle a successful response
+            success : function(data) {
+
+                for (var i = 0; i < data.length; i++)
+                {
+                    addCheckbox(data[i].name_ru, data[i].id, 'classifier-form-list')
+                }
+                $('#classifier-list-modal').modal('show');
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+
+            }
+        });
+
+
+    }
+
+    function getFieldsByClassifierList(classifier_id){
+
+        $.ajax({
+            url : "/constructor/fields_classifier/"+classifier_id, // the endpoint
+            type : "GET", // http method
+
+            // handle a successful response
+            success : function(data) {
+
+                $('#field-list-modal').find("#classifier-id").val(classifier_id);
+                for (var i = 0; i < data.length; i++)
+                {
+                    addCheckbox(data[i].title_rus, data[i].id, 'field-form-list')
+                }
+                $('#field-list-modal').modal('show');
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+
+
+            }
+        });
+
+
+    }
+
+    function getTypeRealEstateList(){
+        $.ajax({
+            url : "/types/", // the endpoint
+            type : "GET", // http method
+
+            // handle a successful response
+            success : function(data) {                
+                for (var i = 0; i < data.length; i++)
+                {
+                    addCheckbox(data[i].title_rus, data[i].id, 'type-form-list')
+                }
+                $('#type-list-modal').modal('show');
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+
+            }
+        });
+
+
+    }
+
+    function getSubTypeRealEstateList(type_id){
+        $.ajax({
+            url : "/constructor/subtypes_types/"+type_id, // the endpoint
+            type : "GET", // http method
+
+            // handle a successful response
+            success : function(data) {                
+                $('#subtype-list-modal').find("#type-id").val(type_id);
+                for (var i = 0; i < data.length; i++)
+                {
+                    addCheckbox(data[i].title_rus, data[i].id, 'subtype-form-list')
+                }
+                $('#subtype-list-modal').modal('show');
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+
+            }
+        });
+
+
+    }
+
+    $(document).ready(function() {
+
+        $('#add-classifier').on('click', function(event){
+            getClassifierList();
+
+        });
+
+        $('#classifier').on('click', ".add-field",  function(event){
+
+            var id = $(this).attr('id');
+            getFieldsByClassifierList(id);
+
+        });
+
+        $('#add-type').on('click', function(event){
+            getTypeRealEstateList();
+        });
+
+        $('#type').on('click', ".add-subtype",  function(event){
+
+            var id = $(this).attr('id');
+            getSubTypeRealEstateList(id);
+
+        });
+
+        $('#classifier').on('click', ".remove-classifier",  function(event){
+            var closesClassifierLi = $(this).closest('li');
+            closesClassifierLi.remove();
+        });
+
+        $('#type').on('click', ".remove-type",  function(event){
+            var closesTypetLi = $(this).closest('li');
+            closesTypetLi.remove();
+        });
+
+        $('#post-form').on('submit', function(event){
+            event.preventDefault();
+            editForm('{{form.id}}');
+        });
+    });
+</script>
+{% endblock %}

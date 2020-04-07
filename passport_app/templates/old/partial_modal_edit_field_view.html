@@ -1,0 +1,104 @@
+<div class="modal" tabindex="-1" role="dialog" id="field-edit-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Элемент</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!--<p>Modal body text goes here.</p>-->
+                <form action="/classifiers/" method="put" id="field-edit-form">
+                    {% csrf_token %}
+
+                    <div class="form-group row">
+                        <label for="name" class="col-sm-3 col-form-label"> Название(en) </label>
+                        <div class="col-sm-9">
+                            <input class="form-control" type="text" name="name" id="name" value="{{data_field.name}}"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="title_rus" class="col-sm-3 col-form-label"> Заголовок (ру)</label>
+                        <div class="col-sm-9">
+                            <input class="form-control" type="text" name="title_rus" id="title_rus" value="{{data_field.point}}"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="title" class="col-sm-3 col-form-label"> Заголовок </label>
+                        <div class="col-sm-9">
+                            <input class="form-control" type="text" name="title" id="title" value="{{data_field.descr}}"/>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="point" class="col-sm-3 col-form-label"> Пункт </label>
+                        <div class="col-sm-9">
+                            <input class="form-control" type="text" name="point" id="point" value="{{data_field.descr}}"/>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label> Раздел </label>
+                        <select class="custom-select" name="classifier" id="classifier_id" disabled>
+
+                        </select>
+                    </div>
+                    <input type="text" name="modal-id" id="modal-id" hidden value="{{data_field.id}}"/>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% block javascript %}
+<script>
+
+    $('#field-edit-form').on('submit', function(event){
+
+        event.preventDefault();
+        var form = $(this);        
+        var id = $(this).find('#modal-id').val();
+        var editParam = $(form).serialize();
+        var token = jQuery("[name=csrfmiddlewaretoken]").val();
+        $.ajax({
+            headers: { "X-CSRFToken": token },
+            url : "/fields/"+id+'/', // the endpoint
+            type : "PUT", // http method
+            data : editParam, // data sent with the post request
+
+            // handle a successful response
+            success : function(json) {
+//                let id = json['id'];
+//                let row = $('#'+id);
+//                let field_name = json['name'];
+//                let field_title_rus = json['title_rus'];
+//                let field_title = json['title'];
+//                let point = json['point'];
+//                row.find('#field-name').text(field_name);
+//                row.find('#field-title-rus').text(field_title_rus);
+//                row.find('#field-title').text(field_title);
+//                row.find('#field-point').text(point);
+                $('#field-edit-modal').modal('hide');
+                form.find('input').val('');
+                updateFieldsList();
+
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+            }
+        });
+    });
+
+    $('#field-edit-modal').on('shown.bs.modal', function () {
+
+    });
+</script>
+{% endblock %}

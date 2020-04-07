@@ -1,0 +1,7 @@
+{% load crispy_forms_tags %}
+
+<form action="/typeofvalue/{{object.id}}/delete/" method="post">
+    {% csrf_token %}
+    <p>Вы уверены что хотите удалить "{{ object.name_ru }}"?</p>
+    <input type="submit" class="btn btn-danger pull-right" value="удалить">
+</form>

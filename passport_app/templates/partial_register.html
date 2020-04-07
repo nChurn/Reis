@@ -1,0 +1,10 @@
+
+{% load crispy_forms_tags %}
+
+<h2>Регистрация пользователя</h2>
+<form method="post" action="register/">
+    {% csrf_token %}
+    {{ form|crispy }}
+
+    <button type="submit" class="btn btn-primary button-orange pull-right">Создать</button>
+</form>

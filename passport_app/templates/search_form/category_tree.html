@@ -1,0 +1,5 @@
+<ul id = id_categories style="overflow-y:scroll;max-height:300px;">
+{% for category in root_categories %}
+    {% include "search_form/form_category_child.html" with category_item=category parent_item_id='' parent_cclass_id='' %}
+{% endfor %}
+</ul>

@@ -1,0 +1,344 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+{% if user.is_authenticated %}
+<!--{# Display a form #}-->
+<div class="mt-2">
+    <ul class="nav nav-tabs" id="searchTab" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active link-color" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Поиск</a>
+        </li>
+        {% if user.is_authenticated  %}
+        <li class="nav-item">
+            <a class="nav-link link-color" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Поиск по архиву</a>
+        </li>
+        {% endif %}
+    </ul>
+    <div class="tab-content" id="searchTabContent">
+        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+            <form action="/search/" method="post" id="post-form">
+                {% csrf_token %}
+                {% if search_config and search_config.show_owner_field  %}
+                {{ form.owner|as_crispy_field }}
+                {% endif %}
+
+                {% if search_config and search_config.show_search_form_field  %}
+                {{ form.search_form|as_crispy_field }}
+                {% endif %}
+                
+                {{ form.search_form|as_crispy_field }}
+                <p>{{ form.kadastr_number.help_text }}</p>
+
+                {{ form.kadastr_number|as_crispy_field }}
+                <label class="col hint offset-2 pt-0 mt-0 form-text text-muted" >Адрес: Россия, Московская область, Электросталь, проспект Ленина, 1</label>
+                <label class="col hint offset-2 pt-0 mt-0 form-text text-muted" >Кадастровый номер: 29:21:010101:57</label>
+                {% if not user.is_authenticated  %}
+                {{ form.captcha|as_crispy_field }}
+                {% endif %}
+
+                <div class="row pt-3">
+                    <div class="col">
+                        <button type="submit" class="btn btn-primary pull-right button-orange mt-3 mb-3 pl-4 pr-4" id = "kadastr_number_btn">
+                            Сбор данных
+                        </button>
+                        <button class="btn btn-primary pull-right button-orange mt-3 mb-3" disabled hidden id = "kadastr_number_spinner_btn">
+                            <i class="fa fa-spinner fa-spin"></i>
+                            Загрузка..
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        {% if user.is_authenticated  %}
+        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+            <form action="/search_archive/" method="post" id="post-form-archive">
+                {% csrf_token %}
+                {{ form.search_form|as_crispy_field }}
+                {{ form.kadastr_number|as_crispy_field }}
+                <label class="col hint offset-2 pt-0 mt-0 form-text text-muted" >Адрес: Россия, Московская область, Электросталь, проспект Ленина, 1</label>
+                <label class="col hint offset-2 pt-0 mt-0 form-text text-muted" >Кадастровый номер: 29:21:010101:57</label>
+
+                <div class="row pt-3">
+                    <div class="col">
+                        <button type="submit" class="btn btn-primary pull-right button-orange mt-3 mb-3 pl-4 pr-4" id = "kadastr_number_archive_btn">
+                            Поиск по архиву
+                        </button>
+                        <button class="btn btn-primary pull-right button-orange" disabled hidden id = "kadastr_number_archive_spinner_btn">
+                            <i class="fa fa-spinner fa-spin"></i>
+                            Загрузка..
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+    <div id="history-result">
+    </div>
+</div>
+{% else %}
+<div class="mt-3">
+    <form action="/search/" method="post" id="post-form">
+        {% csrf_token %}
+
+        {% if search_config and search_config.show_email_field  %}
+        {{ form.email|as_crispy_field }}
+        {% endif %}
+        {% if search_config and search_config.show_phone_field  %}
+        {{ form.phone|as_crispy_field }}
+        {% endif %}
+        {% if search_config and search_config.show_owner_field  %}
+        {{ form.owner|as_crispy_field }}
+        {% endif %}
+        {% if search_config and search_config.show_search_form_field  %}
+        {{ form.search_form|as_crispy_field }}
+        {% endif %}
+        {{ form.kadastr_number|as_crispy_field }}
+        <label class="col hint offset-2 pt-0 mt-0 form-text text-muted" >Адрес: Россия, Московская область, Электросталь, проспект Ленина, 1</label>
+        <label class="col hint offset-2 pt-0 mt-0 form-text text-muted" >Кадастровый номер: 29:21:010101:57</label>
+
+        {{ form.captcha|as_crispy_field }}
+
+        <div class="row pt-3">
+            <div class="col">
+                <button type="submit" class="btn btn-primary pull-right button-orange mt-3 mb-3 pl-4 pr-4" id = "kadastr_number_btn">
+                    Сбор данных
+                </button>
+                <button class="btn btn-primary pull-right button-orange mt-3 mb-3" disabled hidden id = "kadastr_number_spinner_btn">
+                    <i class="fa fa-spinner fa-spin"></i>
+                    Загрузка..
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block javascript %}
+    <script>
+    function searchBuildingArchive(search_param){
+
+        $('#kadastr_number_archive_spinner_btn').removeAttr('hidden');
+        $('#kadastr_number_archive_btn').attr('hidden', true);
+        $.ajax({
+            url : "/search-archive/", // the endpoint
+            type : "POST", // http method
+            data : search_param, // data sent with the post request
+
+            // handle a successful response
+            success : function(data) {
+                $('#kadastr_number_archive_spinner_btn').attr('hidden', true);
+                $('#kadastr_number_archive_btn').removeAttr('hidden');
+                $('#kadastr_number-archive').val(''); // remove the value from the input
+
+                $('#history-result').html(data);
+                $("#kadastr_number_archive").val('');
+
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+
+            }
+        });
+    }
+
+    function searchBuilding(search_param){
+
+        $('#kadastr_number_spinner_btn').removeAttr('hidden');
+        $('#kadastr_number_btn').attr('hidden', true);        
+
+        $.ajax({
+            url : "/search/", // the endpoint
+            type : "POST", // http method
+            data : search_param, // data sent with the post request
+
+            // handle a successful response
+            success : function(data) {                
+
+                $('#kadastr_number').val(''); // remove the value from the input
+                $('#kadastr_number_spinner_btn').attr('hidden', true);
+                $('#kadastr_number_btn').removeAttr('hidden');
+                $("#kadastr_number").val('');
+                $('#history-result').html(data);
+
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+
+            }
+        });
+    }
+
+    function history(){
+        $.ajax({
+            url : "/history/", // the endpoint
+            type : "GET", // http method
+
+            // handle a successful response
+            success : function(data) {
+                $('#history-result').html(data);
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+
+
+            }
+        });
+    }
+
+    $(document).ready(function() {
+
+        var url = document.location.toString();
+        if (url.match('#')) {
+            $('.nav-tabs a[href="#' + url.split('#')[1] + '"]').tab('show');
+        }
+
+        $('.nav-tabs a').on('shown.bs.tab', function (e) {
+            window.location.hash = e.target.hash;            
+            if (e.target.hash =="#profile")
+            {
+                history();
+            }
+            else
+            {
+                $('#history-result').empty();
+            }
+        })
+
+       $('#search').on('click', function(event){
+           $('#post-form').submit();
+       });
+
+       $('#post-form').on('submit', function(event){
+           event.preventDefault();
+           var form = $(this);
+           var searchParam = $(form).serialize();
+           searchBuilding(searchParam);
+       });
+        $('#post-form-archive').on('submit', function(event){
+            event.preventDefault();
+            var form = $(this);            
+            var searchParam = $(form).serialize();
+            searchBuildingArchive(searchParam);
+        });
+
+        $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+            e.target // newly activated tab
+            e.relatedTarget // previous active tab
+            $("#search-result").find('li').remove().end();
+        });
+
+        $('.captcha').click(function () {
+            $.getJSON("/captcha/refresh/", function (result) {
+                $('.captcha').attr('src', result['image_url']);
+                $('#id_captcha_0').val(result['key'])
+            });
+
+
+        });
+
+    })
+
+    ymaps.ready(init);
+
+    function init() {
+        var suggestView = new ymaps.SuggestView('id_kadastr_number');
+
+        var myMap = new ymaps.Map('map', {
+            center: [55.753994, 37.622093],
+            zoom: 9
+        });
+
+        // Поиск координат центра Нижнего Новгорода.
+        ymaps.geocode('Нижний Новгород', {
+            /**
+             * Опции запроса
+             * @see https://api.yandex.ru/maps/doc/jsapi/2.1/ref/reference/geocode.xml
+             */
+            // Сортировка результатов от центра окна карты.
+            // boundedBy: myMap.getBounds(),
+            // strictBounds: true,
+            // Вместе с опцией boundedBy будет искать строго внутри области, указанной в boundedBy.
+            // Если нужен только один результат, экономим трафик пользователей.
+            results: 1
+        }).then(function (res) {
+            // Выбираем первый результат геокодирования.
+            var firstGeoObject = res.geoObjects.get(0),
+                // Координаты геообъекта.
+                coords = firstGeoObject.geometry.getCoordinates(),
+                // Область видимости геообъекта.
+                bounds = firstGeoObject.properties.get('boundedBy');
+
+            firstGeoObject.options.set('preset', 'islands#darkBlueDotIconWithCaption');
+            // Получаем строку с адресом и выводим в иконке геообъекта.
+            firstGeoObject.properties.set('iconCaption', firstGeoObject.getAddressLine());
+
+            // Добавляем первый найденный геообъект на карту.
+            myMap.geoObjects.add(firstGeoObject);
+            // Масштабируем карту на область видимости геообъекта.
+            myMap.setBounds(bounds, {
+                // Проверяем наличие тайлов на данном масштабе.
+                checkZoomRange: true
+            });
+
+            /**
+             * Все данные в виде javascript-объекта.
+             */
+            console.log('Все данные геообъекта: ', firstGeoObject.properties.getAll());
+            /**
+             * Метаданные запроса и ответа геокодера.
+             * @see https://api.yandex.ru/maps/doc/geocoder/desc/reference/GeocoderResponseMetaData.xml
+             */
+            console.log('Метаданные ответа геокодера: ', res.metaData);
+            /**
+             * Метаданные геокодера, возвращаемые для найденного объекта.
+             * @see https://api.yandex.ru/maps/doc/geocoder/desc/reference/GeocoderMetaData.xml
+             */
+            console.log('Метаданные геокодера: ', firstGeoObject.properties.get('metaDataProperty.GeocoderMetaData'));
+            /**
+             * Точность ответа (precision) возвращается только для домов.
+             * @see https://api.yandex.ru/maps/doc/geocoder/desc/reference/precision.xml
+             */
+            console.log('precision', firstGeoObject.properties.get('metaDataProperty.GeocoderMetaData.precision'));
+            /**
+             * Тип найденного объекта (kind).
+             * @see https://api.yandex.ru/maps/doc/geocoder/desc/reference/kind.xml
+             */
+            console.log('Тип геообъекта: %s', firstGeoObject.properties.get('metaDataProperty.GeocoderMetaData.kind'));
+            console.log('Название объекта: %s', firstGeoObject.properties.get('name'));
+            console.log('Описание объекта: %s', firstGeoObject.properties.get('description'));
+            console.log('Полное описание объекта: %s', firstGeoObject.properties.get('text'));
+            /**
+             * Прямые методы для работы с результатами геокодирования.
+             * @see https://tech.yandex.ru/maps/doc/jsapi/2.1/ref/reference/GeocodeResult-docpage/#getAddressLine
+             */
+            console.log('\nГосударство: %s', firstGeoObject.getCountry());
+            console.log('Населенный пункт: %s', firstGeoObject.getLocalities().join(', '));
+            console.log('Адрес объекта: %s', firstGeoObject.getAddressLine());
+            console.log('Наименование здания: %s', firstGeoObject.getPremise() || '-');
+            console.log('Номер здания: %s', firstGeoObject.getPremiseNumber() || '-');
+
+            /**
+             * Если нужно добавить по найденным геокодером координатам метку со своими стилями и контентом балуна, создаем новую метку по координатам найденной и добавляем ее на карту вместо найденной.
+             */
+            /**
+             var myPlacemark = new ymaps.Placemark(coords, {
+             iconContent: 'моя метка',
+             balloonContent: 'Содержимое балуна <strong>моей метки</strong>'
+             }, {
+             preset: 'islands#violetStretchyIcon'
+             });
+
+             myMap.geoObjects.add(myPlacemark);
+             */
+        });
+    }
+    </script>
+{% endblock %}

@@ -1,0 +1,8 @@
+{% if child_categories and child_categories.count > 0 %}    
+               
+{% for child_item in child_categories %}
+    {%with category_item=child_item parent_item_id=parent_category.id template_name="category/child_category_list_node_view.html" %}
+        {%include template_name%}
+    {%endwith%}
+{% endfor %}
+{% endif %}

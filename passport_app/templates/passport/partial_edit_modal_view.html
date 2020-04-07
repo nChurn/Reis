@@ -1,0 +1,88 @@
+<div class="modal" tabindex="-1" role="dialog" id="edit-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!--<p>Modal body text goes here.</p>-->
+                <form action="/edit/" method="post" id="field-edit">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <div>
+                    <label> Значение </label> <input type="text" name="value" id="modal-field-value" value="{{data_field.value}}"/>
+                    </div>
+                    {% if user.is_superuser %}
+                    <div>
+                    <label> Вес </label> <input type="text" name="rate" id="modal-field-rate" value="{{data_field.rate}}"/>
+                    </div>
+                    {% else %}
+                    <div>
+                        <input type="text" name="rate" id="modal-field-rate" value="{{data_field.rate}}" hidden/>
+                    </div>
+                    {% endif %}
+                    <input type="text" name="id" id="modal-field-id" style="display: none" value="{{data_field.id}}"/>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% block javascript %}
+<script>
+    $('#field-edit').on('submit', function(event){
+        event.preventDefault();
+        var form = $(this);        
+        var editParam = $(form).serialize();
+        var value_param = form.find('#modal-field-value').val();
+        var rate_param = form.find('#modal-field-rate').val();
+        var data_field_id = form.find('#modal-field-id').val();
+
+        var resp_data = {};
+        if (value_param){
+            resp_data['value'] = value_param;
+        }
+
+        if (rate_param){
+            resp_data['rate'] = rate_param;
+        }
+
+        let row = $('#'+data_field_id);
+        row.find('#field-value').text(value_param);
+        row.find('#field-rate').text(rate_param);
+
+        $('#edit-modal').modal('hide');
+
+//        $.ajax({
+//            headers: { "X-CSRFToken": '{{csrf_token}}'},
+//            url : "/data_fields/"+data_field_id+"/", // the endpoint
+//            type : "PUT", // http method
+//            data : resp_data,
+//
+//            // handle a successful response
+//            success : function(json) {
+//                let id = json['id'];
+//                let row = $('#'+id);
+//                let field_value = json['value'];
+//                let field_rate = json['rate'];
+//                row.find('#field-value').text(field_value);
+//                row.find('#field-rate').text(field_rate);
+//                $('#edit-modal').modal('hide');
+//
+//            },
+//
+//            // handle a non-successful response
+//            error : function(xhr,errmsg,err) {
+//            }
+//        });
+    });
+
+</script>
+{% endblock %}

@@ -1,0 +1,58 @@
+<tr id="unit-{{unit.id}}">
+    <td><button class="btn btn-light btn-edit" value="{{unit.id}}" id="btn-edit"><i class="fa fa-pencil"></i></button></td>
+    <td><button class="btn btn-light btn-delete" value="{{unit.id}}" id="btn-delete"><i class="fa fa-trash"></i></button></td>
+    <td>{{ unit.name }}</td>
+    <td>{{ unit.name_ru }}</td>
+</tr>
+{% block javascript %}
+<script>
+
+    $(document).ready(function() {
+        var unit_id = '{{unit.id}}';
+        
+        $('#unit-'+'{{unit.id}}').on("click", ".btn-edit", function(event){
+
+            $.ajax({
+            url : "/unit/"+unit_id, // the endpoint
+            type : "GET", // http method request
+
+            // handle a successful response
+            success : function(data) {
+                $('.modal-title').text("Изменить единицу измерения")
+                $('#modal-body').html(data);
+                $('#modal-form').modal('show');
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+
+                }
+            });
+
+        });
+
+        $('#unit-'+'{{unit.id}}').on("click", ".btn-delete", function(event){
+
+            $.ajax({
+                headers: { "X-CSRFToken": '{{csrf_token}}' },
+                url : "/unit/"+unit_id+"/delete/", // the endpoint
+                type : "GET", // http method request
+
+                // handle a successful response
+                success : function(data) {
+                    $('#modal-body').html(data);
+                    $('#modal-title').text('Единица измерения');
+                    $('#modal-form').modal('show');
+                },
+
+                // handle a non-successful response
+                error : function(xhr,errmsg,err) {
+
+                    }
+            });
+
+        });
+    })
+
+</script>
+{% endblock %}

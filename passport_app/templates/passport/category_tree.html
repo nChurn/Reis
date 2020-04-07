@@ -1,0 +1,5 @@
+{% include 'modal_form/modal_form.html' %}
+
+{% for category in data %}
+    {% include 'passport/category_node.html' with category_item=category parent_item_id='' %}    
+{% endfor %}

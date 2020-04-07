@@ -1,0 +1,85 @@
+
+<div id="manage_form">
+    <form>
+        {% csrf_token %}
+
+        <div class="form-group row">
+            <div class="col-sm-9">
+                <input class="form-control" type="text" name="form_name" id="form_name"/>
+            </div>
+            <button class="btn btn-light"><i class="fa fa-search"></i></i></button>
+            <a class="btn btn-success pull-right m-1 button-orange" href="/constructor/form_new/" value="{{data_field.id}}" id="btn-add"><i class="fa fa-plus"></i> Создать форму</a>
+        </div>
+    </form>
+    <div id="div-form-list-table">
+
+    </div>
+</div>
+
+{% block javascript %}
+<script>
+var searchFormByName = function(search_name, form_input){
+    if (search_name == ''){        
+        return;
+    }
+
+    $.ajax({
+        url : "form_view_list/"+search_name+"/", // the endpoint
+        type : "GET", // http method
+        // handle a successful response
+        success : function(data) {
+            $('#div-form-list-table').html(data);
+            //form_input.val('');
+        },
+
+        // handle a non-successful response
+        error : function(xhr,errmsg,err) {
+
+
+        }
+    });
+};
+
+$(document).ready(function() {
+
+
+    $('#manage_form').on("click", ".btn-delete", function(){
+        var selectedTR = $(this).parents("tr");
+        var trID = $(this).parents("tr").attr('id');
+        $.ajax({
+            headers: { "X-CSRFToken": '{{csrf_token}}' },
+            url : "/forms/"+trID, // the endpoint
+            type : "DELETE", // http method request
+
+            // handle a successful response
+            success : function(json) {
+                selectedTR.remove();
+
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+
+            }
+        });
+
+    });
+
+    $('#form_name').on('input', function() {
+        var search_name =  $(this).val();
+        searchFormByName(search_name, $(this));
+
+    });
+
+    $('#manage_form').on('submit', function(event){
+        event.preventDefault();
+        var form = $(this);
+        var form_input = form.find('#form_name');
+        var search_name = form_input.val();
+        searchFormByName(search_name, form_input);
+
+    });
+})
+
+</script>
+{% endblock %}

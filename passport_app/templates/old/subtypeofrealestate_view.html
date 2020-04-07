@@ -1,0 +1,90 @@
+
+
+<div id="manage_subtypeofrealestates">
+    <button class="btn btn-success pull-right button-orange m-1" value="{{data_field.id}}" id="btn-add"><i class="fa fa-plus"></i></button>
+<table class="table ">
+  <thead>
+    <tr>
+        <th style="width: 5%"></th>
+        <th style="width: 5%"></th>
+      <th style="width: 20%">Название(en)</th>
+      <th style="width: 25%">Заголовок(ру)</th>
+      <th style="width: 25%">Заголовок(en)</th>
+        <th style="width: 20%">Тип недвижимости</th>
+    </tr>
+  </thead>
+  <tbody>
+
+  {% for data_field in subtypes %}
+    <tr id="{{data_field.id}}">
+        <td><button class="btn btn-light btn-edit" value="{{data_field.id}}" id="btn-edit"><i class="fa fa-pencil"></i></button></td>
+        <td><button class="btn btn-light btn-delete" value="{{data_field.id}}" id="btn-delete"><i class="fa fa-trash"></i></button></td>
+        <td id="field-name">{{ data_field.name }}</td>
+        <td id="field-title-rus">{{ data_field.title_rus }}</td>
+        <td id="field-title">{{ data_field.title }}</td>
+        <td id="field-type">{{ data_field.type.title_rus }}</td>
+    </tr>
+  {% endfor %}
+
+  </tbody>
+</table>
+</div>
+
+{% include 'partial_modal_add_subtypeofrealestate_view.html' %}
+{% include 'partial_modal_edit_subtypeofrealestate_view.html' %}
+
+
+{% block javascript %}
+    <script>
+
+    $(document).ready(function() {
+
+        $('#manage_subtypeofrealestates').find('#btn-add').on('click', function(event){
+            $('#subtypeofrealestate-modal').modal('show');
+        });
+
+        $('#manage_subtypeofrealestates').on("click", ".btn-edit",  function (value) {
+
+            let id = $(this).attr('value');
+            let row = $(this).closest('tr');            
+            let field_name = row.find('#field-name').text();
+            let field_title_rus = row.find('#field-title-rus').text();
+            let field_title = row.find('#field-title').text();
+
+            $('#subtypeofrealestates-edit-modal').find('#name').val(field_name);
+            $('#subtypeofrealestates-edit-modal').find('#title_rus').val(field_title_rus);
+            $('#subtypeofrealestates-edit-modal').find('#title').val(field_title);
+            $('#subtypeofrealestates-edit-modal').find('#modal-id').val(id);
+            $('#subtypeofrealestates-edit-modal').modal('show');
+
+        });
+
+        $("#manage_subtypeofrealestates").on("click", ".btn-delete", function(){
+            var selectedTR = $(this).parents("tr");
+            var trID = $(this).parents("tr").attr('id');
+            var token = jQuery("[name=csrfmiddlewaretoken]").val();
+            $.ajax({
+                headers: { "X-CSRFToken": token },
+                url : "/subtypes/"+trID, // the endpoint
+                type : "DELETE", // http method request
+
+                // handle a successful response
+                success : function(json) {
+                    selectedTR.remove();
+
+                },
+
+                // handle a non-successful response
+                error : function(xhr,errmsg,err) {
+
+                }
+            });
+
+        });
+
+
+    })
+
+    </script>
+{% endblock %}
+

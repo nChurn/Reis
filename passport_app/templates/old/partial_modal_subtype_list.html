@@ -1,0 +1,61 @@
+<div class="modal" tabindex="-1" role="dialog" id="subtype-list-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Подкатегории</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="subtype-form-list">
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                    <button type="button" class="btn btn-primary" id="subtype-accept">Применить</button>
+                </div>
+                <input type="text" hidden id="type-id"/>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+{% block javascript %}
+<script>
+    function addSubtypeLiItem(name, id, container_name) {
+        $('#'+container_name).append("<li id=\""+id+"\" class='subtype'>"+name+"</li>");
+    }
+
+    $('#subtype-list-modal').on('shown.bs.modal', function () {
+
+        $('#subtype-accept').on('click', function(event){
+            var typeID = $('#subtype-list-modal').find('#type-id').val();
+            var checkboxes = $('#subtype-list-modal').find("input:checked");
+            var containerName = 'subtype-container-'+typeID;            
+
+            $("#"+containerName).find('.subtype').remove().end();
+
+            for (var i = 0; i<checkboxes.length; i++)
+            {
+                var id = checkboxes[i].id;
+
+                var label = $('#subtype-list-modal').find("#label-"+id);
+                var labelText = label.html();
+
+                addSubtypeLiItem(labelText, id, containerName);
+            }
+            $('#subtype-list-modal').modal('hide');
+        });
+    });
+
+    $('#subtype-list-modal').on('hide.bs.modal', function () {
+
+        $("#subtype-form-list").find('div').remove().end();
+        $('#subtype-accept').prop("onclick", null).off("click");
+
+    });
+
+</script>
+{% endblock %}

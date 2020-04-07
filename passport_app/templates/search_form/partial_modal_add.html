@@ -1,0 +1,48 @@
+
+<div class="modal" tabindex="-1" role="dialog" id="search-form-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Форма</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <form action="/forms/add/" method="post">
+                    {% csrf_token %}
+                    <div class="form-row">
+                        <label>Названиие (en)*</label>
+                    </div>            
+                    <div class="form-row">                        
+                        {{ form.name }}                        
+                    </div>
+                    
+                    <div class="form-row">
+                        <label>Названиие (ру)</label>
+                    </div>  
+                    <div class="form-row">
+                        {{ form.name_ru }}                        
+                    </div>
+                    
+                    {{ form.user }}
+                    <div class="form-row">
+                        <label>Элементы</label>
+                    </div>  
+                    <!-- <div class="form-row">
+                        {{ form.categories }}                        
+                    </div> -->
+
+                    
+                    {% include "search_form/category_tree.html" with root_categories=categories %}
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>

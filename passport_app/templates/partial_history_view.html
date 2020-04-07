@@ -1,0 +1,98 @@
+{% csrf_token %}
+{% load tz %}
+{% for data_item in data %}
+<div class="accordion" id="accordion-{{forloop.counter}}">
+    <div class="card">
+        <div class="card-header p-1" id="card-{{forloop.counter}}">
+                <div class="btn btn-link button-label-color" data-toggle="collapse" data-target="#collapse-{{forloop.counter}}" aria-expanded="true" aria-controls="collapseOne" id="item-{{forloop.counter}}">
+                    <label id ="address">{{ data_item.address }}</label>
+                    <label>{{ data_item.kadastr_number }}</label>
+                    <label>{{ data_item.count }}</label>
+                </div>
+        </div>
+
+        <div id="collapse-{{forloop.counter}}" class="collapse" aria-labelledby="headingOne" data-parent="#accordion-{{forloop.counter}}">
+            <div class="card-body">
+                <table class="table table-color">
+                    <thead>
+                    <tr>
+                        <th style="width: 60%">Адрес</th>
+                        <th style="width: 30%">Кадастровый номер</th>
+                        <th style="width: 10%">Время</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endfor %}
+{% if data|length == 0 %}
+ По вашему запросу ничего не найдено
+{% endif %}
+{% block javascript %}
+<script>
+    function format_time(date){
+        let month = date.getMonth() + 1;
+        month = month < 10 ? "0"+month : month;
+        let day = date.getDate() < 10 ? "0"+date.getDate() : date.getDate();
+        let hours = date.getHours() + 3;
+        hours = hours < 10 ? "0"+hours : hours;
+        let minutes = date.getMinutes() < 10 ? "0"+date.getMinutes() : date.getMinutes();
+        let seconds = date.getSeconds() < 10 ? "0"+date.getSeconds() : date.getSeconds();
+        return day+"-"+month+"-"+date.getFullYear() + " " +hours+":"+minutes+":"+seconds;
+    }
+    $(document).ready(function() {
+        $('.collapse').on('show.bs.collapse', function () {
+            var str = $(this).attr('id');
+            var re = /\d*$/;
+            var id = str.match(re);
+            var tbody = $(this).find("tbody");
+            var address = $('#item-'+id).find('#address').text();
+
+            var token = jQuery("[name=csrfmiddlewaretoken]").val();
+            tbody.find('tr').remove().end();
+
+            $.ajax({
+                headers: { "X-CSRFToken": token },
+                url : "/search-archive-list/", // the endpoint
+                type : "POST", // http method
+                data : {'kadastr_number_archive': address}, // data sent with the post request
+
+                // handle a successful response
+                success : function(json) {                          
+                    if (json['real_property_list'] != '')           
+                    {
+                        var data_json = JSON.parse(json['real_property_list']);
+                    
+                        for (var i = 0; i < data_json.length; i++) {
+                            var created_date = new Date(data_json[i]['fields']['create_date']);
+                            tbody.append("<tr id=\"" +
+                                data_json[i]['pk'] + "\"><td><a href=\"details?id="+data_json[i]['pk']+"\">" +
+                                data_json[i]['fields']['address'] +
+                                "</a></td><td><a href=\"details?id="+data_json[i]['pk']+"\">" +
+                                data_json[i]['fields']['kadastr_number'] +
+                                "</a></td><td><a href=\"details?id="+data_json[i]['pk']+"\">" +
+                                format_time(created_date) +
+                                //created_date +
+                                "</a></td>");
+                        }
+                    }
+
+                },
+
+                // handle a non-successful response
+                error : function(xhr,errmsg,err) {
+
+                }
+            });
+        });
+    })
+
+
+</script>
+{% endblock %}

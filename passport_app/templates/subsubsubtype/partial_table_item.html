@@ -1,0 +1,34 @@
+<tr id="subsubsubitem-{{subsubitem.id}}">
+    <td><button class="btn btn-light btn-edit" value="{{subsubitem.id}}" id="btn-edit"><i class="fa fa-pencil"></i></button></td>
+    <td><button class="btn btn-light btn-delete" value="{{subsubitem.id}}" id="btn-delete"><i class="fa fa-trash"></i></button></td>
+    <td id="field-name">{{ subsubitem.name }}</td>
+    <td id="field-title-rus">{{ subsubitem.title_rus }}</td>
+    <td id="field-title">{{ subsubitem.title }}</td>
+    <td id="field-type">{{ subsubitem.subtype.title_rus }}</td>
+</tr>
+{% block javascript %}
+<script>
+
+    $(document).ready(function() {
+        var subsubitem_id = '{{subsubitem.id}}';
+        $('#subsubsubitem-'+'{{subsubitem.id}}').on("click", ".btn-edit",  function (value) {
+
+            let field_name = '{{subsubitem.name}}';
+            let field_title_rus = '{{subsubitem.title_rus}}';
+            let field_title = '{{subsubitem.title}}';
+            let field_subtype_id = '{{subsubitem.subsubtype.id}}';
+
+            $('#subsubsubtypeofrealestates-edit-modal').find('#id_name').val(field_name);
+            $('#subsubsubtypeofrealestates-edit-modal').find('#id_title_rus').val(field_title_rus);
+            $('#subsubsubtypeofrealestates-edit-modal').find('#id_title').val(field_title);
+            $('#subsubsubtypeofrealestates-edit-modal').find('#id_subtype').val(field_subtype_id);
+            $('#subsubsubtypeofrealestates-edit-modal').find('#modal-id').val(subsubitem_id);
+            $('#subsubsubtypeofrealestates-edit-modal').modal('show');
+
+        });
+
+
+    })
+
+</script>
+{% endblock %}

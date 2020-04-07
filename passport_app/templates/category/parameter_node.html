@@ -1,0 +1,36 @@
+
+<li id="parameter-{{parameter_item.id}}">
+    <button class="btn" id="btn-parameter-remove" value="{{parameter_item.id}}"><i class="fa fa-minus"></i></button>
+    {{parameter_item.name_ru}}
+</li>
+
+
+{% block javascript %}
+<script>
+
+    $(document).ready(function () {
+        var parameter_id = '{{parameter_item.id}}';
+        var category_id = '{{category_item.id}}';
+
+        $("#parameter-" + parameter_id).on("click", '#btn-parameter-remove', function (value) {
+            let id = $(this).attr('value');
+            $.ajax({
+                headers: { "X-CSRFToken": '{{csrf_token}}' },
+                url: "parameters-remove/" + category_id + "/" + id + "/", // the endpoint
+                type: "DELETE", // http method request
+
+                // handle a successful response
+                success: function (data) {
+                    updateParameterList();
+                },
+
+                // handle a non-successful response
+                error: function (xhr, errmsg, err) {
+
+                }
+            });
+
+        });
+    });
+</script>
+{% endblock %}

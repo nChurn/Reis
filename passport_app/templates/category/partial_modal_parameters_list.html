@@ -1,0 +1,18 @@
+{% load static %}
+{% block style %}
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css">
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>    
+    <link rel="stylesheet" type="text/css" href="{% static 'css/modal_select2.css' %}">
+{% endblock %}
+
+{% load crispy_forms_tags %}
+<form action="categories-add/{{id}}/" method="post">
+    {% csrf_token %}
+    {{ categories_form.categories_data }}
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </div>
+</form>
+
+<script src="{% static 'django_select2/django_select2.js' %}"></script>

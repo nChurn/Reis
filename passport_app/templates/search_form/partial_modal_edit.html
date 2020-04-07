@@ -1,0 +1,32 @@
+
+<form action="/forms/{{id}}/" method="post">
+    {% csrf_token %}
+    <div class="form-row">
+        <label>Названиие (en)*</label>
+    </div>            
+    <div class="form-row">                        
+        {{ form.name }}                        
+    </div>
+    
+    <div class="form-row">
+        <label>Названиие (ру)</label>
+    </div>  
+    <div class="form-row">
+        {{ form.name_ru }}                        
+    </div>
+    
+    {{ form.user }}
+    <div class="form-row">
+        <label>Элементы</label>
+    </div>  
+    <!-- <div class="form-row">
+        {{ form.categories }}                        
+    </div> -->
+
+    
+    {% include "search_form/category_tree.html" with root_categories=categories %}
+    <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+    </div>
+</form>

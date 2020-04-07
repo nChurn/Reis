@@ -1,0 +1,23 @@
+<li>
+    <label> {{category_item.point}} {{category_item.name_ru}} </label>
+
+    {% if category_item.categories and category_item.categories.all.count > 0 %}    
+    <ul>
+        {% for category_child_item in category_item.categories.all %}            
+            {%with category_item=category_child_item parent_item_id=category_item.id parent_parent_id=parent_item_id template_name="search_form/category_view_form/form_category_child.html" %}
+                {%include template_name%}
+            {%endwith%}
+        {% endfor %}
+    </ul>
+    {% endif %}
+</li>
+{% block javascript %}
+<script>
+    $(document).ready(function() {
+        var category_id = '{{category_item.id}}';
+        var parent_id = '{{parent_item_id}}'; 
+        var parent_parent_id = '{{parent_parent_id}}'
+
+    });
+</script>
+{% endblock %}

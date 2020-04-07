@@ -1,0 +1,73 @@
+<ul>
+    {% for category_item in view_data.categories %}
+    <li>
+        <label>{{category_item.category.name_ru}}</label>
+        {% if category_item.formula %}   
+            {% for formula in category_item.formula.all %} 
+
+            <!-- <div class="form-row">      
+                <div class="col-md-4">
+                    <label>Значение - {{formula.value_label}}</label>
+                </div>
+                <div class="col-md-4">
+                    <label>Рейтинг - {{formula.rate_label}}</label>
+                </div>      
+                <div class="col-md-4">                                     
+                    <label>Формула - {{formula.formula_lbl}}</label>
+                </div>             
+            </div> -->
+            <div class="form-row">      
+                <div class="col-md-4" id = "col_{{formula.value_label}}">
+                    <input type="text" name="category_value_{{formula.id}}" value="{{formula.value}}" id="{{formula.value_label}}" class="form-control formula-form-view" style="width: 70%; display: inline;">
+                </div>
+                <div class="col-md-4" id = "col_{{formula.rate_label}}">
+                    <input type="text" name="category_rate_{{formula.id}}" value="{{formula.rate}}" id="{{formula.rate_label}}" class="form-control formula-form-view" style="width: 70%; display: inline;">
+                </div>      
+                <div class="col-md-4" id = "col_{{formula.formula_lbl}}">                                     
+                    <input type="text" name="category_formula_{{formula.id}}" value="{{formula.formula}}" id="{{formula.formula_lbl}}" class="form-control formula-form-view" style="width: 70%; display: inline;">       
+                </div>             
+            </div>
+                
+            {% endfor %}
+        {% endif %}
+        
+        {% if category_item.formula_parameters %} 
+            <label>Параметры:</label>
+            <ul>
+                {% for param_item in category_item.formula_parameters %}
+                <li>
+                    <label>{{param_item.parameter.name_ru}}</label>
+                    <!-- <div class="form-row">      
+                            <div class="col-md-4">
+                                <label>Значение - {{param_item.value_label}}</label>
+                            </div>
+                            <div class="col-md-4">
+                                <label>Рейтинг - {{param_item.rate_label}}</label>
+                            </div>      
+                            <div class="col-md-4">                                     
+                                <label>Формула - {{param_item.formula_label}}</label>
+                            </div>             
+                    </div> -->
+                    <div class="form-row">   
+                        <div class="col-md-4" id = "col_{{param_item.value_label}}">
+                            <input type="text" name="parameter_value_{{param_item.id}}" value="{{param_item.value}}" id="{{param_item.value_label}}" readonly class="form-control formula-form-view" style="width: 70%; display: inline;">
+                        </div>
+                        <div class="col-md-4" id = "col_{{param_item.rate_label}}">
+                            <input type="text" name="parameter_rate_{{param_item.id}}" value="{{param_item.rate}}" id="{{param_item.rate_label}}"  readonly class="form-control formula-form-view" style="width: 70%; display: inline;">
+                        </div>
+                        <div class="col-md-4" id = "col_{{param_item.formula_label}}">
+                            <input type="text" name="parameter_formula_{{param_item.id}}" value="{{param_item.formula}}" id="{{param_item.formula_label}}" class="form-control formula-form-view" style="width: 60%; display: inline;">
+                        </div>
+                    </div>
+                </li>                                
+                {% endfor %}
+            </ul>            
+        {% endif %}
+        
+        {%with view_data=category_item.categories template_name="search_form/view_form_node.html" %}
+            {%include template_name%}
+        {%endwith%}
+    </li>
+        
+    {% endfor %}
+</ul>

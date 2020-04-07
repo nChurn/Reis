@@ -1,0 +1,5 @@
+<div role="tablist" aria-multiselectable="true">
+     {% for category_item in categories %}
+          {% include "category/category_list_node_view.html" with category_item=category_item parent_item_id="" %}
+     {% endfor %}
+</div>

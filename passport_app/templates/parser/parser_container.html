@@ -1,0 +1,29 @@
+<div class="col-10" id="manage_parser_parameters">
+    <form>
+        {% csrf_token %}
+
+        <div class="form-group row">
+            <div class="col">
+                <input class="form-control" type="text" name="form_name" id="form_name" />
+            </div>
+            <button class="btn btn-light"><i class="fa fa-search"></i></i></button>
+            <a class="btn btn-success pull-right button-orange m-1" id="btn-add"><i class="fa fa-plus"></i></a>
+        </div>
+    </form>
+
+    {% for item in parser_types %}
+    {% include 'parser/partial_parser_type_list.html' with parser_type=item %}
+    {% endfor %}
+
+</div>
+{% include 'parser/partial_modal_add.html' %}
+{% include 'parser/partial_modal_parser_parameter_add.html' %}
+{% block javascript %}
+<script>
+    $(document).ready(function () {
+        $('#manage_parser_parameters').find('#btn-add').on('click', function (event) {
+            $('#parser-type-modal').modal('show');
+        });
+    });
+</script>
+{% endblock %}

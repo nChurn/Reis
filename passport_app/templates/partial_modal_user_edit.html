@@ -1,0 +1,87 @@
+{% load crispy_forms_tags %}
+
+<div class="modal" tabindex="-1" role="dialog" id="user-edit-modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Пользователи</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <!--<p>Modal body text goes here.</p>-->
+                <form method="put" action="">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+
+                    <input type="text" name="modal-id" id="modal-id" hidden />
+
+                    <button type="submit" class="btn btn-primary button-orange pull-right">Сохранить</button>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+{% block javascript %}
+<script>
+
+    $('#user-edit-modal').on('submit', function(event){
+        event.preventDefault();
+        var form = $(this);
+        var user_id = $(this).find('#modal-id').val();
+        var editParam = $(form).serialize();
+        $.ajax({
+            headers: { "X-CSRFToken": '{{csrf_token}}' },
+            url : "/users_list/edit/"+user_id+'/', // the endpoint
+            type : "PUT", // http method
+            data : editParam, // data sent with the post request
+
+            // handle a successful response
+            success : function(json) {
+                $('#user-edit-modal').modal('hide');
+
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+            }
+        });
+    });
+
+    $('#user-edit-modal').on('shown.bs.modal', function () {
+        var user_id = $('#modal-id').val();
+        $.ajax({
+            url : "/users/"+user_id+"/", // the endpoint
+            type : "GET", // http method request
+
+            // handle a successful response
+            success : function(json) {
+                $('#user-edit-modal').find('#id_username').val(json['username']);
+                //$('#user-edit-modal').find('#id_password').val(json['password']);
+                $('#user-edit-modal').find('#id_email').val(json['email']);
+                $('#user-edit-modal').find('#id_first_name').val(json['first_name']);
+                $('#user-edit-modal').find('#id_last_name').val(json['last_name']);
+
+                if(json['groups'].length > 0)
+                {
+                    for (var i = 0; i < json['groups'].length; i++)
+                    {
+                        var group_id = json['groups'][i];
+                        $('#user-edit-modal').find('#id_groups option[value=' + group_id + ']').attr('selected', true);
+                    }
+
+                }
+
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+
+            }
+        });
+
+    })
+</script>
+{% endblock %}

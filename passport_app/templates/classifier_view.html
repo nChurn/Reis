@@ -1,0 +1,104 @@
+
+<div id="manage_classifier">
+    <button class="btn btn-success pull-right m-1 button-orange" value="{{data_field.id}}" id="btn-add"><i class="fa fa-plus"></i></button>
+    <div class="table-responsive">
+        <table class="table ">
+            <thead>
+            <tr>
+                <th style="width: 5%"></th>
+                <th style="width: 5%"></th>
+                <th style="width: 30%">Название(en)</th>
+                <th style="width: 10%">Пункт</th>
+                <th style="width: 20%">Описание</th>
+                <th style="width: 30%">Название(ру)</th>
+            </tr>
+            </thead>
+            <tbody>
+
+            {% for data_field in classifiers %}
+            <tr id="{{data_field.id}}">
+                <td ><button class="btn btn-light btn-edit cursor" value="{{data_field.id}}" id="btn-edit"><i class="fa fa-pencil"></i></button></td>
+                <td ><button class="btn btn-light btn-delete cursor" value="{{data_field.id}}" id="btn-delete"><i class="fa fa-trash"></i></button></td>
+                <td id="field-name">{{ data_field.name }}</td>
+                <td id="field-point">{{ data_field.point }}</td>
+                <td id="field-descr">{{ data_field.descr }}</td>
+                <td id="field-name-ru">{{ data_field.name_ru }}</td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</div>
+{% include 'partial_modal_add_classifier_view.html' %}
+{% include 'partial_modal_edit_classifier_view.html' %}
+
+
+
+{% block javascript %}
+<script>
+    function initClassifierItem(classifier_id) {
+
+        $.ajax({
+            url : "/classifiers/"+classifier_id+"/", // the endpoint
+            type : "GET", // http method
+
+            // handle a successful response
+            success : function(data) {                
+                $('#classifier-edit-modal').find('#name').val(data['name']);
+                $('#classifier-edit-modal').find('#point').val(data['point']);
+                $('#classifier-edit-modal').find('#descr').val(data['descr']);
+                $('#classifier-edit-modal').find('#name_ru').val(data['name_ru']);
+                $('#classifier-edit-modal').find('#modal-id').val(data['id']);
+                $('#classifier-edit-modal').modal('show');
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+            }
+        });
+
+    }
+
+$(document).ready(function() {
+
+    $('#manage_classifier').find('#btn-add').on('click', function(event){
+        $('#classifier-modal').modal('show');
+    });
+
+    $('#manage_classifier').on("click", ".btn-edit", function (value) {
+
+        let id = $(this).attr('value');
+        initClassifierItem(id);
+
+    });
+
+    $('#manage_classifier').on("click", ".btn-delete", function(){
+        var selectedTR = $(this).parents("tr");
+        var trID = $(this).parents("tr").attr('id');
+        var token = jQuery("[name=csrfmiddlewaretoken]").val();
+        $.ajax({
+            headers: { "X-CSRFToken": token },
+            url : "/classifiers/"+trID, // the endpoint
+            type : "DELETE", // http method request
+
+            // handle a successful response
+            success : function(json) {
+                selectedTR.remove();
+
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+
+            }
+        });
+
+    });
+
+
+})
+
+</script>
+{% endblock %}
+

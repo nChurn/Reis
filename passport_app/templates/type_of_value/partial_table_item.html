@@ -1,0 +1,58 @@
+<tr id="type_of_value-{{type_of_value.id}}">
+    <td><button class="btn btn-light btn-edit" value="{{type_of_value.id}}" id="btn-edit"><i class="fa fa-pencil"></i></button></td>
+    <td><button class="btn btn-light btn-delete" value="{{type_of_value.id}}" id="btn-delete"><i class="fa fa-trash"></i></button></td>
+    <td>{{ type_of_value.name }}</td>
+    <td>{{ type_of_value.name_ru }}</td>
+</tr>
+{% block javascript %}
+<script>
+
+    $(document).ready(function() {
+        var type_of_value_id = '{{type_of_value.id}}';
+        
+        $('#type_of_value-'+'{{type_of_value.id}}').on("click", ".btn-edit", function(event){
+
+            $.ajax({
+            url : "/typeofvalue/"+type_of_value_id, // the endpoint
+            type : "GET", // http method request
+
+            // handle a successful response
+            success : function(data) {
+                $('#modal-body').html(data);
+                $('#modal-title').text('Тип значения');
+                $('#modal-form').modal('show');
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+
+                }
+            });
+
+        });
+
+        $('#type_of_value-'+'{{type_of_value.id}}').on("click", ".btn-delete", function(event){
+
+            $.ajax({
+                headers: { "X-CSRFToken": '{{csrf_token}}' },
+                url : "/typeofvalue/"+type_of_value_id+"/delete/", // the endpoint
+                type : "GET", // http method request
+
+                // handle a successful response
+                success : function(data) {
+                    $('#modal-body').html(data);
+                    $('#modal-title').text('');
+                    $('#modal-form').modal('show');
+                },
+
+                // handle a non-successful response
+                error : function(xhr,errmsg,err) {
+
+                    }
+            });
+
+        });
+    })
+
+</script>
+{% endblock %}

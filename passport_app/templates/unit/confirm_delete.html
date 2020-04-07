@@ -1,0 +1,6 @@
+
+<form action="/unit/{{object.id}}/delete/" method="post">
+    {% csrf_token %}
+    <p>Вы уверены что хотите удалить "{{ object.name_ru }}"?</p>
+    <input type="submit" value="удалить">
+</form>

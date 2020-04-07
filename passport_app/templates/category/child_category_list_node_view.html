@@ -1,0 +1,146 @@
+{% load custom_tags %}
+<div class="card">
+    <div class="card-header" role="tab" id="sectionHeader-{{parent_item_id}}-{{category_item.id}}">
+        <h5 class="mb-0">
+            <button class="btn" id="btn-edit" value="{{category_item.id}}"><i class="fa fa-pencil"></i></button>
+            {% if category_item.parent_categories and category_item.parent_categories.count > 0   %}
+            <button class="btn" id="btn-minus" value="{{category_item.id}}"><i class="fa fa-minus"></i></button>
+            {% endif %}
+            <button class="btn" id="btn-remove" value="{{category_item.id}}"><i class="fa fa-trash"></i></button>
+            <a href="#sectionContent-{{parent_item_id}}-{{category_item.id}}">
+                {{ category_item.point }} {{ category_item.name_ru }}
+            </a>
+            <button class="btn btn-success pull-right button-orange m-1" id="btn-category-add"
+                value="{{category_item.id}}">Добавить <i class="fa fa-plus"></i></button>
+        </h5>
+    </div>
+    <div id="sectionContent-{{parent_item_id}}-{{category_item.id}}">
+        <div class="card-body">
+            <!-- Section {{category_item.name }} content -->
+            <div id="child-categories-{{parent_item_id}}-{{category_item.id}}">
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    параметры: <button class="btn btn-success pull-right button-orange m-1" id="btn-parameter-add"
+                        value="{{category_item.id}}">Добавить параметр <i class="fa fa-plus"></i></button>
+                </div>
+                {% if category_item.parameters and category_item.parameters.count > 0 %}
+                <div class="col-md-12">
+                    <ul>
+                        {% for parameter_item in category_item.parameters.all %}
+                        {%with parameter_item=parameter_item category_item=category_item template_name="category/parameter_node.html" %}
+                        {%include template_name%}
+                        {%endwith%}
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block javascript %}
+<script>
+    $(document).ready(function () {
+        var category_id = '{{category_item.id}}';
+        var parent_id = '{{parent_item_id}}';
+
+        $("#sectionContent-" + parent_id + "-" + category_id).on("click", '#btn-parameter-add', function (value) {
+            let id = $(this).attr('value');
+            $.ajax({
+                url: "parameters-add/" + id,
+                type: "GET",
+                success: function (data) {
+                    $('#modal-body').html(data);
+                    $('#modal-form').modal('show');
+                    $('#modal-title').text("Параметры, собираемые парсером");
+                },
+                error: function (xhr, errmsg, err) {
+
+                }
+            });
+        });
+
+        $("#sectionHeader-" + parent_id + "-" + category_id).on("click", '#btn-category-add', function (value) {
+            let id = $(this).attr('value');
+            $.ajax({
+                headers: { "X-CSRFToken": '{{csrf_token}}' },
+                url: "categories-add/" + id + "/",
+                type: "GET",
+                success: function (data) {
+                    $('#modal-body').html(data);
+                    $('#modal-form').modal('show');
+                    $('#modal-title').text("Создать элемент");
+                },
+                error: function (xhr, errmsg, err) {
+
+                }
+            });
+        });
+
+        $("#sectionHeader-" + parent_id + "-" + category_id).on("click", '#btn-edit', function (value) {
+            let id = $(this).attr('value');
+            $.ajax({
+                headers: { "X-CSRFToken": '{{csrf_token}}' },
+                url: "/category/" + id + "/",
+                type: "GET",
+                success: function (data) {
+                    $('#modal-body').html(data);
+                    $('#modal-form').modal('show');
+                    $('#modal-title').text("Изменить элемент");
+                },
+                error: function (xhr, errmsg, err) {
+
+                }
+            });
+        });
+
+        $("#sectionHeader-" + parent_id + "-" + category_id).on("click", '#btn-remove', function (value) {
+            let id = $(this).attr('value');
+            $.ajax({
+                url: "/category/" + id + "/delete/",
+                type: "GET",
+                success: function (data) {
+                    $('#modal-body').html(data);
+                    $('#modal-title').text('');
+                    $('#modal-form').modal('show');
+                },
+                error: function (xhr, errmsg, err) {
+
+                }
+            });
+
+        });
+        $("#sectionHeader-" + parent_id + "-" + category_id).on("click", '#btn-minus', function (value) {
+            let id = $(this).attr('value');
+            $.ajax({
+                headers: { "X-CSRFToken": '{{csrf_token}}' },
+                url: "/constructor/categories-delete/" + parent_id + "/" + id + "/",
+                type: "POST",
+                success: function (data) {
+                    window.location = '/constructor/#v-pills-category';
+                },
+                error: function (xhr, errmsg, err) {
+
+                }
+            });
+        });
+
+        $("#sectionHeader-" + parent_id + "-" + category_id).on('click', function () {
+            $.ajax({
+                headers: { "X-CSRFToken": '{{csrf_token}}' },
+                url: "/constructor/categories/" + category_id + "/",
+                type: "GET",
+                success: function (data) {
+                    $('#child-categories-' + parent_id + '-' + category_id).html(data);
+                },
+                error: function (xhr, errmsg, err) {
+
+                }
+            });
+        })
+    });
+</script>
+{% endblock %}
