@@ -45,6 +45,7 @@ from passport_app.views_items.unit import *
 from passport_app.models import *
 import sys, os
 from passport_app.data_sources.data_sources_manager import start_search_info
+from passport_app.data_sources.DataSourcesLauncher import DataSourcesLauncher
 from passport_app.print_exception import *
 
 
@@ -887,11 +888,14 @@ class SearchView(FormView):
 
             real_estate.save()
 
-            start_search_info(real_estate.address, real_estate)
-            search_history = RealEstate.objects.filter(
-                user=current_user,
-                address=real_estate.address).values('address').order_by(
-                    'address').annotate(count=Count('address'))
+            #start_search_info(real_estate.address, real_estate)
+
+            launcher = DataSourcesLauncher(real_estate)
+            search_history = RealEstate.objects
+                .filter(user=current_user, address=real_estate.address)
+                .values('address')
+                .order_by('address')
+                .annotate(count=Count('address'))
         except Exception as e:
             PrintException()
 
