@@ -9,18 +9,19 @@ from urllib.parse import urlencode
 REQ_TIMEOUT = 10
 
 class Pkk_Rosreestr_Parser:
-    def parse_data(self, address, real_estate: RealEstate):
+    def parse_data(self, real_estate: RealEstate):
         print ('START rosreestr.ru')
 
-        params = {
-            'social': {}, 
-            'transport': {}, 
-            'place_info': {},
-            'rights': {}, 
-            'architecture': {},
-            'engsys': {},
-            'base': {}
-        }
+        params = {}
+        # params = {
+        #     'social': {}, 
+        #     'transport': {}, 
+        #     'place_info': {},
+        #     'rights': {}, 
+        #     'architecture': {},
+        #     'engsys': {},
+        #     'base': {}
+        # }
 
         address = real_estate.longitude + ' ' + real_estate.latitude
         print('search for: ' + address)
@@ -40,7 +41,7 @@ class Pkk_Rosreestr_Parser:
         }
 
         url_params = urlencode(params)
-        type = 1
+        type = 5
         url_sttr = 'https://pkk.rosreestr.ru/api/features/' + str(type) + '?' + url_params
         try:
             response = requests.get(url_sttr, timeout=REQ_TIMEOUT)
@@ -50,38 +51,69 @@ class Pkk_Rosreestr_Parser:
             pass
 
         if not json_content or len(json_content['features']) == 0:
-            type = 5
-            params['_'] = str(int(time.time()))
-            url_params = urlencode(params)
-            url_sttr = 'https://pkk.rosreestr.ru/api/features/' + str(type) + '?' + url_params
-            try:
-                response = requests.get(url_sttr, timeout=REQ_TIMEOUT)
-                data = response.text
-                json_content = json.loads(data)
-            except requests.Timeout:
-                pass
-        
-        if not json_content or len(json_content['features']) == 0:
             print('nothing found')
             return data_params
 
-
         # второй запрос, когда мы кликаем на найденный адресс
         try:
-            search_number = json_content['features'][0]['attrs']['id']  # типо кадастрового номера только без 0
+            search_number = json_content['features'][0]['attrs']['id']  # типо кадастрового номера только без нулей
             
             params['_'] = str(int(time.time()))
             url_params = urlencode(params)
-            url_sttr = 'https://pkk.rosreestr.ru/api/features/' + str(type) + '/' + search_number  # используем не кадастровый, а search number
+            url_sttr = 'https://pkk.rosreestr.ru/api/features/' + str(type) + '/' + search_number
             response = requests.get(url_sttr, timeout=REQ_TIMEOUT)
             json_content = json.loads(response.text)
-        
-            #return self.__rosreestr_details_5kk(json_content, data_params)  # записываем контет в массивы
         except (KeyError, TypeError, IndexError, requests.Timeout):  # когда переход на адресс не удался
             pass
 
-        self.__parse_json_params(json_content, data_params)
+        attrs = json_content['feature']['attrs']
+        data_params['address'] = attrs['address']
+        #Кадастровый номер помещения
+        data_params['kadastr_number'] = attrs['cn']
+        #Общая площадь помещения, м2
+        data_params['total_area'] = attrs['area_value']
+        #Кадастровая стоимость помещения, рублей
+        data_params['kadastr_cost'] = attrs['cad_cost'] if 'cad_cost' in attrs else ''
+        #Год постройки
+        data_params['year_built'] = attrs['year_built'] if 'year_built' in attrs else ''
+        #Год ввода в эксплуатацию
+        data_params['year_in_used'] = attrs['year_used'] if 'year_used' in attrs else ''
+        
         self.__rosreestr_details_5kk(json_content, data_params)
+
+
+        type = 1
+        params['_'] = str(int(time.time()))
+        url_params = urlencode(params)
+        url_sttr = 'https://pkk.rosreestr.ru/api/features/' + str(type) + '?' + url_params
+        try:
+            response = requests.get(url_sttr, timeout=REQ_TIMEOUT)
+            data = response.text
+            json_content = json.loads(data)
+        except requests.Timeout:
+            pass
+        if not json_content or len(json_content['features']) == 0:
+            print('nothing found plot')
+            return data_params
+        # второй запрос, когда мы кликаем на найденный адресс
+        try:
+            search_number = json_content['features'][0]['attrs']['id']  # типо кадастрового номера только без нулей
+            
+            params['_'] = str(int(time.time()))
+            url_params = urlencode(params)
+            url_sttr = 'https://pkk.rosreestr.ru/api/features/' + str(type) + '/' + search_number
+            response = requests.get(url_sttr, timeout=REQ_TIMEOUT)
+            json_content = json.loads(response.text)
+        except (KeyError, TypeError, IndexError, requests.Timeout):  # когда переход на адресс не удался
+            pass
+
+        attrs = json_content['feature']['attrs']   
+        data_params['address'] = attrs['address']
+        #Кадастровый номер земельного участка
+        data_params['plot_kadastr_number'] = attrs['cn']
+        #Общая площадь помещения земельного участка, м2
+        data_params['plot_total_area'] = attrs['area_value']        
+
         return data_params
 
     def __parse_json_params(self, json_data, result):
