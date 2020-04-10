@@ -37,20 +37,20 @@ class GoogleMapsAPI:
         address_coord = address_convert[0]['geometry']['location']
         print('search point: ' + str(address_coord))
 
-        social_infr = ParserParameter.objects.filter(parser_parameter_type='social', parser_type = None)
-        transport_dist = ParserParameter.objects.filter(parser_parameter_type='transport_dist', parser_type = None)
+        social_infr = ParserParameter.objects.filter(parser_parameter_type='social', parser_type_id = 2)#TODO change id to object
+        transport_dist = ParserParameter.objects.filter(parser_parameter_type='transport_dist', parser_type_id = 2)
 
-        # for social_param in social_infr:
-        #     try:                
-        #         param_lang_name = self.__get_parameter_name_by_lang(lang_code, social_param)
-        #         count = self.__get_places(address_coord, param_lang_name, lang)
+        for social_param in social_infr:
+            try:                
+                param_lang_name = self.__get_parameter_name_by_lang(lang_code, social_param)
+                count = self.__get_places(address_coord, param_lang_name, lang)
                 
-        #         result[social_param.name] = count
-        #         self.__save_to_parameter_data(social_param, str(count))
-        #     except Exception as e:
-        #         if is_send_email:
-        #             send_error(str(e))
-        #         PrintException()
+                result[social_param.name] = count
+                self.__save_to_parameter_data(social_param, str(count))
+            except Exception as e:
+                if is_send_email:
+                    send_error(str(e))
+                PrintException()
             
         for dist_param in transport_dist:
             try:
@@ -78,6 +78,8 @@ class GoogleMapsAPI:
 
     def __get_places(self, address_coord, term, lang, is_send_email = False):
         try:
+            term = term.replace('Google', '')
+
             print('place ' + term + " " + str(address_coord))
             query_result = self.google_places.nearby_search(lat_lng=address_coord,
                 language=lang, keyword=term, radius=1000)
@@ -113,7 +115,7 @@ class GoogleMapsAPI:
         parser_parameter = ParserParameter.objects.get(name = parser_parameter.name)
         
         try:
-            parameter = Parameter.objects.get(name_ru = parser_parameter.name_ru)
+            parameter = Parameter.objects.get(name_ru = parser_parameter.name_ru.replace('Google', '').strip())
             parameter_data = ParameterData()
 
             parameter_data.value = value

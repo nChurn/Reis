@@ -521,7 +521,7 @@ class DetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
         data = []
         try:
             if categories.exists():
-                for cat in categories.all():
+                for cat in categories.order_by('point').all():
                     cat_data = {}
                     cat_data['category'] = cat
                     cat_data['formula'] = FormulaCategory.objects.filter(

@@ -31,8 +31,8 @@ class YandexMapsAPI:
         lng = address_point[1]
         print("yandex search coord: " + address_result['point'])
 
-        social_infr = ParserParameter.objects.filter(parser_parameter_type='social', parser_type = None)
-        transport_dist = ParserParameter.objects.filter(parser_parameter_type='transport_dist', parser_type = None)
+        social_infr = ParserParameter.objects.filter(parser_parameter_type='social', parser_type_id = 3)
+        transport_dist = ParserParameter.objects.filter(parser_parameter_type='transport_dist', parser_type_id = 3)
 
         for item in social_infr:
             try:
@@ -120,18 +120,23 @@ class YandexMapsAPI:
 
     def __get_near_places(self, lat, lng, place):
         print("start __get_near_places")
-        distance = 1.00
+        distance_lat = 0.016667
+        distance_lng = 0.016667
+
+        place = place.replace('Yandex', '')
 
         url = 'https://search-maps.yandex.ru/v1/?text=%s&ll=%.6f,%.6f&spn=%.6f,%.6f&lang=ru_RU&apikey=%s' % \
-            (place, float(lat), float(lng), float(distance), float(distance), self.places_api_key)
+            (place, float(lat), float(lng), float(distance_lat), float(distance_lng), self.places_api_key)
         response = requests.get(url)
         print(response.status_code)
         try:
             if response.status_code == 200:
                 json_data = json.loads(response.text)
-                features = json_data['features']#TODO change len select
-                len_features = len(features)
+                # features = json_data['features']
+                # len_features = len(features)
                 
+                len_features = json_data['properties']['ResponseMetaData']['SearchResponse']['found']
+
                 return len_features            
         except Exception as e:
             if self.is_send_email:
@@ -144,7 +149,7 @@ class YandexMapsAPI:
         parser_parameter = ParserParameter.objects.get(name = parser_parameter.name)
         
         try:
-            parameter = Parameter.objects.get(name_ru = parser_parameter.name_ru)
+            parameter = Parameter.objects.get(name_ru = parser_parameter.name_ru.replace('Yandex', '').strip())
             parameter_data = ParameterData()
 
             parameter_data.value = value
