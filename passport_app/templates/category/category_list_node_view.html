@@ -59,7 +59,7 @@
 </div>
 
 {% block javascript %}
-<!-- <script>
+<script>
     $(document).ready(function () {
         var category_id = '{{category_item.id}}';
         var parent_id = '{{parent_item_id}}';
@@ -147,124 +147,26 @@
 
         });
 
-        $("#sectionContent-" + parent_id + "-" + category_id).on('shown.bs.collapse', function () {
-            $.ajax({
-                headers: { "X-CSRFToken": '{{csrf_token}}' },
-                url: "/constructor/categories/" + category_id + "/", 
-                type: "GET", 
-                success: function (data) {
-                    $('#child-categories-' + parent_id + '-' + category_id).html(data);
-                },
-                error: function (xhr, errmsg, err) {
+        $("#sectionContent-" + parent_id + "-" + category_id).on('shown.bs.collapse', function () {            
+            let node = $('#child-categories-' + parent_id + '-' + category_id);
+            let check = $(node[0]).html().trim();
+            if(check === ""){ 
+                $.ajax({
+                    headers: { "X-CSRFToken": '{{csrf_token}}' },
+                    url: "/constructor/categories/" + category_id + "/", 
+                    type: "GET", 
+                    success: function (data) {
+                        $('#child-categories-' + parent_id + '-' + category_id).html(data);
+                    },
+                    error: function (xhr, errmsg, err) {
 
-                }
-            });
-        })
-    });
-</script> -->
-
-<script>
-    $(document).ready(function () {
-        var category_id = '{{category_item.id}}';
-        var parent_id = '{{parent_item_id}}';
-
-        $("#sectionContent-{{parent_item_id}}-{{category_item.id}}").on("click", '.btn-parameter-add', function (value) {
-            let id = $(this).attr('value');
-            $.ajax({
-                url: "parameters-add/" + id,
-                type: "GET",
-                success: function (data) {
-                    $('#modal-body').html(data);
-                    $('#modal-form').modal('show');
-                    $('#modal-title').text("Параметры, собираемые парсером");
-
-                },
-                error: function (xhr, errmsg, err) {
-
-                }
-            });
-
-        });
-
-        $("#sectionHeader-{{parent_item_id}}-{{category_item.id}}").on("click", '.btn-category-add', function (value) {
-            let id = $(this).attr('value');
-            $.ajax({
-                headers: { "X-CSRFToken": '{{csrf_token}}' },
-                url: "categories-add/" + id + "/",
-                type: "GET",
-                success: function (data) {
-                    $('#modal-body').html(data);
-                    $('#modal-form').modal('show');
-                    $('#modal-title').text("Создать элемент");
-
-                },
-                error: function (xhr, errmsg, err) {
-
-                }
-            });
-        });
-
-        $("#sectionHeader-{{parent_item_id}}-{{category_item.id}}").on("click", '.btn-edit', function (value) {
-            let id = $(this).attr('value');
-            $.ajax({
-                headers: { "X-CSRFToken": '{{csrf_token}}' },
-                url: "/category/" + id + "/",
-                type: "GET",
-                success: function (data) {
-                    $('#modal-body').html(data);
-                    $('#modal-form').modal('show');
-                    $('#modal-title').text("Изменить элемент");
-                },
-                error: function (xhr, errmsg, err) {
-                }
-            });
-        });
-
-        $("#sectionHeader-{{parent_item_id}}-{{category_item.id}}").on("click", '.btn-remove', function (value) {
-            let id = $(this).attr('value');
-            $.ajax({
-                url: "/category/" + id + "/delete/",
-                type: "GET",
-                success: function (data) {
-                    $('#modal-body').html(data);
-                    $('#modal-form').modal('show');
-                    $('#modal-title').text('');
-
-                },
-                error: function (xhr, errmsg, err) {
-
-                }
-            });
-        });
-
-        $("#sectionHeader-{{parent_item_id}}-{{category_item.id}}").on("click", '.btn-minus', function (value) {
-            let id = $(this).attr('value');
-            $.ajax({
-                headers: { "X-CSRFToken": '{{csrf_token}}' },
-                url: "/constructor/categories-delete/" + parent_id + "/" + id + "/",
-                type: "POST",
-                success: function (data) {
-                    window.location = '/constructor/#v-pills-category';
-                },
-                error: function (xhr, errmsg, err) {
-
-                }
-            });
-
-        });
-
-        $("#sectionContent-{{parent_item_id}}-{{category_item.id}}").on('shown.bs.collapse', function () {
-            $.ajax({
-                headers: { "X-CSRFToken": '{{csrf_token}}' },
-                url: "/constructor/categories/" + category_id + "/",
-                type: "GET",
-                success: function (data) {
-                    $('#child-categories-' + parent_id + '-' + category_id).html(data);
-                },
-                error: function (xhr, errmsg, err) {
-
-                }
-            });
+                    }
+                });
+            }
+            else{
+                $('#child-categories-' + parent_id + '-' + category_id).html("");
+                $('#sectionContent-' + parent_id + '-' + category_id).removeClass('show');
+            }
         })
     });
 </script>

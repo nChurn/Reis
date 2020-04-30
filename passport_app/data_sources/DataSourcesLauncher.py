@@ -16,7 +16,7 @@ class DataSourcesLauncher():
         self.__real_estate = real_estate
 
     def start_parsing(self):  
-        # f = open(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\parser_parametrs__name.csv", "r", encoding='utf8')
+        # f = open(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\parser_parameters_fix.csv", "r", encoding='utf8')
         # lines = f.read().splitlines()
 
         # for line in lines:
@@ -70,15 +70,15 @@ class DataSourcesLauncher():
         
         parsers = ParserType.objects.order_by('id').all()
         for parser in parsers:
-            if parser.name == 'google_map':
-                p = GoogleMapsAPI(self.__real_estate, parser.authkey, False)
-                google_result = p.parse_info('ru')
+            # if parser.name == 'google_map':
+            #     p = GoogleMapsAPI(self.__real_estate, parser.authkey, False)
+            #     google_result = p.parse_info('ru')
 
-                #self.__save_data(google_result)
+            #     #self.__save_data(google_result)
 
-            if parser.name == 'yandex_map':
-                p = YandexMapsAPI(self.__real_estate, parser.authkey, 'c687c609-ae0e-4b12-8d9a-aab953d8642f', False)
-                yandex_result = p.parse_info('ru')
+            # if parser.name == 'yandex_map':
+            #     p = YandexMapsAPI(self.__real_estate, parser.authkey, 'c687c609-ae0e-4b12-8d9a-aab953d8642f', False)
+            #     yandex_result = p.parse_info('ru')
 
                 #self.__save_data(yandex_result)
 

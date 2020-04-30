@@ -486,6 +486,7 @@ class DetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
             rate = 0
             formula = 0
             id = 0
+            result = []
             if parameter_datas.exists() and parameter_datas.count() > 0:
                 parameter_data = parameter_datas[0]
                 id = parameter_data.id
@@ -509,13 +510,25 @@ class DetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
                 if parser_parameters.exists() and parser_parameters.count() > 0:   
                     parser_parameter = parser_parameters[0]
                     val = parser_parameter.value
+
+            
+            if parameter_datas.exists() and parameter_datas.count() > 0:
+                for param in parameter_datas:
+                    result.append({
+                        'id': param.id,
+                        'val': param.value,
+                        'rate': param.rate,
+                        'formula': 0,
+                        'name': param.parameter.name_ru +" "+ param.comment
+                    })
+            
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             print(str(e))
             print(exc_type, fname, exc_tb.tb_lineno)
 
-        return val, rate, formula, id
+        return val, rate, formula, id, result
 
     def get_form_category_data(self, categories, real_estate):
         data = []
@@ -533,7 +546,7 @@ class DetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
                         for pararmeter in cat.parameters.all():
                             formula = FormulaParameterCategory.objects.filter(
                                 category=cat, parameter=pararmeter).first
-                            value, rate, formula, id = self.get_parameter_data(
+                            value, rate, formula, id, result = self.get_parameter_data(
                                 pararmeter, real_estate, formula)
                             pararmeter_obj = {
                                 'parameter': pararmeter,
@@ -542,7 +555,8 @@ class DetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
                                     'value': value,
                                     'rate': rate,
                                     'formula': formula,
-                                    'id': id
+                                    'id': id,
+                                    'result': result
                                 }
                             }
                             cat_data['parameters'].append(pararmeter_obj)

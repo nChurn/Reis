@@ -1,15 +1,24 @@
 
 <tr id="parameter-{{parameter_item.parameter.id}}">    
-    <td>{{ parameter_item.parameter.name_ru }}</td>
-    <td class="parameter-value-test" >{{ parameter_item.data.value }}</td>
+    <td><a class="btn-open-add-params" href="#">{{ parameter_item.parameter.name_ru }}</a></td>
+    <td>{{ parameter_item.data.value }}</td>
     <td>{{ parameter_item.data.rate }}</td>
     <td>{{ parameter_item.data.formula }}</td>
+    <!-- <td>{{ parameter_item.data.result }}</td> -->
     <td>
         <button class="btn-edit"  id="btn-parameter-edit"  value="{{parameter_item.parameter.id}}">
             <i class="fa fa-pencil"></i>
         </button>
     </td>
-</tr>                          
+</tr>  
+{% for param in parameter_item.data.result %}    
+<tr class="additional-param-{{parameter_item.parameter.id}} d-none">
+    <td>{{ param.name }}</td>
+    <td>{{ param.val }}</td>
+    <td>{{ param.rate }}</td>
+    <td>{{ param.formula }}</td>
+</tr>   
+{% endfor %}                 
 {% block javascript %}
 <script>
     $(document).ready(function() {
@@ -28,6 +37,16 @@
             error : function(xhr,errmsg,err) {
 
                 }
+            });
+        });
+
+        $('#parameter-'+'{{parameter_item.parameter.id}}').on("click", ".btn-open-add-params", function(event){
+            event.preventDefault();
+            $('.additional-param-{{parameter_item.parameter.id}}').each(function(index){
+                if($(this).hasClass('d-none'))
+                    $(this).removeClass('d-none')
+                else
+                    $(this).addClass('d-none')
             });
         });
     })

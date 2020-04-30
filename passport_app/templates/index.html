@@ -29,11 +29,9 @@
                 {% endif %}
                 
                 {{ form.search_form|as_crispy_field }}
-                <p>{{ form.kadastr_number.help_text }}</p>
+                <!-- <p>{{ form.kadastr_number.help_text }}</p> -->
 
                 {{ form.kadastr_number|as_crispy_field }}
-                <label class="col hint offset-2 pt-0 mt-0 form-text text-muted" >Адрес: Россия, Московская область, Электросталь, проспект Ленина, 1</label>
-                <label class="col hint offset-2 pt-0 mt-0 form-text text-muted" >Кадастровый номер: 29:21:010101:57</label>
                 {% if not user.is_authenticated  %}
                 {{ form.captcha|as_crispy_field }}
                 {% endif %}
@@ -57,8 +55,6 @@
                 {% csrf_token %}
                 {{ form.search_form|as_crispy_field }}
                 {{ form.kadastr_number|as_crispy_field }}
-                <label class="col hint offset-2 pt-0 mt-0 form-text text-muted" >Адрес: Россия, Московская область, Электросталь, проспект Ленина, 1</label>
-                <label class="col hint offset-2 pt-0 mt-0 form-text text-muted" >Кадастровый номер: 29:21:010101:57</label>
 
                 <div class="row pt-3">
                     <div class="col">
@@ -96,8 +92,6 @@
         {{ form.search_form|as_crispy_field }}
         {% endif %}
         {{ form.kadastr_number|as_crispy_field }}
-        <label class="col hint offset-2 pt-0 mt-0 form-text text-muted" >Адрес: Россия, Московская область, Электросталь, проспект Ленина, 1</label>
-        <label class="col hint offset-2 pt-0 mt-0 form-text text-muted" >Кадастровый номер: 29:21:010101:57</label>
 
         {{ form.captcha|as_crispy_field }}
 
