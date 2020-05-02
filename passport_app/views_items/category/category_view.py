@@ -167,10 +167,9 @@ class CategoriesSearch(LoginRequiredMixin, View):
 
         try:
             category_name = self.kwargs['name']
-            categories = Category.objects.filter(name = category_name).order_by('point')           
+            categories = Category.objects.filter(name = category_name).order_by('id')           
         except:
-            categories = Category.objects.filter(parent_categories = None).order_by('point')        
-            pass
+            categories = Category.objects.filter(parent_categories = None).order_by('id')
 
         form = CategoryForm()
         html = render_to_string('category/category_container.html', {'categories': categories, 'form': form}, request=request)

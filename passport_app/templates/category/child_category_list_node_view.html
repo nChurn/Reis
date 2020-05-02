@@ -7,9 +7,15 @@
             <button class="btn" id="btn-minus" value="{{category_item.id}}"><i class="fa fa-minus"></i></button>
             {% endif %}
             <button class="btn" id="btn-remove" value="{{category_item.id}}"><i class="fa fa-trash"></i></button>
+
+
+            {% if category_item.categories.count == 0 %}
+            <a>{{ category_item.point }} {{ category_item.name_ru }}</a>
+            {% else %}
             <a href="#sectionContent-{{parent_item_id}}-{{category_item.id}}">
                 {{ category_item.point }} {{ category_item.name_ru }}
             </a>
+            {% endif %}
             <button class="btn btn-success pull-right button-orange m-1" id="btn-category-add"
                 value="{{category_item.id}}">Добавить <i class="fa fa-plus"></i></button>
         </h5>

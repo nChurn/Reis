@@ -15,57 +15,7 @@ class DataSourcesLauncher():
     def __init__(self, real_estate: RealEstate):
         self.__real_estate = real_estate
 
-    def start_parsing(self):  
-        # f = open(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\parser_parameters_fix.csv", "r", encoding='utf8')
-        # lines = f.read().splitlines()
-
-        # for line in lines:
-        #     arr = line.split(';')
-
-        #     check = ParserParameter.objects.filter(name = arr[0] + " Yandex").first()
-        #     if check is None:
-        #         pp = ParserParameter()
-        #         pp.name = arr[0] + " Yandex"
-        #         pp.name_ru = arr[1] + " Yandex"
-        #         pp.parser_type_id = 3
-        #         pp.parser_parameter_type = 'social'
-
-        #         pp.save()
-
-
-        #     check = ParserParameter.objects.filter(name = arr[0] + " Google").first()
-        #     if check is None:
-        #         pp = ParserParameter()
-        #         pp.name = arr[0] + " Google"
-        #         pp.name_ru = arr[1] + " Google"
-        #         pp.parser_type_id = 2
-        #         pp.parser_parameter_type = 'social'
-
-        #         pp.save()
-
-        # for line in lines:
-        #     arr = line.split(';')
-        #     p_params = ParserParameter.objects.filter(name_ru__contains = arr[1]).order_by('name_ru')
-
-        #     if p_params.count() <= 0:
-        #         continue
-
-        #     p = Parameter()
-        #     p.name = p_params[0].name.replace("Google", "").replace("Yandex", "").strip()
-        #     p.name_ru = arr[1]
-
-
-
-        #     check = Parameter.objects.filter(name = p.name).first()
-        #     if check is None:
-        #         p.save()
-
-        #         p.parser_parameters.add(p_params[0])
-        #         p.parser_parameters.add(p_params[1])
-
-        #         p.save()
-        # return      
-
+    def start_parsing(self):              
         result = {}
         
         parsers = ParserType.objects.order_by('id').all()
