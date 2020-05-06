@@ -23,7 +23,7 @@ class Pkk_Rosreestr_Parser:
         #     'base': {}
         # }
 
-        address = real_estate.longitude + ' ' + real_estate.latitude
+        address = real_estate.latitude + ' ' + real_estate.longitude
         print('search for: ' + address)
 
         p = self.__get_data_from_pkk_by_address(address, params, real_estate.longitude + ' ' + real_estate.latitude)
@@ -36,12 +36,82 @@ class Pkk_Rosreestr_Parser:
         params = {
             '_' : str(int(time.time())),
             'text': address,
-            'limit': '11',  # лимит ответов, мы берем всегда первый
+            'limit': '11',
             'skip': '0'
         }
 
+        json_content = self.__load_page(params, 1)#участок
+        if json_content:
+            attrs = json_content['feature']['attrs']   
+            #Вид
+            data_params['ground_type'] = area_units[self.__get_value_or_empty(attrs, 'area_unit')]
+            #Кадастровая стоимость
+            data_params['ground_kadastr_cost'] = self.__get_value_or_empty(attrs, 'cad_cost')
+            #Уточненная площадь
+            data_params['ground_total_area'] = self.__get_value_or_empty(attrs, 'area_value')
+            #Кадастровый номер
+            data_params['ground_kadastr_number'] = self.__get_value_or_empty(attrs, 'cn')
+            #Статус
+            data_params['ground_status'] = self.__get_value_from_dict(states, self.__get_value_or_empty(attrs, 'statecd'))
+            #Адрес
+            data_params['ground_address'] = self.__get_value_or_empty(attrs, 'address')
+            #Форма собственности
+            data_params['ground_owning_form'] = ''
+            #категория земель
+            data_params['ground_category'] = self.__get_value_from_dict(category_types, self.__get_value_or_empty(attrs, 'category_type'))
+            #Разрешённое использование
+            data_params['ground_permitted_use'] = self.__get_value_from_dict(util_description, self.__get_value_or_empty(attrs, 'util_code'))
+            #Разрешённое использование по документу
+            data_params['ground_permitted_use_doc'] = self.__get_value_or_empty(attrs, 'util_by_doc')
+            #Кадастровый номер квартала
+            data_params['ground_kvartal_cn'] = self.__get_value_or_empty(attrs, 'kvartal_cn')
+
+        json_content = self.__load_page(params, 5)#окс
+        if json_content:
+            attrs = json_content['feature']['attrs']
+
+            #вид
+            data_params['oks_type'] = self.__get_value_from_dict(oks_types, self.__get_value_or_empty(attrs, 'oks_type'))
+            #Назначение
+            data_params['oks_purpose'] = ''#todo check in reformagkh
+            #Кадастровая стоимость
+            data_params['oks_kadastr_cost'] = self.__get_value_or_empty(attrs, 'cad_cost')
+            #Общая площадь
+            data_params['oks_total_area'] = self.__get_value_or_empty(attrs, 'area_value')
+            #общая этажность
+            data_params['oks_floors'] = self.__get_value_or_empty(attrs, 'floors')
+            #подземная этажность
+            data_params['oks_underground_floors'] = self.__get_value_or_empty(attrs, 'underground_floors')
+            #завершение строительства
+            data_params['oks_year_built'] = self.__get_value_or_empty(attrs, 'year_built')
+            #ввод в эксплуатацию
+            data_params['oks_year_used'] = self.__get_value_or_empty(attrs, 'year_used')
+            #Кадастровый номер
+            data_params['oks_cn'] = self.__get_value_or_empty(attrs, 'cn')
+            #Статус
+            data_params['oks_cn'] = self.__get_value_from_dict(states, self.__get_value_or_empty(attrs, 'statecd'))
+            #Адрес
+            data_params['oks_address'] = self.__get_value_or_empty(attrs, 'address')
+            #Форма собственности
+            data_params['oks_owning_form'] = ''
+            #Кадастровый номер квартала
+            data_params['oks_kvartal_cn'] = self.__get_value_or_empty(attrs, 'kvartal_cn')
+        
+        return data_params
+
+    def __get_value_from_dict(dict, key):
+        try:
+            return dict[key]
+        except (KeyError, TypeError):
+            return ''
+
+    def __get_value_or_empty(dict, key):
+        return attrs[key] if key in dict else ''
+
+
+    def __load_page(self, params, type):
+        params['_'] = str(int(time.time()))
         url_params = urlencode(params)
-        type = 5
         url_sttr = 'https://pkk.rosreestr.ru/api/features/' + str(type) + '?' + url_params
         try:
             response = requests.get(url_sttr, timeout=REQ_TIMEOUT)
@@ -52,86 +122,21 @@ class Pkk_Rosreestr_Parser:
 
         if not json_content or len(json_content['features']) == 0:
             print('nothing found')
-            return data_params
+            return {}
 
         # второй запрос, когда мы кликаем на найденный адресс
         try:
-            search_number = json_content['features'][0]['attrs']['id']  # типо кадастрового номера только без нулей
+            search_number = json_content['features'][0]['attrs']['id']
             
             params['_'] = str(int(time.time()))
             url_params = urlencode(params)
             url_sttr = 'https://pkk.rosreestr.ru/api/features/' + str(type) + '/' + search_number
             response = requests.get(url_sttr, timeout=REQ_TIMEOUT)
             json_content = json.loads(response.text)
-        except (KeyError, TypeError, IndexError, requests.Timeout):  # когда переход на адресс не удался
+        except (KeyError, TypeError, IndexError, requests.Timeout):  
             pass
 
-        attrs = json_content['feature']['attrs']
-        data_params['address'] = attrs['address']
-        #Кадастровый номер помещения
-        data_params['kadastr_number'] = attrs['cn']
-        #Общая площадь помещения, м2
-        data_params['total_area'] = attrs['area_value']
-        #Кадастровая стоимость помещения, рублей
-        data_params['kadastr_cost'] = attrs['cad_cost'] if 'cad_cost' in attrs else ''
-        #Год постройки
-        data_params['year_built'] = attrs['year_built'] if 'year_built' in attrs else ''
-        #Год ввода в эксплуатацию
-        data_params['year_in_used'] = attrs['year_used'] if 'year_used' in attrs else ''
-        
-        self.__rosreestr_details_5kk(json_content, data_params)
-
-
-        type = 1
-        params['_'] = str(int(time.time()))
-        url_params = urlencode(params)
-        url_sttr = 'https://pkk.rosreestr.ru/api/features/' + str(type) + '?' + url_params
-        try:
-            response = requests.get(url_sttr, timeout=REQ_TIMEOUT)
-            data = response.text
-            json_content = json.loads(data)
-        except requests.Timeout:
-            pass
-        if not json_content or len(json_content['features']) == 0:
-            print('nothing found plot')
-            return data_params
-        # второй запрос, когда мы кликаем на найденный адресс
-        try:
-            search_number = json_content['features'][0]['attrs']['id']  # типо кадастрового номера только без нулей
-            
-            params['_'] = str(int(time.time()))
-            url_params = urlencode(params)
-            url_sttr = 'https://pkk.rosreestr.ru/api/features/' + str(type) + '/' + search_number
-            response = requests.get(url_sttr, timeout=REQ_TIMEOUT)
-            json_content = json.loads(response.text)
-        except (KeyError, TypeError, IndexError, requests.Timeout):  # когда переход на адресс не удался
-            pass
-
-        attrs = json_content['feature']['attrs']   
-        data_params['address'] = attrs['address']
-        #Кадастровый номер земельного участка
-        data_params['plot_kadastr_number'] = attrs['cn']
-        #Общая площадь помещения земельного участка, м2
-        data_params['plot_total_area'] = attrs['area_value']        
-
-        return data_params
-
-    def __parse_json_params(self, json_data, result):
-        attrs = json_data['feature']['attrs']
-
-        result['address'] = attrs['address']
-        #Кадастровый номер помещения
-        result['kadastr_number'] = attrs['cn']
-        #Общая площадь помещения, м2
-        result['total_area'] = attrs['area_value']
-        #Кадастровая стоимость помещения, рублей
-        result['kadastr_cost'] = attrs['cad_cost'] if 'cad_cost' in attrs else ''
-        #Год постройки
-        result['year_built'] = attrs['year_built'] if 'year_built' in attrs else ''
-        #Год ввода в эксплуатацию
-        result['year_in_used'] = attrs['year_used'] if 'year_used' in attrs else ''
-        #Кадастровый номер земельного участка
-        #...
+        return json_content
 
 
     def __rosreestr_details_5kk(self, json_content, result):

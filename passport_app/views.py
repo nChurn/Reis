@@ -892,13 +892,10 @@ class SearchView(FormView):
             real_estate.street_name = base_address['street']
             real_estate.house_number = base_address['house']
             real_estate.address = base_address['text_address']
-            #TODO it's test. Is it work's?
-            #real_estate.address = base_address['street'] + " " + base_address['locality'] + " " + base_address['country']
-
 
             pos = base_address['point'].split(' ')
-            real_estate.latitude = pos[0]
-            real_estate.longitude = pos[1]
+            real_estate.latitude = pos[1]
+            real_estate.longitude = pos[0]
 
             real_estate.save()
 

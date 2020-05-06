@@ -17,8 +17,8 @@ class DataSourcesLauncher():
         self.__real_estate = real_estate
 
     def start_parsing(self):              
-        p = ArbParser ("Теньковский Дмитрий Викторович", "7731031078", None, None)
-        print(p.getResult())
+        # p = ArbParser ("Теньковский Дмитрий Викторович", "7731031078", None, None)
+        # print(p.getResult())
         
         
         parsers = ParserType.objects.order_by('id').all()
