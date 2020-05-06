@@ -135,18 +135,26 @@
         });
 
         $("#sectionHeader-" + parent_id + "-" + category_id).on('click', function () {
-            $.ajax({
-                headers: { "X-CSRFToken": '{{csrf_token}}' },
-                url: "/constructor/categories/" + category_id + "/",
-                type: "GET",
-                success: function (data) {
-                    $('#child-categories-' + parent_id + '-' + category_id).html(data);
-                },
-                error: function (xhr, errmsg, err) {
+            let node = $('#child-categories-' + parent_id + '-' + category_id);
+            let check = $(node[0]).html().trim();
+            if(check === ""){ 
+                $.ajax({
+                    headers: { "X-CSRFToken": '{{csrf_token}}' },
+                    url: "/constructor/categories/" + category_id + "/", 
+                    type: "GET", 
+                    success: function (data) {
+                        $('#child-categories-' + parent_id + '-' + category_id).html(data);
+                    },
+                    error: function (xhr, errmsg, err) {
 
-                }
-            });
-        })
+                    }
+                });
+            }
+            else{
+                $('#child-categories-' + parent_id + '-' + category_id).html("");
+                $('#sectionContent-' + parent_id + '-' + category_id).removeClass('show');
+            }
+        })        
     });
 </script>
 {% endblock %}

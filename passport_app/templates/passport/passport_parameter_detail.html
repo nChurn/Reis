@@ -27,16 +27,16 @@
 
         $('#parameter-'+'{{parameter_item.parameter.id}}').on("click", ".btn-edit", function(event){
             $.ajax({
-            url : "/parameterdata/"+parameter_data_id+"/"+real_estate_id+"/",
-            type : "GET",
-            success : function(data) {
-                $('#modal-body').html(data);
-                $('#modal-title').text('значения');
-                $('#modal-form').modal('show');
-            },
-            error : function(xhr,errmsg,err) {
+                url : "/parameterdata/"+parameter_data_id+"/"+real_estate_id+"/",
+                type : "GET",
+                success : function(data) {
+                    $('#modal-body').html(data);
+                    $('#modal-title').text('значения');
+                    $('#modal-form').modal('show');
+                },
+                error : function(xhr,errmsg,err) {
 
-                }
+                    }
             });
         });
 

@@ -81,7 +81,7 @@
 
         });
 
-        $("#sectionHeader-" + parent_id + "-" + category_id).on("click", '#btn-category-add', function (value) {
+        $("#sectionHeader-" + parent_id + "-" + category_id).on("click", '#btn-category-add', function (value) {                    
             let id = $(this).attr('value');
             $.ajax({
                 headers: { "X-CSRFToken": '{{csrf_token}}' },
@@ -98,7 +98,7 @@
             });
         });
 
-        $("#sectionHeader-" + parent_id + "-" + category_id).on("click", '#btn-edit', function (value) {
+        $("#sectionHeader-" + parent_id + "-" + category_id).on("click", '.btn-edit', function (value) {
             let id = $(this).attr('value');
             $.ajax({
                 headers: { "X-CSRFToken": '{{csrf_token}}' },

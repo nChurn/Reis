@@ -23,7 +23,7 @@
 {% include 'category/category_modal_add.html' %}
 
 {% block javascript %}
-<!-- <script>
+<script>
     $(document).ready(function () {
         var category_id = '{{category_item.id}}';
         var parent_id = '{{parent_item_id}}';
@@ -110,23 +110,21 @@
 
         });
 
-        $('body').on('shown.bs.collapse', function (e) {
-            alert('hello')
+        // $('body').on('shown.bs.collapse', function (e) {
+        //     $.ajax({
+        //         headers: { "X-CSRFToken": '{{csrf_token}}' },
+        //         url: "/constructor/categories/" + category_id + "/", 
+        //         type: "GET", 
+        //         success: function (data) {
+        //            // $('#child-categories-' + parent_id + '-' + category_id).html(data);
+        //         },
+        //         error: function (xhr, errmsg, err) {
 
-            $.ajax({
-                headers: { "X-CSRFToken": '{{csrf_token}}' },
-                url: "/constructor/categories/" + category_id + "/", 
-                type: "GET", 
-                success: function (data) {
-                   // $('#child-categories-' + parent_id + '-' + category_id).html(data);
-                },
-                error: function (xhr, errmsg, err) {
-
-                }
-            });
-        })
+        //         }
+        //     });
+        // })
     });
-</script> -->
+</script>
 
 <script>
     function showCategoryDetail(category_id) {

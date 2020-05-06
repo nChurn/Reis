@@ -1,13 +1,13 @@
-<div class="accordion" id="accordion-{{category_item.category.name}}">
+<div class="accordion" id="accordion-{{category_item.category.id}}">
     <div class="card">
-        <div class="card-header" id="card-{{category_item.category.name}}">
+        <div class="card-header" id="card-{{category_item.category.id}}">
             <h2 class="mb-0 button-label-color">
-                <button class="btn btn-link" style="color: #006c32;width:100%" type="button" data-toggle="collapse" 
-                    data-target="#collapse-{{category_item.category.name}}" aria-expanded="true" aria-controls="collapseOne">
+                <button class="btn btn-link collapsed" style="color: #006c32;width:100%" type="button" data-toggle="collapse" 
+                    data-target="#collapse-{{category_item.category.id}}" aria-expanded="false" aria-controls="collapse-{{category_item.category.id}}">
                     <div class="row" style="white-space: normal important!">
                         <div class="col-auto text-left">
-                                {{ category_item.category.point }}
-                                {{ category_item.category.name_ru }}
+                            {{ category_item.category.point }}
+                            {{ category_item.category.name_ru }}
                         </div>
                         <div class="col">
                         </div>
@@ -22,9 +22,9 @@
             </h2>
         </div>
 
-        <div id="collapse-{{category_item.category.name}}" class="collapse" aria-labelledby="headingOne" data-parent="#accordion-{{category_item.category.name}}">
+        <div id="collapse-{{category_item.category.id}}" class="collapse" aria-labelledby="card-{{category_item.category.id}}"
+            data-parent="#accordion-{{category_item.category.id}}">
             <div class="card-body">
-
                 {% for child_item in category_item.categories %}                    
                     {%with category_item=child_item parent_item_id=category_item.id template_name="passport/category_node.html" %}
                         {%include template_name%}
@@ -33,13 +33,13 @@
 
                 {% if category_item.parameters %}
                     <table class="table">
-                            <tr>                                    
-                                    <th>Название</th>
-                                    <th>Значение</th>
-                                    <th>Вес</th>
-                                    <th>Рейтинг</th>
-                                    <th></th>
-                                </tr>
+                        <tr>                                    
+                            <th>Название</th>
+                            <th>Значение</th>
+                            <th>Вес</th>
+                            <th>Рейтинг</th>
+                            <th></th>
+                        </tr>
                         {% for parameter in category_item.parameters %}
                             {%with parameter_item=parameter template_name="passport/passport_parameter_detail.html" %}
                                 {%include template_name%}
@@ -51,3 +51,4 @@
         </div>
     </div>
 </div>
+

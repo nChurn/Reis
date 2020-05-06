@@ -6,6 +6,7 @@ from passport_app.data_sources.api.YandexMapsAPI import YandexMapsAPI
 from passport_app.data_sources.parser.ReformaGkh_Parser import ReformaGkh_Parser
 from passport_app.models import *
 from passport_app.data_sources.parser.pkk_rosreestr.Pkk_Rosreestr_Parser import Pkk_Rosreestr_Parser
+from passport_app.data_sources.parserApi.ArbParser import ArbParser
 
 logger = logging.getLogger(__name__)
 
@@ -16,7 +17,9 @@ class DataSourcesLauncher():
         self.__real_estate = real_estate
 
     def start_parsing(self):              
-        result = {}
+        p = ArbParser ("Теньковский Дмитрий Викторович", "7731031078", None, None)
+        print(p.getResult())
+        
         
         parsers = ParserType.objects.order_by('id').all()
         for parser in parsers:
@@ -30,7 +33,7 @@ class DataSourcesLauncher():
             #     p = YandexMapsAPI(self.__real_estate, parser.authkey, 'c687c609-ae0e-4b12-8d9a-aab953d8642f', False)
             #     yandex_result = p.parse_info('ru')
 
-                #self.__save_data(yandex_result)
+            #     self.__save_data(yandex_result)
 
             if parser.name == 'rosreestr.ru':            
                 p = Pkk_Rosreestr_Parser()
