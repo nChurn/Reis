@@ -1,10 +1,10 @@
 import json
 import requests
 
-class ArbParser():
+class PbNalog_Parser():
     def __init__(self, fio, inn, ogrn, name):
         self.domain = 'http://81.177.175.19:8080'
-        self.url = 'getBankrot'
+        self.url = 'getNalog'
 
         self.fio = fio
         self.inn = inn

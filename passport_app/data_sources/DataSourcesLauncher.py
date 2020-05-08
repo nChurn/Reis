@@ -6,7 +6,8 @@ from passport_app.data_sources.api.YandexMapsAPI import YandexMapsAPI
 from passport_app.data_sources.parser.ReformaGkh_Parser import ReformaGkh_Parser
 from passport_app.models import *
 from passport_app.data_sources.parser.pkk_rosreestr.Pkk_Rosreestr_Parser import Pkk_Rosreestr_Parser
-from passport_app.data_sources.parserApi.ArbParser import ArbParser
+from passport_app.data_sources.parserApi.BankrotFedres_Parser import BankrotFedres_Parser
+from passport_app.data_sources.parserApi.PbNalog_Parser import PbNalog_Parser
 
 logger = logging.getLogger(__name__)
 
@@ -17,10 +18,6 @@ class DataSourcesLauncher():
         self.__real_estate = real_estate
 
     def start_parsing(self):              
-        # p = ArbParser ("Теньковский Дмитрий Викторович", "7731031078", None, None)
-        # print(p.getResult())
-        
-        
         parsers = ParserType.objects.order_by('id').all()
         for parser in parsers:
             # if parser.name == 'google_map':
@@ -45,6 +42,18 @@ class DataSourcesLauncher():
                 p = ReformaGkh_Parser()
                 p.parse_data(self.__real_estate.address, self.__real_estate)
 
+            if parser.url == 'http://bankrot.fedresurs.ru/':
+                p = BankrotFedres_Parser("Теньковский Дмитрий Викторович", "7731031078", None, "ЗАКРЫТОЕ АКЦИОНЕРНОЕ ОБЩЕСТВО 'НЕДРА'")
+                data = p.get_result()
+
+                self.__save_data(data)
+
+            if parser.url == 'https://pb.nalog.ru/':
+                p = PbNalog_Parser("Теньковский Дмитрий Викторович", "7731031078", None, "ЗАКРЫТОЕ АКЦИОНЕРНОЕ ОБЩЕСТВО 'НЕДРА'")
+                data = p.get_result()
+
+                self.__save_data(data)
+
 
     def __save_data(self, data):
         for item_key in data:
@@ -56,16 +65,17 @@ class DataSourcesLauncher():
                 logger.error('')
                 continue
 
-            try:
-                parameter = Parameter.objects.get(name_ru = parser_parameter.name_ru)
-                parameter_data = ParameterData()
+            #тут должны браться параметры к которым привязан parser_parameter
+            # try:
+            #     parameter = Parameter.objects.get(name_ru = parser_parameter.name_ru)
+            #     parameter_data = ParameterData()
 
-                parameter_data.value = '' if data[item_key] is None else data[item_key]
-                parameter_data.real_estate = self.__real_estate
-                parameter_data.parameter = parameter
-                parameter_data.save()
-            except Exception as e:
-                logger.error('Parameter not found in db: ' + item_key + " " + parser_parameter.name_ru)
-                logger.error(str(e))
-                logger.error('')
-                logger.error('')
+            #     parameter_data.value = '' if data[item_key] is None else data[item_key]
+            #     parameter_data.real_estate = self.__real_estate
+            #     parameter_data.parameter = parameter
+            #     parameter_data.save()
+            # except Exception as e:
+            #     logger.error('Parameter not found in db: ' + item_key + " " + parser_parameter.name_ru)
+            #     logger.error(str(e))
+            #     logger.error('')
+            #     logger.error('')
