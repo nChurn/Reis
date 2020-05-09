@@ -156,7 +156,7 @@ class Parameter(models.Model):
         return "/constructor" #reverse('constructor', kwargs={'pk': self.pk})
 
 class Category(models.Model):
-    name = models.CharField(max_length=255, default='', unique=True)
+    name = models.CharField(max_length=255, default='')#, unique=True)
     name_ru = models.CharField(max_length=255, default='')    
     comment = models.CharField(max_length=255, default='', blank=True)
     point = models.CharField(max_length=20, default='')

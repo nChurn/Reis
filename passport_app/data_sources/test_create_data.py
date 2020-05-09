@@ -7,6 +7,8 @@ django.setup()
 
 from passport_app.models import *
 
+from openpyxl import load_workbook
+
 def create_parser_param(name, name_ru, parser_type_id, parser_parameter_type):
     pp = ParserParameter()
     pp.name = name
@@ -31,15 +33,23 @@ def create_param(name, name_ru, parser_parameters):
     return p
 
 
-def create_category(lines, i):
-    arr = lines[i].split(';')
-    index = arr[0]
+def create_category(wsheet, row):
+    index = str(wsheet.cell(row, 1).value)
+    next_index = str(wsheet.cell(row+1, 1).value)
+    if next_index == 'None':
+        next_index = index
 
+    param_name_rus = wsheet.cell(row, 4).value
+    param_name = wsheet.cell(row, 5).value
+
+    parser_param_name_rus = wsheet.cell(row, 6).value
+    parser_param_name = wsheet.cell(row, 7).value
+
+    #add category
     category = Category()
-    category.name_ru = arr[1]
-    category.name = arr[2]
+    category.name_ru = wsheet.cell(row, 2).value
+    category.name = wsheet.cell(row, 3).value
     category.point = index
-
     category.save()
 
     if len(index.split('.')) > 1:
@@ -54,105 +64,66 @@ def create_category(lines, i):
             parent.categories.add(category)
 
         category.parent_categories.add(parent)
-
     category.save()
 
     #add param to category
-    if len(index.split('.')) >= len(lines[i+1].split(';')[0].split('.')) and len(index.split('.')) != 1:
-        param = Parameter.objects.filter(name = category.name).first()
-        if param is not None:
-            category.parameters.add(param)
-        else:
-            print("param " + category.name_ru + " not found")
+    if parser_param_name:
+        if len(index.split('.')) >= len(next_index.split(';')[0].split('.')) and len(index.split('.')) != 1:
+            param = Parameter.objects.filter(name = param_name).first()
+            if param is not None:
+                print('ERROR')
+                #category.parameters.add(param)
+            else:
+                print("param '" + category.name + "' not found")
 
-            parser_params = ParserParameter.objects.filter(name = category.name).all()
-            if len(parser_params) > 1:
-                print('error')
+                parser_params = ParserParameter.objects.filter(name = parser_param_name).all()
+                if len(parser_params) > 1:
+                    print('ERROR')
 
-            if len(parser_params) == 0:
-                print('parser_param not found')
+                if len(parser_params) == 0:
+                    print('parser_param not found')
+                    parser_params = []
+                    if wsheet.cell(row, 8).value == '+':
+                        p = create_parser_param(parser_param_name + " Google", parser_param_name_rus + " Google", 2, 'social')
+                        parser_params.append(p)
 
-                parser_params = []
-                if arr[3] == '+':
-                    p = create_parser_param(category.name + " Google", category.name_ru + " Google", 2, 'social')
-                    parser_params.append(p)
+                        p = create_parser_param(parser_param_name + " Yandex", parser_param_name_rus + " Yandex", 3, 'social')
+                        parser_params.append(p)
+                    else:
+                        parser_params = [create_parser_param(parser_param_name, parser_param_name_rus, wsheet.cell(row, 9).value, '')]
 
-                    p = create_parser_param(category.name + " Yandex", category.name_ru + " Yandex", 3, 'social')
-                    parser_params.append(p)
-                else:
-                    parser_params = [create_parser_param(category.name, category.name_ru, arr[4], '')]
+                param = create_param(param_name, param_name_rus, parser_params)
+                category.parameters.add(param)            
 
-            param = create_param(category.name, category.name_ru, parser_params)
-
-            category.parameters.add(param)
+            category.save()
             print('addedd')
 
-        category.save()
+def strat(file_name):
+    wb = None
+    wsheet = None
+    
+    wb = load_workbook(file_name)
+    wsheet = wb.get_sheet_by_name(wb.get_sheet_names()[0])
 
-def strat():
-    f = open(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 1, ктагории для загрузки.csv", "r", encoding='utf8')
-    lines = f.read().splitlines()
+    max_row = 1
+    while wsheet.cell(max_row, 1).value is not None:
+        max_row = max_row + 1
 
-    for i in range(0, len(lines)):
-        create_category(lines, i)
+    #max_row = max_row - 1
+
+    for row in range(2, max_row):
+        print(row)
+        create_category(wsheet, row)
+
+    wb.close()
         
-
-def create_params():
-    f = open(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\parser_parameters_fix.csv", "r", encoding='utf8')
-    lines = f.read().splitlines()
-
-    for line in lines:
-        arr = line.split(';')
-
-        check = ParserParameter.objects.filter(name = arr[0] + " Yandex").first()
-        if check is None:
-            pp = ParserParameter()
-            pp.name = arr[0] + " Yandex"
-            pp.name_ru = arr[1] + " Yandex"
-            pp.parser_type_id = 3
-            pp.parser_parameter_type = 'social'
-
-            pp.save()
-
-
-        check = ParserParameter.objects.filter(name = arr[0] + " Google").first()
-        if check is None:
-            pp = ParserParameter()
-            pp.name = arr[0] + " Google"
-            pp.name_ru = arr[1] + " Google"
-            pp.parser_type_id = 2
-            pp.parser_parameter_type = 'social'
-
-            pp.save()
-
-    for line in lines:
-        arr = line.split(';')
-        p_params = ParserParameter.objects.filter(name_ru__contains = arr[1]).order_by('name_ru')
-
-        if p_params.count() <= 0:
-            continue
-
-        p = Parameter()
-        p.name = p_params[0].name.replace("Google", "").replace("Yandex", "").strip()
-        p.name_ru = arr[1]
-
-
-
-        check = Parameter.objects.filter(name = p.name).first()
-        if check is None:
-            p.save()
-
-            p.parser_parameters.add(p_params[0])
-            p.parser_parameters.add(p_params[1])
-
-            p.save()
-
-
 def delete_all():
     cat = Category.objects.all().delete()
     Parameter.objects.all().delete()
     ParserParameter.objects.all().delete()
 
 delete_all()
-strat()
+strat(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 1, категории для загрузки.xlsx")
+strat(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 2, категории для загрузки.xlsx")
+# strat(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 3, категории для загрузки.xlsx")
     

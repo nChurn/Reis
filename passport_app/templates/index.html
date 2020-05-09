@@ -20,18 +20,20 @@
         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
             <form action="/search/" method="post" id="post-form">
                 {% csrf_token %}
-                {% if search_config and search_config.show_owner_field  %}
+                <!-- {% if search_config and search_config.show_owner_field  %}
                 {{ form.owner|as_crispy_field }}
                 {% endif %}
 
                 {% if search_config and search_config.show_search_form_field  %}
                 {{ form.search_form|as_crispy_field }}
-                {% endif %}
+                {% endif %} -->
                 
                 {{ form.search_form|as_crispy_field }}
-                <!-- <p>{{ form.kadastr_number.help_text }}</p> -->
-
                 {{ form.kadastr_number|as_crispy_field }}
+                {{ form.owner|as_crispy_field }}
+                {{ form.inn|as_crispy_field }}
+
+
                 {% if not user.is_authenticated  %}
                 {{ form.captcha|as_crispy_field }}
                 {% endif %}

@@ -50,7 +50,7 @@ class Pkk_Rosreestr_Parser:
             #Уточненная площадь
             data_params['ground_total_area'] = self.__get_value_or_empty(attrs, 'area_value')
             #Кадастровый номер
-            data_params['ground_kadastr_number'] = self.__get_value_or_empty(attrs, 'cn')
+            data_params['ground_cn'] = self.__get_value_or_empty(attrs, 'cn')
             #Статус
             data_params['ground_status'] = self.__get_value_from_dict(states, self.__get_value_or_empty(attrs, 'statecd'))
             #Адрес
@@ -89,7 +89,7 @@ class Pkk_Rosreestr_Parser:
             #Кадастровый номер
             data_params['oks_cn'] = self.__get_value_or_empty(attrs, 'cn')
             #Статус
-            data_params['oks_cn'] = self.__get_value_from_dict(states, self.__get_value_or_empty(attrs, 'statecd'))
+            data_params['oks_status'] = self.__get_value_from_dict(states, self.__get_value_or_empty(attrs, 'statecd'))
             #Адрес
             data_params['oks_address'] = self.__get_value_or_empty(attrs, 'address')
             #Форма собственности
@@ -99,14 +99,14 @@ class Pkk_Rosreestr_Parser:
         
         return data_params
 
-    def __get_value_from_dict(dict, key):
+    def __get_value_from_dict(self, _dict, key):
         try:
-            return dict[key]
+            return _dict[key]
         except (KeyError, TypeError):
             return ''
 
-    def __get_value_or_empty(dict, key):
-        return attrs[key] if key in dict else ''
+    def __get_value_or_empty(self, _dict, key):
+        return _dict[key] if key in _dict else ''
 
 
     def __load_page(self, params, type):

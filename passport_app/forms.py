@@ -116,13 +116,21 @@ class UserSearchForm(forms.Form):
             'Укажите наименование собственника объекта недвижимости'
         })
 
+    inn = forms.CharField(   
+        label='ИНН',
+        max_length=255,
+        required=False,
+        error_messages={
+            'required': 'Укажите адрес объекта или кадастровый номер'
+        })
+
     def __init__(self, *args, **kwargs):
         user_forms = kwargs.pop('forms', None)
         super(UserSearchForm, self).__init__(*args, **kwargs)
         self.helper = FormHelper(self)
         self.helper.form_class = 'form-horizontal'
-        self.helper.label_class = 'col-sm-2'
-        self.helper.field_class = 'col-sm-10 pt-3'
+        self.helper.label_class = 'col-sm-3'
+        self.helper.field_class = 'col-sm-9 pt-3'
 
         # choices = [(pt.id, pt.name_ru) for pt in user_forms]
         self.fields['search_form'].initial = user_forms

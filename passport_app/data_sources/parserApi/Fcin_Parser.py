@@ -1,7 +1,7 @@
 import json
 import requests
 
-class ArbParser():
+class Fcin_Parser():
     def __init__(self, fio, inn, ogrn, name):
         self.domain = 'http://81.177.175.19:8080'
         self.url = 'getCrime'
@@ -22,12 +22,16 @@ class ArbParser():
             }
         }
 
-    def get_dict_from_resp(self, resp_text):
-        json = json.loads(resp)
-        return json['result']['info']
+    def get_dict_from_resp(self, json_obj):
+        data = json_obj['result']['info']
+
+        result = {}
+        result['person_wanted'] = "Да" if data != 'Информация не найдена' else 'Нет'
+
+        return result
 
     def getResult(self):
         post_data = self.get_request_data()
-        resp = requests.post(self.domain + '/' + self.url, json.dumps(post_data))
+        resp = requests.post(self.domain + '/' + self.url, json=post_data)
 
-        return self.get_dict_from_resp(resp.text)
+        return self.get_dict_from_resp(resp.json())
