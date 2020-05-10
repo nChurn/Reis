@@ -1,9 +1,11 @@
 import json
 import requests
 
-class ArbParser():
+from passport_app.data_sources.parserApi.BaseParserApi import *
+
+class DomGosuslugi_Parser(BaseParserApi):
     def __init__(self, subject, district, city, locality, street, numberTown):
-        self.domain = 'http://81.177.175.19:8080'
+        super.__init__(subject, district, city, locality, street, numberTown)
         self.url = 'gos'
         
         self.subject = subject
@@ -28,10 +30,4 @@ class ArbParser():
 
     def get_dict_from_resp(self, resp_text):
         json = json.loads(resp)
-        return json['result']['info']
-
-    def getResult(self):
-        post_data = self.get_request_data()
-        resp = requests.post(self.domain + '/' + self.url, json.dumps(post_data))
-
-        return self.get_dict_from_resp(resp.text)
+        return json['result']['info']#TODO alll

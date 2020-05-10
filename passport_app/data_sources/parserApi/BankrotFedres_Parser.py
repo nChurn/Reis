@@ -5,26 +5,11 @@ from passport_app.data_sources.parserApi.BaseParserApi import *
 
 class BankrotFedres_Parser(BaseParserApi):
     def __init__(self, fio, inn, ogrn, name):
-        self.super(fio, inn, orgn, name)
-
-        #self.domain = 'http://81.177.175.19:8080'
+        super.__init__(fio, inn, orgn, name)
         self.url = 'getBankrot'
 
-        # self.fio = fio
-        # self.inn = inn
-        # self.ogrn = ogrn
-        # self.name = name
-
-    # def __get_request_data(self):
-    #     return {
-    #         'success': True,
-    #         'result': {
-    #             'fio': self.fio,
-    #             'inn': self.inn,
-    #             'ogrn': self.ogrn,
-    #             'name': self.name
-    #         }
-    #     }
+    def get_request_data(self):
+        return self.get_request_data_default()
     
     def _get_dict_from_resp(self, json_obj):
         data = json_obj['result']['info']
@@ -40,9 +25,3 @@ class BankrotFedres_Parser(BaseParserApi):
         result['fio_contest_manager'] = next(iter(data['sro']['1'].keys()))
 
         return result
-
-    # def get_result(self):
-    #     post_data = self.__get_request_data()
-    #     resp = requests.post(self.domain + '/' + self.url, json=post_data)
-
-    #     return self.__get_dict_from_resp(resp.json())
