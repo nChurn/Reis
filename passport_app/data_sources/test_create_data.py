@@ -109,8 +109,6 @@ def strat(file_name):
     while wsheet.cell(max_row, 1).value is not None:
         max_row = max_row + 1
 
-    #max_row = max_row - 1
-
     for row in range(2, max_row):
         print(row)
         create_category(wsheet, row)
@@ -126,4 +124,12 @@ delete_all()
 strat(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 1, категории для загрузки.xlsx")
 strat(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 2, категории для загрузки.xlsx")
 # strat(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 3, категории для загрузки.xlsx")
+
+categories = Category.objects.all()
+search_form = SearchForm.objects.get(name= 'default')
+
+for c in categories:
+    search_form.categories.add(c)
+
+search_form.save()
     

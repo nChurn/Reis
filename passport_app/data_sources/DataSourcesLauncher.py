@@ -36,11 +36,11 @@ class DataSourcesLauncher():
 
             #     self.__save_data(yandex_result)
 
-            if parser.name == 'rosreestr.ru':            
-                p = Pkk_Rosreestr_Parser()
-                data = p.parse_data(self.__real_estate)
+            # if parser.name == 'rosreestr.ru':            
+            #     p = Pkk_Rosreestr_Parser()
+            #     data = p.parse_data(self.__real_estate)
 
-                self.__save_data(data)
+            #     self.__save_data(data)
 
             # if parser.name == 'reformagkh.ru':
             #     p = ReformaGkh_Parser()
@@ -62,10 +62,9 @@ class DataSourcesLauncher():
             #     data = p.get_result()
             #     self.__save_data(data)
                 
-            # if parser.url == 'http://xn--h1akkl.xn--p1ai/':
-            #     p = Fcin_Parser("Теньковский Дмитрий Викторович", "7731031078", None, "ЗАКРЫТОЕ АКЦИОНЕРНОЕ ОБЩЕСТВО 'НЕДРА'")
-            #     data = p.get_result()
-            #     self.__save_data(data)
+            if parser.url == 'http://xn--h1akkl.xn--p1ai/':
+                p = Fcin_Parser("Теньковский Дмитрий Викторович", "7731031078", None, "ЗАКРЫТОЕ АКЦИОНЕРНОЕ ОБЩЕСТВО 'НЕДРА'")
+                self.__save_data(p.get_result())
 
 
     def __save_data(self, data):
@@ -76,24 +75,19 @@ class DataSourcesLauncher():
                 logger.error('Parser parameter not found in db: ' + item_key)
                 continue
 
-            cursor = connection.cursor()
-            cursor.execute('''SELECT count(*) FROM people_person''')
+            try:
+                cursor = connection.cursor()
+                cursor.execute('''SELECT * FROM public.passport_app_parameter_parser_parameters
+                    where parserparameter_id = ''' + str(parser_parameter.id)) 
 
-            rows = cursor.fetchall()
-            for row in rows:
-                param = Parameter.objects.get(pk= row['id'])
+                rows = cursor.fetchall()
+                for row in rows:
+                    param = Parameter.objects.get(pk= row[1])
 
-            #TODO тут должны браться параметры к которым привязан parser_parameter
-            # try:
-            #     parameter = Parameter.objects.get(name_ru = parser_parameter.name_ru)
-            #     parameter_data = ParameterData()
-
-            #     parameter_data.value = '' if data[item_key] is None else data[item_key]
-            #     parameter_data.real_estate = self.__real_estate
-            #     parameter_data.parameter = parameter
-            #     parameter_data.save()
-            # except Exception as e:
-            #     logger.error('Parameter not found in db: ' + item_key + " " + parser_parameter.name_ru)
-            #     logger.error(str(e))
-            #     logger.error('')
-            #     logger.error('')
+                    parameter_data = ParameterData()
+                    parameter_data.value = '' if data[item_key] is None else data[item_key]
+                    parameter_data.real_estate = self.__real_estate
+                    parameter_data.parameter = param
+                    parameter_data.save()
+            except Exception as e:
+                logger.exception('fail to save item key: ' + item_key, e)
