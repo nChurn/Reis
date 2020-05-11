@@ -15,6 +15,11 @@ class BaseParserApi(ABC):
         self.ogrn = ogrn
         self.name = name
 
+        print("fio: " + str(fio))
+        print("inn: " + str(inn))
+        print("ogrn: " + str(ogrn))
+        print("name: " + str(name))
+
     @abstractmethod
     def get_request_data(self):
         pass

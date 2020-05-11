@@ -108,21 +108,15 @@ class UserSearchForm(forms.Form):
             'Кадастровый номер: 29:21:010101:57') 
 
     owner = forms.CharField(
-        label='Наименование собственника объекта недвижимости',
+        label='Данные собственника объекта недвижимости',
         max_length=255,
         required=False,
         error_messages={
             'required':
             'Укажите наименование собственника объекта недвижимости'
-        })
+        },
+        help_text='Укажите ФИО, название организации или ИНН собственника объекта недвижимости')
 
-    inn = forms.CharField(   
-        label='ИНН',
-        max_length=255,
-        required=False,
-        error_messages={
-            'required': 'Укажите адрес объекта или кадастровый номер'
-        })
 
     def __init__(self, *args, **kwargs):
         user_forms = kwargs.pop('forms', None)

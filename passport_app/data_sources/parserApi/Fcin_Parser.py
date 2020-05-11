@@ -6,6 +6,7 @@ from passport_app.data_sources.parserApi.BaseParserApi import *
 
 class Fcin_Parser(BaseParserApi):
     def __init__(self, fio, inn, ogrn, name):
+        print("start fcin")
         super().__init__(fio, inn, ogrn, name)
         self.url = 'getCrime'
 

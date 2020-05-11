@@ -72,7 +72,7 @@ def create_category(wsheet, row):
             param = Parameter.objects.filter(name = param_name).first()
             if param is not None:
                 print('ERROR')
-                #category.parameters.add(param)
+                category.parameters.add(param)
             else:
                 print("param '" + category.name + "' not found")
 
@@ -98,7 +98,7 @@ def create_category(wsheet, row):
             category.save()
             print('addedd')
 
-def strat(file_name):
+def start(file_name):
     wb = None
     wsheet = None
     
@@ -121,9 +121,9 @@ def delete_all():
     ParserParameter.objects.all().delete()
 
 delete_all()
-strat(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 1, категории для загрузки.xlsx")
-strat(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 2, категории для загрузки.xlsx")
-# strat(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 3, категории для загрузки.xlsx")
+start(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 1, категории для загрузки.xlsx")
+start(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 2, категории для загрузки.xlsx")
+start(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 3, категории для загрузки.xlsx")
 
 categories = Category.objects.all()
 search_form = SearchForm.objects.get(name= 'default')

@@ -11,6 +11,7 @@ from passport_app.data_sources.parserApi.BankrotFedres_Parser import BankrotFedr
 from passport_app.data_sources.parserApi.PbNalog_Parser import PbNalog_Parser
 from passport_app.data_sources.parserApi.Fcin_Parser import Fcin_Parser
 from passport_app.data_sources.parserApi.KadArbitr_Parser import KadArbitr_Parser
+from passport_app.data_sources.parserApi.DomGosuslugi_Parser import DomGosuslugi_Parser
 
 
 logger = logging.getLogger(__name__)
@@ -36,34 +37,38 @@ class DataSourcesLauncher():
 
             #     self.__save_data(yandex_result)
 
-            # if parser.name == 'rosreestr.ru':            
-            #     p = Pkk_Rosreestr_Parser()
-            #     data = p.parse_data(self.__real_estate)
+            if parser.name == 'rosreestr.ru':            
+                p = Pkk_Rosreestr_Parser()
+                data = p.parse_data(self.__real_estate)
+                self.__save_data(data)
 
-            #     self.__save_data(data)
+            if parser.name == 'reformagkh.ru':
+                p = ReformaGkh_Parser()
+                p.parse_data(self.__real_estate.address, self.__real_estate)
 
-            # if parser.name == 'reformagkh.ru':
-            #     p = ReformaGkh_Parser()
-            #     p.parse_data(self.__real_estate.address, self.__real_estate)
+            if self.__real_estate.owner.name or self.__real_estate.owner.inn:
+                if parser.url == 'http://bankrot.fedresurs.ru/':
+                    p = BankrotFedres_Parser(self.__real_estate.owner.name, self.__real_estate.owner.inn, None, self.__real_estate.owner.name)
+                    self.__save_data(p.get_result())
 
-            # if parser.url == 'http://bankrot.fedresurs.ru/':
-            #     p = BankrotFedres_Parser("Теньковский Дмитрий Викторович", "7731031078", None, "ЗАКРЫТОЕ АКЦИОНЕРНОЕ ОБЩЕСТВО 'НЕДРА'")
-            #     data = p.get_result()
+                if parser.url == 'https://pb.nalog.ru/':
+                    p = PbNalog_Parser(self.__real_estate.owner.name, self.__real_estate.owner.inn, None, self.__real_estate.owner.name)
+                    self.__save_data(p.get_result())
 
-            #     self.__save_data(data)
+                if parser.url == 'https://kad.arbitr.ru/':
+                    p = KadArbitr_Parser(self.__real_estate.owner.name, self.__real_estate.owner.inn, None, self.__real_estate.owner.name)
+                    self.__save_data(p.get_result())
+                    
+                if parser.url == 'http://xn--h1akkl.xn--p1ai/':#фсин
+                    p = Fcin_Parser(self.__real_estate.owner.name, self.__real_estate.owner.inn, None, None)
+                    self.__save_data(p.get_result())
+            
+            if parser.url == 'https://dom.gosuslugi.ru/':
+                p = DomGosuslugi_Parser(self.__real_estate.region_name, self.__real_estate.district, 
+                    self.__real_estate.locality, None, 
+                    self.__real_estate.street_name, self.__real_estate.house_number)
+                p.parser_type = parser
 
-            # if parser.url == 'https://pb.nalog.ru/':
-            #     p = PbNalog_Parser("Теньковский Дмитрий Викторович", "7731031078", None, "ЗАКРЫТОЕ АКЦИОНЕРНОЕ ОБЩЕСТВО 'НЕДРА'")
-            #     data = p.get_result()
-            #     self.__save_data(data)
-
-            # if parser.url == 'https://kad.arbitr.ru/':
-            #     p = KadArbitr_Parser("Теньковский Дмитрий Викторович", "7731031078", None, "ЗАКРЫТОЕ АКЦИОНЕРНОЕ ОБЩЕСТВО 'НЕДРА'")
-            #     data = p.get_result()
-            #     self.__save_data(data)
-                
-            if parser.url == 'http://xn--h1akkl.xn--p1ai/':
-                p = Fcin_Parser("Теньковский Дмитрий Викторович", "7731031078", None, "ЗАКРЫТОЕ АКЦИОНЕРНОЕ ОБЩЕСТВО 'НЕДРА'")
                 self.__save_data(p.get_result())
 
 

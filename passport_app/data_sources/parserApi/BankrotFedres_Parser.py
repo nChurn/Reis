@@ -4,14 +4,15 @@ import requests
 from passport_app.data_sources.parserApi.BaseParserApi import *
 
 class BankrotFedres_Parser(BaseParserApi):
-    def __init__(self, fio, inn, ogrn, name):
-        super.__init__(fio, inn, orgn, name)
+    def __init__(self, fio, inn, orgn, name):
+        print("start BankrotFedres")
+        super().__init__(fio, inn, orgn, name)
         self.url = 'getBankrot'
 
     def get_request_data(self):
         return self.get_request_data_default()
     
-    def _get_dict_from_resp(self, json_obj):
+    def get_dict_from_resp(self, json_obj):
         data = json_obj['result']['info']
 
         result = {}

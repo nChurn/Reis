@@ -5,6 +5,7 @@ from passport_app.data_sources.parserApi.BaseParserApi import *
 
 class PbNalog_Parser(BaseParserApi):
     def __init__(self, fio, inn, ogrn, name):
+        print("start PbNalog")
         super().__init__(fio, inn, ogrn, name)
         self.url = 'getNalog'
 

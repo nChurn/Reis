@@ -57,6 +57,7 @@ class Unit(models.Model):
 
 class Owner(models.Model):
     name = models.CharField(max_length=255)
+    inn = models.CharField(max_length=255)
     patronymic = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
 

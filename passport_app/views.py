@@ -861,8 +861,7 @@ class SearchView(FormView):
         params = create_property_dict()
 
         try:
-            match = re.search("\d{1,3}\:\d{1,3}\:\d{1,8}\:\d{1,7}",
-                              search_param)  # Get all IPs line by line
+            match = re.search("\d{1,3}\:\d{1,3}\:\d{1,8}\:\d{1,7}", search_param)  # Get all IPs line by line
             base_address = ""
             params['base'] = {}
             kadastr_number = search_param
@@ -874,10 +873,18 @@ class SearchView(FormView):
                 address = search_param
 
             base_address = yandex_get_address_data(address)
+
             logger.error('base address')
             logger.error(base_address['point'])
             logger.error(base_address['text_address'])
+            
             owner = Owner()
+
+            match = re.search("\d{12}", form['owner'].value())
+            if not match:
+                owner.name = form['owner'].value()
+            else:
+                owner.inn = form['owner'].value()
             owner.save()
 
             real_estate = RealEstate()

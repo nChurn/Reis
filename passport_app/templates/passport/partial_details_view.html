@@ -1,4 +1,3 @@
-{% comment %}
 {% for category in real_property.categories.all %}
 <div class="accordion" id="accordion-{{data_item.classifier.id}}">
     <div class="card">
@@ -19,13 +18,11 @@
                             {%include template_name%}
                         {%endwith%}
                     {% endfor %}
-                {% endif %}
-                
+                {% endif %}                
             </div>
         </div>
     </div>
 </div>
 {% endfor %}
-{% endcomment %}
 
 {% include 'passport/category_tree.html' %}

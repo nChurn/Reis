@@ -3,7 +3,8 @@
         <div class="card-header" id="card-{{category_item.category.id}}">
             <h2 class="mb-0 button-label-color">
                 <button class="btn btn-link collapsed" style="color: #006c32;width:100%" type="button" data-toggle="collapse" 
-                    data-target="#collapse-{{category_item.category.id}}" aria-expanded="false" aria-controls="collapse-{{category_item.category.id}}">
+                    data-target="#collapse-{{category_item.category.id}}" aria-expanded="false" aria-controls="collapse-{{category_item.category.id}}"
+                    id="btn-collapse-{{category_item.category.id}}">
                     <div class="row" style="white-space: normal important!">
                         <div class="col-auto text-left">
                             {{ category_item.category.point }}
@@ -23,7 +24,7 @@
         </div>
 
         <div id="collapse-{{category_item.category.id}}" class="collapse" aria-labelledby="card-{{category_item.category.id}}"
-            data-parent="#accordion-{{category_item.category.id}}">
+            data-parent="#accordion-{{category_item.category.id}}__magic_text"> <!-- Without '__magic_text' it won't work -->
             <div class="card-body">
                 {% for child_item in category_item.categories %}                    
                     {%with category_item=child_item parent_item_id=category_item.id template_name="passport/category_node.html" %}
@@ -51,4 +52,21 @@
         </div>
     </div>
 </div>
+
+<script>
+    $('#btn-collapse-{{category_item.category.id}}').click(function(e){
+        // console.log(e)
+
+        // if ($('#collapse-{{category_item.category.id}}').hasClass('show')){
+        //     e.preventDefault()
+        //     $("#collapse-{{category_item.category.id}}").collapse('hide');
+        // }
+    })
+
+    $("#accordion-{{category_item.category.id}}").on('shown.bs.collapse', function(e) {
+        // if ($('#collapse-{{category_item.category.id}}').hasClass('show')){
+        //     e.preventDefault()
+        // }
+    });
+</script>
 
