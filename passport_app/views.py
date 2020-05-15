@@ -534,7 +534,8 @@ class DetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
         data = []
         try:
             if categories.exists():
-                for cat in categories.order_by('id').all():
+                for cat in categories.extra(select={'myinteger': 'CAST(comment AS INTEGER)'}
+            ).order_by('myinteger').all():
                     cat_data = {}
                     cat_data['category'] = cat
                     cat_data['formula'] = FormulaCategory.objects.filter(
@@ -577,13 +578,14 @@ class DetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
             real_property = get_object_or_404(RealEstate, id=pk)
 
             if real_property.search_form and real_property.search_form.categories:
-                categories = real_property.search_form.categories.order_by('id').filter(
+                categories = real_property.search_form.categories.filter(
                     parent_categories=None)
             else:
                 search_form = SearchForm.objects.get(name='default')
                 categories = search_form.categories.filter(parent_categories=None)
 
-            cat_data = self.get_form_category_data(categories, real_property)
+            cat_data = self.get_form_category_data(
+                categories.extra(select={'myinteger': 'CAST(comment AS INTEGER)'}).order_by('myinteger'), real_property)
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]

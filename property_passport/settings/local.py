@@ -72,7 +72,7 @@ DATABASES = {
 
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'tests',
+        'NAME': 'xgb_dbreis',
         'USER': 'postgres',
         'PASSWORD': 'root',
         'HOST': 'localhost',

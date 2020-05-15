@@ -50,6 +50,7 @@ def create_category(wsheet, row):
     category.name_ru = wsheet.cell(row, 2).value
     category.name = wsheet.cell(row, 3).value
     category.point = index
+    category.comment = index.replace(".", "")
     category.save()
 
     if len(index.split('.')) > 1:

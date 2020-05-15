@@ -73,7 +73,7 @@ class Pkk_Rosreestr_Parser:
             #вид
             data_params['oks_type'] = self.__get_value_from_dict(oks_types, self.__get_value_or_empty(attrs, 'oks_type'))
             #Назначение
-            data_params['oks_purpose'] = ''#TODO check in reformagkh
+            data_params['oks_purpose'] = ''
             #Кадастровая стоимость
             data_params['oks_kadastr_cost'] = self.__get_value_or_empty(attrs, 'cad_cost')
             #Общая площадь
