@@ -167,9 +167,11 @@ class CategoriesSearch(LoginRequiredMixin, View):
 
         try:
             category_name = self.kwargs['name']
-            categories = Category.objects.filter(name = category_name).order_by('id')           
+            categories = Category.objects.filter(name = category_name).extra(select={'myinteger': 'CAST(comment AS INTEGER)'}
+            ).order_by('myinteger')           
         except:
-            categories = Category.objects.filter(parent_categories = None).order_by('id')
+            categories = Category.objects.filter(parent_categories = None).extra(select={'myinteger': 'CAST(comment AS INTEGER)'}
+            ).order_by('myinteger')
 
         form = CategoryForm()
         html = render_to_string('category/category_container.html', {'categories': categories, 'form': form}, request=request)
@@ -252,7 +254,8 @@ class CategoriesParent(LoginRequiredMixin, View):
         try:
             category_id = self.kwargs['parent']
             category = Category.objects.get(id = category_id)
-            categories = category.categories.all().order_by('point')           
+            categories = category.categories.extra(select={'myinteger': 'CAST(comment AS INTEGER)'}
+            ).order_by('myinteger').all()           
         except:      
             pass
 

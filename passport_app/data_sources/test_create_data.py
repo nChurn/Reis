@@ -1,6 +1,8 @@
 import os
 import sys
 import django
+import requests
+
 sys.path.append("D:\Work Projects\passport_app\property_passport")
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'property_passport.settings')
 django.setup()
@@ -133,4 +135,3 @@ for c in categories:
     search_form.categories.add(c)
 
 search_form.save()
-    

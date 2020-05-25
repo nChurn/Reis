@@ -78,6 +78,16 @@ DATABASES = {
         'HOST': 'localhost',
         'PORT': 5433,
     }
+
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    #     'NAME': 'xgb_dbreis',
+    #     'HOST': 'postgres72.1gb.ru',
+    #     'USER': 'xgb_dbreis',
+    #     'PASSWORD': 'ae554776789',
+    #     'PORT': '5432',
+    #     'ATOMIC_REQUESTS': True,
+    # }
 }
 
 

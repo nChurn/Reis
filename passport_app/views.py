@@ -535,11 +535,12 @@ class DetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
         try:
             if categories.exists():
                 for cat in categories.extra(select={'myinteger': 'CAST(comment AS INTEGER)'}
-            ).order_by('myinteger').all():
+                        ).order_by('myinteger').all():
                     cat_data = {}
                     cat_data['category'] = cat
                     cat_data['formula'] = FormulaCategory.objects.filter(
                         category=cat).first
+                    cat_data['rate'] = -1
                     cat_data['parameters'] = []
                     cat_data['categories'] = self.get_form_category_data(
                         cat.categories, real_estate)
@@ -586,6 +587,8 @@ class DetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
 
             cat_data = self.get_form_category_data(
                 categories.extra(select={'myinteger': 'CAST(comment AS INTEGER)'}).order_by('myinteger'), real_property)
+
+            self.calc_rating(cat_data)
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
@@ -598,6 +601,31 @@ class DetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
             'real_property': real_property,
             'data': cat_data
         })
+
+    def calc_rating(self, category_data, parent_categorories_count = 0):
+        try:
+            for category in category_data:
+                if len(category['categories']) == 0:
+                    ratio = 1 if self.has_any_data(category) else 0
+                    category['rate'] = ratio * (5 / parent_categorories_count)
+                    category['formula'] = str(ratio) + '*' + '(' + str(parent_categorories_count) + '/5)'
+                else:
+                    self.calc_rating(category['categories'], len(category['categories']))
+
+                    category['rate'] = sum(x['rate'] for x in category['categories'])# / len(category['categories'])
+        except Exception as e:
+            print(e)
+
+    def has_any_data(self, category):
+        # if len(category['parameters']) == 0:
+        #     return False
+
+        # for param in category['parameters']:
+        #     if param['data']['value'] == '' or \
+        #         param['data']['value'] == 0:
+        #         return False
+
+        return True
 
 
 class DetailsUpdateView(LoginRequiredMixin, PermissionRequiredMixin, View):
