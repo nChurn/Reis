@@ -18,7 +18,7 @@
     <label> {{category_item.point}} {{category_item.name_ru}} </label>
         {% if category_item.categories and category_item.categories.all.count > 0 %}    
         <ul>
-            {% for category_child_item in category_item.categories.all %}            
+            {% for category_child_item in category_item.categories.all|category_sort_by_point %}            
                 {%with category_item=category_child_item parent_item_id=category_item.id parent_parent_id=parent_item_id template_name="search_form/form_category_child.html" %}
                     {%include template_name%}
                 {%endwith%}
@@ -34,16 +34,10 @@
         var parent_parent_id = '{{parent_parent_id}}'
         
         $('#category-'+parent_id+'-'+category_id).on('click', function(event){            
-        
             let parent_checkbox = $('#category-'+parent_parent_id+"-"+parent_id);
-            
             let is_checked = $(this).prop("checked") == true
-        
-            if (parent_checkbox){
+            if (parent_checkbox)
                 parent_checkbox.attr("checked", is_checked);
-            }    
-       
-            
         });
     });
 </script>

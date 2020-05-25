@@ -22,9 +22,19 @@ class SearchFormUpdate(UpdateView):
         pk = self.kwargs['pk']
         search_form = get_object_or_404(SearchForm, id=pk)
         form = FormSearchForm(instance=search_form)
-        categories = Category.objects.filter(parent_categories = None)
-        form_categories = search_form.categories
-        html = render_to_string('search_form/partial_modal_edit.html', {'form': form, 'id':search_form.id, 'categories':categories, 'form_categories':form_categories}, request=request)
+        categories = Category.objects.filter(parent_categories = None). \
+            extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
+            order_by('int_point')
+        form_categories = search_form.categories.\
+            extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
+            order_by('int_point')
+
+        html = render_to_string('search_form/partial_modal_edit.html', {
+                'form': form,
+                'id':search_form.id, 
+                'categories':categories,
+                'form_categories':form_categories
+            }, request=request)
         return HttpResponse(html)
 
 class SearchFormDelete(DeleteView):
@@ -43,7 +53,9 @@ class SearchFormSearch(LoginRequiredMixin, View):
             searchforms = SearchForm.objects.all()  
             pass
         form = FormSearchForm(user=request.user)
-        categories = Category.objects.filter(parent_categories = None)
+        categories = Category.objects.filter(parent_categories = None). \
+            extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
+            order_by('int_point')
         html = render_to_string('search_form/form_container.html', {'search_forms': searchforms, 'form': form, 'categories':categories, 'form_categories':[]}, request=request)
         return HttpResponse(html)
 
@@ -67,48 +79,7 @@ class ViewFormSearch(LoginRequiredMixin, View):
                 }
                 view_data['categories'].append(category_data)
 
-        return view_data
-
-    def set_category_view_data(self, params, categories):
-        print(params)
-        if categories.exists():
-            for form_cat_item in categories.all():
-                formula_list = FormulaCategory.objects.filter(category = form_cat_item)
-                if formula_list.exists() :
-                    for formula_cat in formula_list:
-                        val_name = "category_value_%i" % (formula_cat.id)
-                        val = params.get(val_name, None)
-                        print(val_name)
-                        print(val)
-                        if val:
-                            formula_cat.value = val
-
-                        rate_name = "category_rate_%i" % (formula_cat.id)
-                        rate = params.get(rate_name, None)
-                        print(rate_name)
-                        print(rate)
-                        if rate:
-                            formula_cat.rate = rate
-
-                        formula_name = "category_formula_%i" % (formula_cat.id)
-                        formula = params.get(formula_name, None)
-                        print(formula_name)
-                        print(formula)
-
-                        if formula:
-                            formula_cat.formula = formula                        
-                        formula_cat.save()
-
-                params_list = FormulaParameterCategory.objects.filter(category = form_cat_item)
-                if params_list.exists():
-                    for formula_param in params_list:
-
-                        formula_name = "parameter_formula_%i" % (formula_param.id)
-                        parameter_formula = params.get(formula_name, None)
-                        if parameter_formula:
-                            formula_param.formula = parameter_formula
-                            formula_param.save()
-        
+        return view_data            
 
     def get(self, request, *args, **kwargs):
         pk = self.kwargs['pk']
@@ -128,11 +99,66 @@ class ViewFormSearch(LoginRequiredMixin, View):
         html = render_to_string('search_form/view_form_content.html', {
             'form': form, 
             'id':search_form.id, 
-            'categories':categories, 
-            'form_categories':form_categories, 
+            #'categories':categories, 
+            # 'form_categories': form_categories, 
             'view_data': view_data
         }, request=request)
         return HttpResponse(html)
+
+    def set_category_view_data(self, params, categories):        
+        if categories.exists():
+            for form_cat_item in categories.all():
+                #create data
+                new_formula = FormulaCategory()
+                new_formula.category = form_cat_item
+                val_name = "formula_rate_create_%i" % (form_cat_item.id)
+                rate = params.get(val_name, None)
+                if rate:
+                    new_formula.rate = rate
+
+                rate_name = "formula_amount_create_%i" % (form_cat_item.id)
+                amount = params.get(rate_name, None)
+                if rate:
+                    new_formula.amount = amount
+
+                formula_name = "formula_create_%i" % (form_cat_item.id)
+                formula = params.get(formula_name, None)
+
+                if formula:
+                    new_formula.formula = formula                        
+                if amount or rate or formula:
+                    new_formula.save()
+
+                #update data
+                formula_list = FormulaCategory.objects.filter(category = form_cat_item)
+                if formula_list.exists():
+                    for formula_cat in formula_list:
+                        val_name = "formula_rate_%i" % (formula_cat.id)
+                        val = params.get(val_name, None)
+                        if val:
+                            formula_cat.rate = val
+
+                        rate_name = "formula_amount_%i" % (formula_cat.id)
+                        rate = params.get(rate_name, None)
+                        if rate:
+                            formula_cat.amount = rate
+
+                        formula_name = "formula_%i" % (formula_cat.id)
+                        formula = params.get(formula_name, None)
+
+                        if formula:
+                            formula_cat.formula = formula                        
+                        formula_cat.save()
+
+
+                params_list = FormulaParameterCategory.objects.filter(category = form_cat_item)
+                if params_list.exists():
+                    for formula_param in params_list:
+                        formula_name = "parameter_formula_%i" % (formula_param.id)
+                        parameter_formula = params.get(formula_name, None)
+                        if parameter_formula:
+                            formula_param.formula = parameter_formula
+                            formula_param.save()
 
     def post(self, request, *args, **kwargs):
         pk = self.kwargs['pk']

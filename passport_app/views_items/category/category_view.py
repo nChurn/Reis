@@ -233,7 +233,6 @@ class CategoriesAddView(LoginRequiredMixin, View):
         return redirect('/constructor/#v-pills-category')
 
 class CategoriesDeleteView(LoginRequiredMixin, View):
-
     def post(self, request, *args, **kwargs):        
         cateory_id = self.kwargs['category_pk']
         child_category_id = self.kwargs['child_category_pk']

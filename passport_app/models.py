@@ -232,11 +232,8 @@ class ParserParameterData(models.Model):
     parser_parameter = models.ForeignKey(ParserParameter, on_delete=models.CASCADE)
 
 class FormulaCategory(models.Model):
-    value_label = models.CharField(max_length=15, default='', unique=True)
-    value = models.CharField(max_length=255, default='')
-    rate_label = models.CharField(max_length=15, default='', unique=True)
     rate = models.CharField(max_length=255, default='')
-    formula_lbl = models.CharField(max_length=15, default='', unique=True)
+    amount = models.CharField(max_length=255, default='')
     formula = models.CharField(max_length=255, default='')
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     

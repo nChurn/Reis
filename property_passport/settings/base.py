@@ -146,6 +146,8 @@ EMAIL_PORT = 587
 EMAIL_HOST_USER = 'baibakepc@gmail.com'
 EMAIL_HOST_PASSWORD = 'cgS^Xv!Cc1Fn'
 
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000
+
 # FONTAWESOME_CSS_URL = '//cdn.example.com/fontawesome-min.css'  # absolute url
 # # FONTAWESOME_CSS_URL = 'myapp/css/fontawesome.min.css'  # relative url
 # FONTAWESOME_PREFIX = 'bg'

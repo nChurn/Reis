@@ -1,54 +1,57 @@
 <ul>
     {% for category_item in view_data.categories %}
     <li>
-        <label>
+        <label class="font-weight-bold">
             <span>{{category_item.category.point}}</span>
             {{category_item.category.name_ru}}
         </label>
-        {% if category_item.formula %}   
-            {% for formula in category_item.formula.all %} 
+        <div class="form-row">      
+            <div class="col-md-4">
+                <label>Коэффициент (x)</label>
+            </div>
+            <div class="col-md-4">
+                <label>Кол-во строк в категории (y)</label>
+            </div>      
+            <div class="col-md-4">                                     
+                <label>Формула</label>
+            </div>             
+        </div>
+
+        {% if category_item.formula %}
+        {% for formula in category_item.formula %}
             <div class="form-row">      
                 <div class="col-md-4">
-                    <label>Значение - {{formula.value_label}}</label>
+                    <input type="text" name="formula_rate_{{formula.id}}" value="{{formula.rate}}" class="form-control formula-form-view">
                 </div>
                 <div class="col-md-4">
-                    <label>Рейтинг - {{formula.rate_label}}</label>
+                    <input type="text" name="formula_amount_{{formula.id}}" value="{{formula.amount}}"class="form-control formula-form-view">
                 </div>      
                 <div class="col-md-4">                                     
-                    <label>Формула - {{formula.formula_lbl}}</label>
+                    <input type="text" name="formula_{{formula.id}}" value="{{formula.formula}}" class="form-control formula-form-view">       
                 </div>             
             </div>
+        {% endfor %}
+        {% else %}
             <div class="form-row">      
-                <div class="col-md-4" id = "col_{{formula.value_label}}">
-                    <input type="text" name="category_value_{{formula.id}}" value="{{formula.value}}" id="{{formula.value_label}}" class="form-control formula-form-view" style="width: 70%; display: inline;">
+                <div class="col-md-4">
+                    <input type="text" name="formula_rate_create_{{category_item.category.id}}" class="form-control formula-form-view">
                 </div>
-                <div class="col-md-4" id = "col_{{formula.rate_label}}">
-                    <input type="text" name="category_rate_{{formula.id}}" value="{{formula.rate}}" id="{{formula.rate_label}}" class="form-control formula-form-view" style="width: 70%; display: inline;">
+                <div class="col-md-4">
+                    <input type="text" name="formula_amount_create_{{category_item.category.id}}" class="form-control formula-form-view">
                 </div>      
-                <div class="col-md-4" id = "col_{{formula.formula_lbl}}">                                     
-                    <input type="text" name="category_formula_{{formula.id}}" value="{{formula.formula}}" id="{{formula.formula_lbl}}" class="form-control formula-form-view" style="width: 70%; display: inline;">       
+                <div class="col-md-4">                                     
+                    <input type="text" name="formula_create_{{category_item.category.id}}" class="form-control formula-form-view">       
                 </div>             
-            </div>
-            {% endfor %}
+            </div>            
         {% endif %}
-        
+
+        <!-- это пока не работает -->
         {% if category_item.formula_parameters %} 
             <label>Параметры:</label>
             <ul>
                 {% for param_item in category_item.formula_parameters %}
                 <li>
                     <label>{{param_item.parameter.name_ru}}</label>
-                    <!-- <div class="form-row">      
-                            <div class="col-md-4">
-                                <label>Значение - {{param_item.value_label}}</label>
-                            </div>
-                            <div class="col-md-4">
-                                <label>Рейтинг - {{param_item.rate_label}}</label>
-                            </div>      
-                            <div class="col-md-4">                                     
-                                <label>Формула - {{param_item.formula_label}}</label>
-                            </div>             
-                    </div> -->
                     <div class="form-row">   
                         <div class="col-md-4" id = "col_{{param_item.value_label}}">
                             <input type="text" name="parameter_value_{{param_item.id}}" value="{{param_item.value}}" id="{{param_item.value_label}}" readonly class="form-control formula-form-view" style="width: 70%; display: inline;">
@@ -65,9 +68,9 @@
             </ul>            
         {% endif %}
         
-        {%with view_data=category_item.categories template_name="search_form/view_form_node.html" %}
-            {%include template_name%}
-        {%endwith%}
+        {% with view_data=category_item.categories template_name="search_form/view_form_node.html" %}
+            {% include template_name %}
+        {% endwith %}
     </li>        
     {% endfor %}
 </ul>

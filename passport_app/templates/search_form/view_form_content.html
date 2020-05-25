@@ -1,4 +1,4 @@
-<form action="/forms/{{id}}/view/" method="post">
+<form id="search-form-formula-update__modal" action="/forms/{{id}}/view/" method="post">
     {% csrf_token %}
     {% include 'search_form/view_form_node.html' %}
     <div class="modal-footer">
@@ -6,78 +6,3 @@
         <button type="submit" class="btn btn-primary">Сохранить</button>
     </div>
 </form>   
-
-{% block javascript %}
-<script>
-
-    $(document).ready(function() {
-        var is_edit = false;
-        var formula_input_id = "";
-        var prev_formula = ""; 
-        var temp_formula = "";        
-
-        $('#search-form-modal-view').find('input').on('focusin', function() {            
-            var value = $(this).val();
-            if (!is_edit){
-                if ($(this).attr('name').includes('parameter_value') || $(this).attr('name').includes('parameter_rate'))
-                {
-                    value = "";
-                    return;
-                }
-                is_edit = true;
-                formula_input_id = $(this).attr('id');
-                prev_formula = $(this).val();
-                $(this).val("="); 
-                value = $(this).val(); 
-                temp_formula = value;
-                
-                var $btn_accept = $('<button />', {
-                    class:'btn btn-light',
-                    type: 'button',
-                    text: '',
-                    id: 'btn_accept_'+formula_input_id
-                }).click(function(){
-                    is_edit = false;
-                    $("#"+formula_input_id).val(temp_formula.replace("=", ""));
-                    $(this).remove();
-                    $('#btn_cancel_'+formula_input_id).remove();
-                });
-
-                var icon = document.createElement("i");
-                icon.className ="fa fa-check";
-                $btn_accept.append(icon);
-
-                var $btn_cancel = $('<button />', {
-                    class:'btn btn-light m-1',
-                    type: 'button',
-                    text: '',
-                    id: 'btn_cancel_'+formula_input_id
-                }).click(function(){
-                    is_edit = false;
-                    $("#"+formula_input_id).val(prev_formula);
-                    $(this).remove();
-                    $('#btn_accept_'+formula_input_id).remove();
-                });     
-                var icon_cancel = document.createElement("i");
-                icon_cancel.className ="fa fa-close";         
-                $btn_cancel.append(icon_cancel);
-
-                $("#col_"+formula_input_id).append($btn_accept);
-                $("#col_"+formula_input_id).append($btn_cancel);
-            }
-            else{
-                if (formula_input_id == $(this).attr('id')){
-                    
-                }
-                else{
-                    var str = $(this).attr('id');
-                    temp_formula = $("#"+formula_input_id).val()
-                    temp_formula += str;
-                    $("#"+formula_input_id).val(temp_formula);
-                }
-            }
-        });
-    })
-
-</script>
-{% endblock %}
