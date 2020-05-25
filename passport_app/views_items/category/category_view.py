@@ -167,11 +167,13 @@ class CategoriesSearch(LoginRequiredMixin, View):
 
         try:
             category_name = self.kwargs['name']
-            categories = Category.objects.filter(name = category_name).extra(select={'myinteger': 'CAST(comment AS INTEGER)'}
-            ).order_by('myinteger')           
+            categories = Category.objects.filter(name = category_name). \
+                extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
+                order_by('int_point')           
         except:
-            categories = Category.objects.filter(parent_categories = None).extra(select={'myinteger': 'CAST(comment AS INTEGER)'}
-            ).order_by('myinteger')
+            categories = Category.objects.filter(parent_categories = None). \
+                extra(select={'myinteger': "CAST(replace(point, '.', '') AS INTEGER)"}). \
+                order_by('myinteger')
 
         form = CategoryForm()
         html = render_to_string('category/category_container.html', {'categories': categories, 'form': form}, request=request)
@@ -254,8 +256,9 @@ class CategoriesParent(LoginRequiredMixin, View):
         try:
             category_id = self.kwargs['parent']
             category = Category.objects.get(id = category_id)
-            categories = category.categories.extra(select={'myinteger': 'CAST(comment AS INTEGER)'}
-            ).order_by('myinteger').all()           
+            categories = category.categories. \
+                extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
+                order_by('int_point').all()           
         except:      
             pass
 

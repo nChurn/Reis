@@ -48,7 +48,6 @@ class SearchFormSearch(LoginRequiredMixin, View):
         return HttpResponse(html)
 
 class ViewFormSearch(LoginRequiredMixin, View):
-
     def get_category_view_data(self, categories):
         view_data = {}
         view_data['categories'] = []
@@ -57,8 +56,15 @@ class ViewFormSearch(LoginRequiredMixin, View):
             for form_cat_item in categories.all():
                 formula_list = FormulaCategory.objects.filter(category = form_cat_item)
                 formula_parametrs = FormulaParameterCategory.objects.filter(category = form_cat_item)
-                child_categories =  self.get_category_view_data(form_cat_item.categories)
-                category_data = { 'formula': formula_list, 'formula_parameters': formula_parametrs, 'category': form_cat_item, 'categories': child_categories}
+                child_categories =  self.get_category_view_data(form_cat_item.categories. \
+                    extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
+                    order_by('int_point'))
+                category_data = { 
+                    'formula': formula_list, 
+                    'formula_parameters': formula_parametrs, 
+                    'category': form_cat_item, 
+                    'categories': child_categories
+                }
                 view_data['categories'].append(category_data)
 
         return view_data
@@ -67,7 +73,6 @@ class ViewFormSearch(LoginRequiredMixin, View):
         print(params)
         if categories.exists():
             for form_cat_item in categories.all():
-
                 formula_list = FormulaCategory.objects.filter(category = form_cat_item)
                 if formula_list.exists() :
                     for formula_cat in formula_list:
@@ -109,20 +114,24 @@ class ViewFormSearch(LoginRequiredMixin, View):
         pk = self.kwargs['pk']
         search_form = get_object_or_404(SearchForm, id=pk)
         form = FormSearchForm(instance=search_form) 
-        categories = Category.objects.filter(parent_categories = None)
-        form_categories = search_form.categories
-        view_category = search_form.categories.filter(parent_categories = None)
+        categories = Category.objects.filter(parent_categories = None). \
+            extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
+            order_by('int_point') 
+        form_categories = search_form.categories. \
+            extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
+            order_by('int_point') 
+        view_category = search_form.categories.filter(parent_categories = None). \
+            extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
+            order_by('int_point')     
         view_data = self.get_category_view_data(view_category)
         
-        # html = render_to_string('search_form/form_container.html', { 'search_forms': searchforms, 'form': form, 'categories':categories, 'form_categories':form_categories, 
-        # 'view_form_categories':view_data}, request=request)
-        # return HttpResponse(html)
-
-        html = render_to_string('search_form/view_form_content.html', {'form': form, 
-        'id':search_form.id, 
-        'categories':categories, 
-        'form_categories':form_categories, 
-        'view_data': view_data}, request=request)
+        html = render_to_string('search_form/view_form_content.html', {
+            'form': form, 
+            'id':search_form.id, 
+            'categories':categories, 
+            'form_categories':form_categories, 
+            'view_data': view_data
+        }, request=request)
         return HttpResponse(html)
 
     def post(self, request, *args, **kwargs):

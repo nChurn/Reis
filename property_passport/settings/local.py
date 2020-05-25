@@ -70,6 +70,7 @@ DATABASES = {
     #     'PORT': 5432,
     # }
 
+    #local dev
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'xgb_dbreis',
@@ -79,6 +80,7 @@ DATABASES = {
         'PORT': 5433,
     }
 
+    #remote dev
     # 'default': {
     #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
     #     'NAME': 'xgb_dbreis',

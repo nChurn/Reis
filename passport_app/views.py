@@ -534,8 +534,9 @@ class DetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
         data = []
         try:
             if categories.exists():
-                for cat in categories.extra(select={'myinteger': 'CAST(comment AS INTEGER)'}
-                        ).order_by('myinteger').all():
+                for cat in categories. \
+                    extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
+                    order_by('int_point').all():
                     cat_data = {}
                     cat_data['category'] = cat
                     cat_data['formula'] = FormulaCategory.objects.filter(
