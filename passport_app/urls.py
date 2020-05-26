@@ -16,6 +16,7 @@ from passport_app.views_items.search_form.search_form import *
 from passport_app.views_items.parser.parser_type_view import *
 from passport_app.views_items.type_of_value.type_of_value_view import *
 from passport_app.views_items.parameter_data.parameter_data_view import *
+from passport_app.views_items.details.details_view import *
 from django_select2.forms import *
 
 app_name = 'passport_app'

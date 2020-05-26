@@ -128,6 +128,7 @@ class ViewFormSearch(LoginRequiredMixin, View):
                     new_formula.formula = formula                        
                 if amount or rate or formula:
                     new_formula.save()
+                    continue
 
                 #update data
                 formula_list = FormulaCategory.objects.filter(category = form_cat_item)
@@ -151,6 +152,8 @@ class ViewFormSearch(LoginRequiredMixin, View):
                         formula_cat.save()
 
 
+                #update parameter formulas
+                #пока не работает
                 params_list = FormulaParameterCategory.objects.filter(category = form_cat_item)
                 if params_list.exists():
                     for formula_param in params_list:
