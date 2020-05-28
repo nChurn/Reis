@@ -160,7 +160,7 @@ class Category(models.Model):
     name = models.CharField(max_length=255, default='')#, unique=True)
     name_ru = models.CharField(max_length=255, default='')    
     comment = models.CharField(max_length=255, default='', blank=True)
-    point = models.CharField(max_length=20, default='')
+    point = models.CharField(max_length=20, default='', blank=True, null=True)
     categories = models.ManyToManyField("self", related_name='childs', symmetrical=False, blank=True, null=True)
     parameters = models.ManyToManyField(Parameter, blank=True, null=True)
     parent_categories = models.ManyToManyField("self", related_name='parent', symmetrical=False, blank=True, null=True)

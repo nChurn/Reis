@@ -38,8 +38,13 @@
                         <label>Пункт</label>
                     </div>  
                     <div class="form-row">
-                        {{ form.point }}                        
+                        {{ form.point }}    
+                        <small class="text-muted">
+                            {{ form.point.help_text }}
+                        </small>   
                     </div>
+                
+
 
                     <div class="form-row">
                             <label>Комментарий</label>

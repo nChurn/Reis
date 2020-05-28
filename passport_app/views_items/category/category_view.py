@@ -47,24 +47,31 @@ class CategoryCreate(CreateView):
 
         try:
             category = Category.objects.get(name = request.POST['name'])
-            if parents_ids:    
-                if isinstance(parents_ids, list):     
-                    for parent_id in parents_ids:
-                        parent = Category.objects.get(id = parent_id)
-                        if parent:
-                            category.save()                        
-                            parent.categories.add(category)
-                            parent.save()
-                            print(parent.categories)
-                            category.parent_categories.add(parent)                        
-                else:
-                    parent = Category.objects.get(id = parents_ids)
+            if len(parents_ids) > 0:     
+                for parent_id in parents_ids:
+                    parent = Category.objects.get(id = parent_id)
                     if parent:
                         category.save()                        
                         parent.categories.add(category)
+                        if category.point is None:
+                            if parent.categories.count() > 1:
+                                children = parent.categories.extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
+                                    order_by('int_point').all()
+                                arr = [x for x in children if x.id != category.id][-1].point.split('.')
+                                arr[-1] = str(int(arr[-1]) + 1)
+                                category.point = ".".join(arr)
+                            else:
+                                category.point = parent.point + '.1'
+
                         parent.save()
                         print(parent.categories)
                         category.parent_categories.add(parent)                        
+            else:
+                children = Category.objects.filter(parent_categories = None).extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
+                                    order_by('int_point').all()
+                if children:
+                    p = [x for x in children if x.id != category.id][-1].point
+                    category.point = int(p) + 1
 
             category.save()            
         except Exception as e:

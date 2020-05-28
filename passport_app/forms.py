@@ -230,6 +230,8 @@ class CategoryForm(forms.ModelForm):
             {'class': 'textinput textInput form-control'})
         self.fields['point'].widget.attrs.update(
             {'class': 'textinput textInput form-control'})
+        self.fields['point'].help_text = 'Оставьте пустым чтобы поле заполнилось автоматически'
+        self.fields['point'].required = False
 
     class Meta:
         model = Category
