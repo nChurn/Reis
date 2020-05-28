@@ -10,10 +10,10 @@ from passport_app.print_exception import *
 logger = logging.getLogger(__name__)
 
 class YandexMapsAPI:
-    __real_estate : RealEstate
-    api_key = ''
-    places_api_key = 'c687c609-ae0e-4b12-8d9a-aab953d8642f'
-    is_send_email = False
+    # __real_estate : RealEstate
+    # api_key = ''
+    # places_api_key = 'c687c609-ae0e-4b12-8d9a-aab953d8642f'
+    # is_send_email = False
 
     def __init__(self, real_estate: RealEstate, api_key, places_api_key, is_send_email):
         self.__real_estate = real_estate

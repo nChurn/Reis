@@ -10,9 +10,9 @@ from passport_app.print_exception import *
 logger = logging.getLogger(__name__)
 
 class GoogleMapsAPI:
-    __real_estate : RealEstate
-    api_key = ''
-    is_send_email = False
+    # __real_estate : RealEstate
+    # api_key = ''
+    # is_send_email = False
 
 
     def __init__(self, real_estate: RealEstate, api_key, is_send_email):

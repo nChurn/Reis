@@ -106,14 +106,16 @@ def __calc_category_sum(category_points, category_data):
     items = []
     for item in category_data:
         if item['point'] in category_points:
-            items.append(item['rate'])
+            if item['rate'] is not None:
+                items.append(float(item['rate']))
     return sum(items)
 
 def __calc_category_average(category_points, category_data):
     items = []
     for item in category_data:
         if item['point'] in category_points:
-            items.append(item['rate'])
+            if item['rate'] is not None:
+                items.append(float(item['rate']))
     return sum(items) / len(items)
 
 def calc_formula_obj(formula_obj, category_data):
@@ -130,7 +132,7 @@ def calc_formula_obj(formula_obj, category_data):
 
         check = re.match(r'avrg\((.*?)\)', formula)
         if check and category_data is not None:
-            _sum = __calc_category_average(__parse_category_points(check.group(1)))
+            _sum = __calc_category_average(__parse_category_points(check.group(1)), category_data)
             formula = formula.replace(check.group(0), str(_sum))
 
         return calc(formula)

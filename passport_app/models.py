@@ -246,3 +246,10 @@ class FormulaParameterCategory(models.Model):
     formula = models.CharField(max_length=255, default='')
     parameter = models.ForeignKey(Parameter, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+
+
+class RateClassifier(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    min_rate = models.FloatField()
+    max_rate = models.FloatField()
+    label = models.CharField(max_length=300)

@@ -123,15 +123,45 @@ def delete_all():
     Parameter.objects.all().delete()
     ParserParameter.objects.all().delete()
 
-delete_all()
-start(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 1, категории для загрузки.xlsx")
-start(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 2, категории для загрузки.xlsx")
-start(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 3, категории для загрузки.xlsx")
+def create_formulas(category: Category, parent_category: Category):
+    if category.categories.count() != 0:
+        for cat in category.categories.all():
+            create_formulas(cat, category)
 
-categories = Category.objects.all()
-search_form = SearchForm.objects.get(name= 'default')
+        formula = FormulaCategory()
+        formula.category = category
 
+        arr = category.point.split('.')
+        if len(arr) == 2:
+            formula.formula = 'avrg(%s-%s)' % (category.categories.first().point, category.categories.last().point)
+        else:
+            formula.formula = 'sum(%s-%s)' % (category.categories.first().point, category.categories.last().point)
+        
+        formula.save()
+    else:
+        formula = FormulaCategory()
+        formula.category = category
+        formula.rate = 5
+        formula.amount = parent_category.categories.count()
+        formula.formula = 'x/y'
+
+        formula.save()
+
+
+# delete_all()
+# start(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 1, категории для загрузки.xlsx")
+# start(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 2, категории для загрузки.xlsx")
+# start(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 3, категории для загрузки.xlsx")
+
+# categories = Category.objects.all()
+# search_form = SearchForm.objects.get(name= 'default')
+
+# for c in categories:
+#     search_form.categories.add(c)
+
+# search_form.save()
+
+FormulaCategory.objects.all().delete()
+categories = Category.objects.filter(parent_categories = None)
 for c in categories:
-    search_form.categories.add(c)
-
-search_form.save()
+    create_formulas(c, None)

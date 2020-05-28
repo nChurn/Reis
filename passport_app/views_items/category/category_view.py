@@ -36,7 +36,6 @@ class CategoryCreate(CreateView):
     model = Category
     fields = ['name', 'name_ru', 'comment', 'point', 'parent_categories']
     def post(self, request):
-        
         super(CategoryCreate, self).post(request)        
         form = CategoryForm(request.POST)        
         parents_ids = None

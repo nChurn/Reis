@@ -6,19 +6,16 @@
                     data-target="#collapse-{{category_item.category.id}}" aria-expanded="false" aria-controls="collapse-{{category_item.category.id}}"
                     id="btn-collapse-{{category_item.category.id}}">
                     <div class="row" style="white-space: normal important!">
-                        <div class="col-auto text-left">
+                        <div class="col-auto text-left text-wrap">
                             {{ category_item.category.point }}
                             {{ category_item.category.name_ru }}
                         </div>
-                        <div class="col">
+                        <div class="col text-wrap">
+                            {{category_item.rate_label}}
+                        </div>  
+                        <div class="col-md-1 text-wrap">
+                            {{category_item.rate|floatformat}}
                         </div>
-                        <div class="col-md-2">
-                                Рейтинг по разделу:
-                        </div>
-                        <div class="col-md-2">
-                                {{category_item.rate|floatformat}}
-                                <!-- {{category_item.formula}} -->
-                        </div>           
                     </div>    
                 </button>
             </h2>
@@ -53,21 +50,3 @@
         </div>
     </div>
 </div>
-
-<script>
-    $('#btn-collapse-{{category_item.category.id}}').click(function(e){
-        // console.log(e)
-
-        // if ($('#collapse-{{category_item.category.id}}').hasClass('show')){
-        //     e.preventDefault()
-        //     $("#collapse-{{category_item.category.id}}").collapse('hide');
-        // }
-    })
-
-    $("#accordion-{{category_item.category.id}}").on('shown.bs.collapse', function(e) {
-        // if ($('#collapse-{{category_item.category.id}}').hasClass('show')){
-        //     e.preventDefault()
-        // }
-    });
-</script>
-

@@ -156,6 +156,7 @@ class DetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
         return data
 
     def get(self, request):
+        total_rate = None
         try:
             error = ''
             contains = []
@@ -173,14 +174,18 @@ class DetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
             cat_data = self.get_form_category_data(categories, real_property)
 
             self.calc_rating(cat_data)
+            total_rate = sum(float(x['rate']) for x in cat_data) / len(cat_data)
+            for c in cat_data:
+                self.create_rate_labels(c)
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            # print(str(e))
-            # print(exc_type, fname, exc_tb.tb_lineno)
+            print(str(e))
+            print(exc_type, fname, exc_tb.tb_lineno)
             
         return render(request, self.template_name, {
             'title': 'Отчет',
+            'total_rate': total_rate,
             'error': error,
             'real_property': real_property,
             'data': cat_data
@@ -209,3 +214,12 @@ class DetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
         #         return False
 
         return True
+
+    def create_rate_labels(self, category_data):
+        if category_data['category'] is not None:
+            classifier = RateClassifier.objects.filter(category_id = category_data['category'].id).first()
+            if classifier and float(category_data['rate']) >= classifier.min_rate \
+                and float(category_data['rate']) <= classifier.max_rate: 
+                category_data['rate_label'] = classifier.label
+
+       

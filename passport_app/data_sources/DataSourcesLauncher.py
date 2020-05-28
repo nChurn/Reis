@@ -17,7 +17,7 @@ from passport_app.data_sources.parserApi.DomGosuslugi_Parser import DomGosuslugi
 logger = logging.getLogger(__name__)
 
 class DataSourcesLauncher():
-    __real_estate : RealEstate
+    # __real_estate : RealEstate
 
     def __init__(self, real_estate: RealEstate):
         self.__real_estate = real_estate
