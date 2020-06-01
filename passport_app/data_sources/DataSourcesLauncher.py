@@ -47,9 +47,9 @@ class DataSourcesLauncher():
                 p.parse_data(self.__real_estate.address, self.__real_estate)
 
             if self.__real_estate.owner.name or self.__real_estate.owner.inn:
-                if parser.url == 'http://bankrot.fedresurs.ru/':
-                    p = BankrotFedres_Parser(self.__real_estate.owner.name, self.__real_estate.owner.inn, None, self.__real_estate.owner.name)
-                    self.__save_data(p.get_result())
+                # if parser.url == 'http://bankrot.fedresurs.ru/':
+                #     p = BankrotFedres_Parser(self.__real_estate.owner.name, self.__real_estate.owner.inn, None, self.__real_estate.owner.name)
+                #     self.__save_data(p.get_result())
 
                 if parser.url == 'https://pb.nalog.ru/':
                     p = PbNalog_Parser(self.__real_estate.owner.name, self.__real_estate.owner.inn, None, self.__real_estate.owner.name)

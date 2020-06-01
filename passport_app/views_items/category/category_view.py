@@ -236,7 +236,29 @@ class CategoriesAddView(LoginRequiredMixin, View):
                 child_category.save()
 
         category.save()
+        for c in category.categories. \
+                extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
+                order_by('int_point').all():
+            self.recalc_points(c, category)
         return redirect('/constructor/#v-pills-category')
+
+    def recalc_points(self, category, parent_category):
+        i = 1
+        category.point = parent_category.point + '.' + str(i)
+        category.save()
+
+        for child in category.categories. \
+                extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
+                order_by('int_point').all():
+            child.point = category.point + '.' + str(i)
+            i = i + 1
+            child.save()
+
+            for c in child.categories. \
+                    extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
+                    order_by('int_point').all():
+                self.recalc_points(c, child)
+                c.save()
 
 class CategoriesDeleteView(LoginRequiredMixin, View):
     def post(self, request, *args, **kwargs):        
@@ -271,6 +293,46 @@ class CategoriesParent(LoginRequiredMixin, View):
         html = render_to_string('category/category_child_nodes.html', {'categories_form': form, 'child_categories': categories, 'parent_category': category}, request=request)
         return HttpResponse(html)
         
+
+class CategoryPaste(View):
+    def post(self, request, *args, **kwargs):        
+        target_category = Category.objects.get(id = request.POST.get('category_id_paste_in', None))
+        copy_category = Category.objects.get(id = request.POST.get('category_copy_id', None))
+
+        self.copy_categories(copy_category, target_category)
+        return HttpResponse('ok')
+
+    def copy_categories(self, category, parent_category):
+        new_category = self.create_copy_category(category, parent_category)
+        if category.categories is not None:
+            for child in category.categories. \
+                    extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
+                    order_by('int_point').all():
+                self.copy_categories(child, new_category)
+
+    def create_copy_category(self, category, parent_category):
+        new_category = Category()
+        new_category.name = category.name
+        new_category.name_ru = category.name_ru
+        new_category.comment = category.comment
+
+        last_children = parent_category.categories. \
+                extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
+                order_by('int_point').last()
+        if last_children is not None:
+            arr = last_children.point.split('.')
+            arr[-1] = str(int(arr[-1]) + 1)
+            new_category.point = ".".join(arr)
+        else:
+            new_category.point = parent_category.point + '.1'
+
+        new_category.save()
+        new_category.parent_categories.add(parent_category)
+        new_category.save()
+        parent_category.categories.add(new_category)
+        parent_category.save()
+
+        return new_category
 
 class TemplateFormView(FormView):
     template_name = 'category/test_form.html'

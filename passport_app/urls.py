@@ -70,6 +70,7 @@ urlpatterns = [
     path('constructor/categories-add/<int:category_pk>/', CategoriesAddView.as_view()),
     path('constructor/categories-delete/<int:category_pk>/<int:child_category_pk>/', CategoriesDeleteView.as_view()),
     path('constructor/category/<int:pk>/', CategoryDetails.as_view(), name='category-detail'),
+    path('constructor/category-paste/', CategoryPaste.as_view()),
     path('category/add/', CategoryCreate.as_view(), name='category-add'),
     path('category/<int:pk>/', CategoryUpdate.as_view(), name='category-update'),
     path('category/<int:pk>/delete/', CategoryDelete.as_view(), name='category-delete'),

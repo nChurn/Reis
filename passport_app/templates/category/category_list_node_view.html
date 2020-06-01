@@ -6,6 +6,12 @@
             <button class="btn btn-edit" value="{{category_item.id}}">
                 <i class="fa fa-pencil"></i>
             </button>
+            <button class="btn btn-copy" data-id="{{category_item.id}}">
+                <i class="fa fa-copy"></i>
+            </button>
+            <button class="btn btn-paste" data-id="{{category_item.id}}">
+                <i class="fa fa-paste"></i>
+            </button>
             {% if category_item.parent_categories and category_item.parent_categories.count > 0   %}
             <button class="btn btn-minus" value="{{category_item.id}}">
                 <i class="fa fa-minus"></i>
@@ -64,6 +70,36 @@
         var category_id = '{{category_item.id}}';
         var parent_id = '{{parent_item_id}}';
 
+        $("#sectionHeader-{{parent_item_id}}-{{category_item.id}}").on("click", '.btn-copy', function (value) {
+            if($(this).hasClass('btn-dark')){
+                $(this).removeClass('btn-dark')
+                $("#copy-category-id").val('')
+            }
+            else{
+                $(".btn-copy").removeClass('btn-dark')
+                $(this).addClass('btn-dark')
+                $("#copy-category-id").val($(this).data('id'))
+            }   
+        });
+
+        $("#sectionHeader-{{parent_item_id}}-{{category_item.id}}").on("click", '.btn-paste', function (value) {
+            $.ajax({
+                url: 'category-paste/',
+                type: 'POST',
+                data: {
+                    'csrfmiddlewaretoken' : '{{csrf_token}}',
+                    'category_copy_id': $("#copy-category-id").val(),
+                    'category_id_paste_in': $(this).data('id')
+                },
+                success: function (data) {
+                    window.location = '/constructor/#v-pills-category';
+                },
+                error: function (xhr, errmsg, err) {
+
+                }
+            })
+        });
+
         $("#sectionContent-" + parent_id + "-" + category_id).on("click", '#btn-parameter-add', function (value) {
             let id = $(this).attr('value');
             $.ajax({
@@ -78,7 +114,6 @@
 
                 }
             });
-
         });
 
         $("#sectionHeader-" + parent_id + "-" + category_id).on("click", '#btn-category-add', function (value) {                    

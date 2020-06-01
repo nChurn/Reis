@@ -148,18 +148,18 @@ def create_formulas(category: Category, parent_category: Category):
         formula.save()
 
 
-# delete_all()
-# start(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 1, категории для загрузки.xlsx")
-# start(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 2, категории для загрузки.xlsx")
-# start(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 3, категории для загрузки.xlsx")
+delete_all()
+start(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 1, категории для загрузки.xlsx")
+start(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 2, категории для загрузки.xlsx")
+start(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 3, категории для загрузки.xlsx")
 
-# categories = Category.objects.all()
-# search_form = SearchForm.objects.get(name= 'default')
+categories = Category.objects.all()
+search_form = SearchForm.objects.get(name= 'default')
 
-# for c in categories:
-#     search_form.categories.add(c)
+for c in categories:
+    search_form.categories.add(c)
 
-# search_form.save()
+search_form.save()
 
 FormulaCategory.objects.all().delete()
 categories = Category.objects.filter(parent_categories = None)
