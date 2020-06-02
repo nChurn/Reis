@@ -300,7 +300,7 @@ class CategoryPaste(View):
         copy_category = Category.objects.get(id = request.POST.get('category_copy_id', None))
 
         self.copy_categories(copy_category, target_category)
-        return HttpResponse('ok')
+        return redirect('/constructor/#v-pills-category')
 
     def copy_categories(self, category, parent_category):
         new_category = self.create_copy_category(category, parent_category)

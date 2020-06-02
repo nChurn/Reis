@@ -69,26 +69,24 @@
             else{
                 $(".btn-copy").removeClass('btn-dark')
                 $(this).addClass('btn-dark')
+
                 $("#copy-category-id").val($(this).data('id'))
+                $("#copy-category-name").val($("#sectionHeader-{{parent_item_id}}-{{category_item.id}}").find('.header-text').text().trim())
             }   
         });
 
         $("#sectionHeader-{{parent_item_id}}-{{category_item.id}}").on("click", '.btn-paste', function (value) {
-            $.ajax({
-                url: 'category-paste/',
-                type: 'POST',
-                data: {
-                    'csrfmiddlewaretoken' : '{{csrf_token}}',
-                    'category_copy_id': $("#copy-category-id").val(),
-                    'category_id_paste_in': $(this).data('id')
-                },
-                success: function (data) {
-                    window.location = '/constructor/#v-pills-category';
-                },
-                error: function (xhr, errmsg, err) {
+            if (!$("#copy-category-name").val())
+                return
 
-                }
-            })
+            $('#show-copy-category-name').html($("#copy-category-name").val())
+            $('#show-paste-category-name').text($("#sectionHeader-{{parent_item_id}}-{{category_item.id}}")
+                .find('.header-text').text().trim())
+            
+            $("input[name=category_copy_id]").val($("#copy-category-id").val())
+            $("input[name=category_id_paste_in]").val($(this).data('id'))
+
+            $("#copy-confirm-modal").modal('show')
         });
 
         $("#sectionContent-" + parent_id + "-" + category_id).on("click", '#btn-parameter-add', function (value) {

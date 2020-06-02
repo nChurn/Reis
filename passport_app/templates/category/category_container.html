@@ -1,5 +1,5 @@
 <input type="hidden" id="copy-category-id">
-{% csrf_token %}
+<input type="hidden" id="copy-category-name">
 
 <div class="col-10" id="manage-category">
     <form>
@@ -24,6 +24,35 @@
 </div>
 
 {% include 'category/category_modal_add.html' %}
+
+<div id="copy-confirm-modal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Подтвердите действие</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="category-paste/" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="category_copy_id">
+                <input type="hidden" name="category_id_paste_in">
+
+                <div class="modal-body">
+                    <p>
+                        Действительно копировать категорию "<span id="show-copy-category-name" class="font-italic"></span>" и всех ее потомков
+                        в категорию "<span id="show-paste-category-name" class="font-italic"></span>"?
+                    </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Ок</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 
 {% block javascript %}
 <script>
