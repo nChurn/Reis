@@ -184,7 +184,7 @@ class DetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
             print(exc_type, fname, exc_tb.tb_lineno)
             
         return render(request, self.template_name, {
-            'title': 'Отчет',
+            'title': real_property.address,
             'total_rate': total_rate,
             'error': error,
             'real_property': real_property,
@@ -205,13 +205,13 @@ class DetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
             print(e)
 
     def has_any_data(self, category):
-        # if len(category['parameters']) == 0:
-        #     return False
+        if len(category['parameters']) == 0:
+            return False
 
-        # for param in category['parameters']:
-        #     if param['data']['value'] == '' or \
-        #         param['data']['value'] == 0:
-        #         return False
+        for param in category['parameters']:
+            if param['data']['value'] == '' or \
+                param['data']['value'] == 0:
+                return False
 
         return True
 

@@ -751,6 +751,7 @@ class SearchView(FormView):
             owner.save()
 
             real_estate = RealEstate()
+            real_estate.report_number = RealEstate.objects.all().count() + 1
             real_estate.owner = owner
             real_estate.user = current_user
             real_estate.search_form_id = search_form

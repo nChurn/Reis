@@ -147,11 +147,38 @@ def create_formulas(category: Category, parent_category: Category):
 
         formula.save()
 
+def create_rate_classifier(wsheet, row):
+    category = Category.objects.filter(name_ru__contains = wsheet.cell(row, 1).value).first()
+    
+    obj = RateClassifier()
+    obj.category = category
+    obj.label = wsheet.cell(row, 2).value
+    obj.min_rate = wsheet.cell(row, 3).value
+    obj.max_rate = wsheet.cell(row, 4).value
+
+    obj.save()
+
+def start_create_rate_classifier(file_name):
+    wb = load_workbook(file_name)
+    wsheet = wb.get_sheet_by_name(wb.get_sheet_names()[0])
+
+    max_row = 1
+    while wsheet.cell(max_row, 1).value is not None:
+        max_row = max_row + 1
+
+    for row in range(2, max_row):
+        print(row)
+        create_rate_classifier(wsheet, row)
+
+
 
 delete_all()
 start(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 1, категории для загрузки.xlsx")
 start(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 2, категории для загрузки.xlsx")
 start(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 3, категории для загрузки.xlsx")
+
+start_create_rate_classifier(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\classifier.xlsx")
+
 
 categories = Category.objects.all()
 search_form = SearchForm.objects.get(name= 'default')

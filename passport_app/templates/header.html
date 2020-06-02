@@ -1,7 +1,8 @@
 <div>
-    <nav class="navbar navbar-expand-lg navbar-dark passport-header-bg">
+    <nav class="navbar navbar-expand-lg navbar-dark passport-header-bg" style="font-size: 15px;">
         <a href="/" class="navbar-brand mr-5 p-0">
             <img src="/static/checklist.png" alt="" class="header-icon">
+            <span class="align-middle">Отчёт R.E.I.S.</span>
             
             <!-- <object type="image/svg+xml" data="static/checklist.svg" width="30">
                 Your browser does not support SVG
@@ -18,27 +19,36 @@
                 <div class="col-auto">
                     <ul class="navbar-nav">
                         {% if user.groups.all.0|stringformat:"s" == "SystemAdministrator" or user.is_superuser  %}
-                        <li class="nav-item active mr-5">
-                            <a class="nav-link" href='/constructor/' alt="конструктор"><i class="fa fa-wrench"></i></a>
+                        <li class="nav-item active">
+                            <a class="nav-link" href='/constructor/' alt="конструктор">
+                                <i class="fa fa-wrench"></i>
+                                <span class="align-middle">Конструктор R.E.I.S.</span>
+                            </a>
                         </li>
                         {% endif %}
 
                         {% if user.groups.all.0|stringformat:"s" == "SystemAdministrator" or user.is_superuser  %}
-                        <li class="nav-item active mr-5">
-                            <a class="nav-link" href="/users_list" alt="пользователи"><i class="fa fa-users"></i></a>
+                        <li class="nav-item active">
+                            <a class="nav-link" href="/users_list" alt="пользователи">
+                                <i class="fa fa-users"></i>
+                                <span class="align-middle">Пользователи R.E.I.S.</span>
+                            </a>
                         </li>
                         {% endif %}
 
                         {% if user.is_authenticated and user.is_superuser %}
-                        <li class="nav-item active mr-5">
-                            <a class="nav-link" href="/search_settings/" alt="настройки"><i class="fa fa-cog"></i></a>
+                        <li class="nav-item active">
+                            <a class="nav-link" href="/search_settings/" alt="настройки">
+                                <i class="fa fa-cog"></i>
+                                <span class="align-middle">Настройки R.E.I.S.</span>
+                            </a>
                         </li>
                         {% endif %}
                     </ul>
                 </div>
 
                 <div class="col ml-3 text-left">
-                    <h4 class=" d-inline-block align-middle m-0">Название услуги: {{ title }}</h4>
+                    <h4 class=" d-inline-block align-middle m-0">{{ title }}</h4>
                 </div>
             </div>
         </div>

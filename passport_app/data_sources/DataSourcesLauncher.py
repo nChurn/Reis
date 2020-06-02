@@ -64,17 +64,17 @@ class DataSourcesLauncher():
                     p = Fcin_Parser(self.__real_estate.owner.name, self.__real_estate.owner.inn, None, None)
                     self.__save_data(p.get_result())
             
-            if parser.url == 'https://dom.gosuslugi.ru/':
-                p = DomGosuslugi_Parser(self.__real_estate.region_name, self.__real_estate.district, 
-                    self.__real_estate.locality, None, 
-                    self.__real_estate.street_name, self.__real_estate.house_number)
-                p.parser_type = parser
+            # if parser.url == 'https://dom.gosuslugi.ru/':
+            #     p = DomGosuslugi_Parser(self.__real_estate.region_name, self.__real_estate.district, 
+            #         self.__real_estate.locality, None, 
+            #         self.__real_estate.street_name, self.__real_estate.house_number)
+            #     p.parser_type = parser
 
-                self.__save_data(p.get_result())
+            #     self.__save_data(p.get_result())
 
-            if parser.url == "https://www.avito.ru/":
-                p = Avito_Parser()
-                self.__save_data(p.pase_data(self.__real_estate.address))
+            # if parser.url == "https://www.avito.ru/":
+            #     p = Avito_Parser()
+            #     self.__save_data(p.pase_data(self.__real_estate.address))
 
 
 
