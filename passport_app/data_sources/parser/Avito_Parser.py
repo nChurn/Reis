@@ -7,9 +7,41 @@ import random
 class Avito_Parser():
     def pase_data(self, address):
         print("start AVITO")
-        counter = 2
+        result = {}
+
+        data = self.__parse("https://www.avito.ru/rossiya/komnaty/prodam-ASgBAgICAUSQA74Q?q=" + address)
+        result['buy_part_apartment Avito'] = self.__calc_average_price(data)
+        data = self.__parse("https://www.avito.ru/rossiya/kvartiry/prodam/1-komnatnye-ASgBAQICAUSSA8gQAUDMCBSOWQ?q=" + address)
+        result['buy_1_room Avito'] = self.__calc_average_price(data)
+        data = self.__parse("https://www.avito.ru/rossiya/kvartiry/prodam/2-komnatnye-ASgBAQICAUSSA8gQAUDMCBSOWQ?q=" + address)
+        result['buy_2_room Avito'] = self.__calc_average_price(data)
+        data = self.__parse("https://www.avito.ru/rossiya/kvartiry/prodam/3-komnatnye-ASgBAQICAUSSA8gQAUDMCBSOWQ?q=" + address)
+        result['buy_3_room Avito'] = self.__calc_average_price(data)
+        data = self.__parse("https://www.avito.ru/rossiya/kvartiry/prodam/4-komnatnye-ASgBAQICAUSSA8gQAUDMCBSOWQ?q=" + address)
+        result['buy_4_room Avito'] = self.__calc_average_price(data)
+
+        data = self.__parse("https://www.avito.ru/rossiya/komnaty/sdam-ASgBAgICAUSQA74Q?q=" + address)
+        result['year_rent_part_apartment Avito'] = self.__calc_average_price(data) * 12
+        data = self.__parse("https://www.avito.ru/rossiya/kvartiry/sdam/1-komnatnye-ASgBAQICAUSSA8gQAUDMCBSOWQ?q=" + address)
+        result['year_rent_1_room Avito'] = self.__calc_average_price(data) * 12
+        data = self.__parse("https://www.avito.ru/rossiya/kvartiry/sdam/2-komnatnye-ASgBAQICAUSSA8gQAUDMCBSOWQ?q=" + address)
+        result['year_rent_2_room Avito'] = self.__calc_average_price(data) * 12
+        data = self.__parse("https://www.avito.ru/rossiya/kvartiry/sdam/3-komnatnye-ASgBAQICAUSSA8gQAUDMCBSOWQ?q=" + address)
+        result['year_rent_3_room Avito'] = self.__calc_average_price(data) * 12
+        data = self.__parse("https://www.avito.ru/rossiya/kvartiry/sdam/4-komnatnye-ASgBAQICAUSSA8gQAUDMCBSOWQ?q=" + address)
+        result['year_rent_4_room Avito'] = self.__calc_average_price(data) * 12
+
+        return result
         
-        r = requests.get('https://www.avito.ru/ekaterinburg/nedvizhimost', 
+    def __calc_average_price(self, info):
+        if len(info) == 0:
+            return 0
+        return sum(float(x['price']) for x in info) / len(info)
+
+
+    def __parse(self, url):
+        counter = 2
+        r = requests.get(url, 
             headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36 OPR/68.0.3618.129'})
         print('!!__!!')
         html = r.text
@@ -17,6 +49,7 @@ class Avito_Parser():
     
         lincs = soup('div', class_="styles-root-2nfT7")
         
+        data = []
         for linc in lincs:
             link = 'https://www.avito.ru' + str(linc.find('a', class_='link-link-39EVK').get('href'))
             print(link)
@@ -61,14 +94,12 @@ class Avito_Parser():
                 f.close()
             
             object = {
-                'Nedvizhimost':{
-                    'Price': price,
-                    'Location': str(locate),
-                    'Name': name,
-                    'Radius': rr,
-                    'Title': title,
-                    'Link': str(link)
-                }
+                'Price': price,
+                'Location': str(locate),
+                'Name': name,
+                'Radius': rr,
+                'Title': title,
+                'Link': str(link)
             }
             data.append(object)
             

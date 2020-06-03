@@ -92,6 +92,12 @@ def create_category(wsheet, row):
 
                         p = create_parser_param(parser_param_name + " Yandex", parser_param_name_rus + " Yandex", 3, 'social')
                         parser_params.append(p)
+                    elif wsheet.cell(row, 10).value == '+': 
+                        p = create_parser_param(parser_param_name + " Avito", parser_param_name_rus + " Avito", 26, 'social')
+                        parser_params.append(p)
+
+                        p = create_parser_param(parser_param_name + " Cian", parser_param_name_rus + " Cian", 27, 'social')
+                        parser_params.append(p)
                     else:
                         parser_params = [create_parser_param(parser_param_name, parser_param_name_rus, wsheet.cell(row, 9).value, '')]
 
@@ -178,7 +184,6 @@ start(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 2, �
 start(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\набор 3, категории для загрузки.xlsx")
 
 start_create_rate_classifier(r"C:\Users\Dmitriev Ivan\Desktop\парсинг питон\classifier.xlsx")
-
 
 categories = Category.objects.all()
 search_form = SearchForm.objects.get(name= 'default')

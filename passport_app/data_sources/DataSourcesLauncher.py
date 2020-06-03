@@ -8,6 +8,7 @@ from passport_app.data_sources.parser.ReformaGkh_Parser import ReformaGkh_Parser
 from passport_app.models import *
 from passport_app.data_sources.parser.pkk_rosreestr.Pkk_Rosreestr_Parser import Pkk_Rosreestr_Parser
 from passport_app.data_sources.parser.Avito_Parser import Avito_Parser
+from passport_app.data_sources.parser.Cian_Parser import Cian_Parser
 from passport_app.data_sources.parserApi.BankrotFedres_Parser import BankrotFedres_Parser
 from passport_app.data_sources.parserApi.PbNalog_Parser import PbNalog_Parser
 from passport_app.data_sources.parserApi.Fcin_Parser import Fcin_Parser
@@ -38,14 +39,14 @@ class DataSourcesLauncher():
 
             #     self.__save_data(yandex_result)
 
-            if parser.name == 'rosreestr.ru':            
-                p = Pkk_Rosreestr_Parser()
-                data = p.parse_data(self.__real_estate)
-                self.__save_data(data)
+            # if parser.name == 'rosreestr.ru':            
+            #     p = Pkk_Rosreestr_Parser()
+            #     data = p.parse_data(self.__real_estate)
+            #     self.__save_data(data)
 
-            if parser.name == 'reformagkh.ru':
-                p = ReformaGkh_Parser()
-                p.parse_data(self.__real_estate.address, self.__real_estate)
+            # if parser.name == 'reformagkh.ru':
+            #     p = ReformaGkh_Parser()
+            #     p.parse_data(self.__real_estate.address, self.__real_estate)
 
             if self.__real_estate.owner.name or self.__real_estate.owner.inn:
                 # if parser.url == 'http://bankrot.fedresurs.ru/':
@@ -72,11 +73,13 @@ class DataSourcesLauncher():
 
             #     self.__save_data(p.get_result())
 
-            # if parser.url == "https://www.avito.ru/":
-            #     p = Avito_Parser()
-            #     self.__save_data(p.pase_data(self.__real_estate.address))
+            if parser.url == "https://www.avito.ru/":
+                p = Avito_Parser()
+                self.__save_data(p.pase_data(self.__real_estate.address))
 
-
+            if parser.url == "https://cian.ru/":
+                p = Cian_Parser()
+                self.__save_data(p.pase_data(self.__real_estate.address))
 
 
     def __save_data(self, data):
