@@ -546,6 +546,7 @@ class ConstructorView(LoginRequiredMixin, PermissionRequiredMixin, View):
             print(exc_type, fname, exc_tb.tb_lineno)
         return render(
             request, self.template_name, {
+                'title': 'Конструктор R.E.I.S.',
                 'error': error,
                 'forms': forms_list,
                 'categories': categories,
@@ -1061,6 +1062,7 @@ class UsersListView(LoginRequiredMixin, PermissionRequiredMixin, View):
 
         form = UserProfileForm(groups=group_serializer)
         return render(request, self.template_name, {
+                'title': 'Пользователи R.E.I.S.',
                 'query': search_query,
                 'users': user_serializer,
                 'groups': group_serializer,

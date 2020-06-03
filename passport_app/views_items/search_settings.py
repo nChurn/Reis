@@ -51,7 +51,7 @@ class SearchSettingsView(LoginRequiredMixin, PermissionRequiredMixin, View):
         form = SearchConfigForm()
 
         return render(request, self.template_name,
-                      {'form': form})
+                      {'title': 'Настройки R.E.I.S.','form': form})
 
     def post(self, request, *args, **kwargs):
         form = SearchConfigForm(request.POST)
@@ -76,5 +76,8 @@ class SearchSettingsView(LoginRequiredMixin, PermissionRequiredMixin, View):
         search_config = SearchConfig.objects.all().first()
         form = SearchConfigForm()
         return render(request, self.template_name,
-                      {'search_config': search_config,
-                       'form': form})
+                    {
+                        'title': 'Настройки R.E.I.S.',
+                        'search_config': search_config,
+                        'form': form,
+                    })

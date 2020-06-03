@@ -184,7 +184,7 @@ class DetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
             print(exc_type, fname, exc_tb.tb_lineno)
             
         return render(request, self.template_name, {
-            'title': real_property.address,
+            'title': 'Отчёт R.E.I.S: ' + real_property.address,
             'total_rate': total_rate,
             'error': error,
             'real_property': real_property,
