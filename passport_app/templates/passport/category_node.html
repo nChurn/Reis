@@ -6,17 +6,26 @@
                     data-target="#collapse-{{category_item.category.id}}" aria-expanded="false" aria-controls="collapse-{{category_item.category.id}}"
                     id="btn-collapse-{{category_item.category.id}}">
                     <div class="row" style="white-space: normal important!">
+                        {% if category_item.rate_label %}
                         <div class="col-md-5 text-left text-wrap">
                             {% if category_item.category.point|length > 1 %}
                                 {{ category_item.category.point }}
                             {% endif %}
                             {{ category_item.category.name_ru }}
-                        </div>
+                        </div>                        
                         <div class="col-md-6 text-wrap">
                             {{category_item.rate_label}}
-                        </div>  
+                        </div> 
+                        {% else %}
+                        <div class="col text-left text-wrap">
+                            {% if category_item.category.point|length > 1 %}
+                                {{ category_item.category.point }}
+                            {% endif %}
+                            {{ category_item.category.name_ru }}
+                        </div>                        
+                        {% endif %} 
                         <div class="col-md-1 text-wrap">
-                            {{category_item.rate|floatformat}}
+                            {{category_item.rate|floatformat:"-2"}}
                         </div>
                     </div>    
                 </button>

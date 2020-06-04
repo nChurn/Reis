@@ -99,6 +99,7 @@ class ViewFormSearch(LoginRequiredMixin, View):
         html = render_to_string('search_form/view_form_content.html', {
             'form': form, 
             'id':search_form.id, 
+            'search_form': search_form,
             #'categories':categories, 
             # 'form_categories': form_categories, 
             'view_data': view_data
@@ -167,6 +168,11 @@ class ViewFormSearch(LoginRequiredMixin, View):
         pk = self.kwargs['pk']
         search_form = get_object_or_404(SearchForm, id=pk)
         view_category = search_form.categories
+
+        search_form.formula_rate = request.POST.get('general_rate')
+        search_form.formula_amount = request.POST.get('general_amount')
+        search_form.formula = request.POST.get('general_formula')
+        search_form.save()
         
         self.set_category_view_data(request.POST, view_category)
 

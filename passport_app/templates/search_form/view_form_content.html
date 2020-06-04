@@ -1,5 +1,33 @@
 <form id="search-form-formula-update__modal" action="/forms/{{id}}/view/" method="post">
     {% csrf_token %}
+    <div>
+        <label class="font-weight-bold">
+            Общий рейтинг
+        </label>
+        <div class="form-row">      
+            <div class="col-md-4">
+                <label>Коэффициент (x)</label>
+            </div>
+            <div class="col-md-4">
+                <label>Кол-во строк в категории (y)</label>
+            </div>      
+            <div class="col-md-4">                                     
+                <label>Формула</label>
+            </div>             
+        </div>
+
+        <div class="form-row">      
+            <div class="col-md-4">
+                <input type="text" name="general_rate" value="{{search_form.formula_rate}}" class="form-control formula-form-view">
+            </div>
+            <div class="col-md-4">
+                <input type="text" name="general_amount" value="{{search_form.formula_amount}}" class="form-control formula-form-view">
+            </div>      
+            <div class="col-md-4">                                     
+                <input type="text" name="general_formula" value="{{search_form.formula}}" class="form-control formula-form-view">       
+            </div>             
+        </div>
+    </div>
     {% include 'search_form/view_form_node.html' %}
     <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>

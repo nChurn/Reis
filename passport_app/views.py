@@ -720,6 +720,9 @@ class SearchView(FormView):
 
         try:
             search_form = form['search_form'].value()
+
+            if search_form is None:
+                search_form = SearchForm.objects.filter(name="default").first().id
         except Exception as e:
             pass
         params = create_property_dict()

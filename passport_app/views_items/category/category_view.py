@@ -6,6 +6,7 @@ from django.http import HttpResponse
 from django.views import View
 from django.template.loader import render_to_string
 from passport_app.forms import CategoryForm, CategoriesForm, TestForm
+from passport_app.models import FormulaCategory
 from django.shortcuts import get_object_or_404, render_to_response, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.http import HttpResponseRedirect
@@ -62,10 +63,15 @@ class CategoryCreate(CreateView):
                                 category.point = ".".join(arr)
                             else:
                                 category.point = parent.point + '.1'
-
                         parent.save()
-                        print(parent.categories)
-                        category.parent_categories.add(parent)                        
+                        category.parent_categories.add(parent)   
+
+                        f = FormulaCategory()                     
+                        f.category = category
+                        f.rate = 5
+                        f.amount = parent.categories.count()
+                        f.formula = 'x/y'
+                        f.save()
             else:
                 children = Category.objects.filter(parent_categories = None).extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
                                     order_by('int_point').all()
@@ -220,20 +226,30 @@ class CategoriesAddView(LoginRequiredMixin, View):
             for child_category_id in categories_data:
                 child_category = Category.objects.get(id=child_category_id)
                 if child_category:
-                    # if child_category.parent_categories:
-                    #     child_category.parent_categories.categories.remove(child_category)
-                    category.categories.add(child_category)
-                    child_category.parent_categories.add(category)
-                    child_category.save()
+                    new_category = Category()
+                    new_category.name = child_category.name
+                    new_category.name_ru = child_category.name_ru
+                    new_category.comment = child_category.comment
+                    new_category.point = child_category.point
+                    new_category.save()
+
+                    category.categories.add(new_category)
+                    new_category.parent_categories.add(category)
+                    new_category.save()
         else:
             child_category_id = categories_data
             child_category = Category.objects.get(id=child_category_id)
             if child_category:
-                # if child_category.parent_categories:
-                #         child_category.parent_categories.categories.remove(child_category)
-                category.categories.add(child_category)
-                child_category.parent_categories.add(category)
-                child_category.save()
+                new_category = Category()
+                new_category.name = child_category.name
+                new_category.name_ru = child_category.name_ru
+                new_category.comment = child_category.comment
+                new_category.point = child_category.point
+                new_category.save()
+
+                category.categories.add(new_category)
+                new_category.parent_categories.add(category)
+                new_category.save()
 
         category.save()
         for c in category.categories. \

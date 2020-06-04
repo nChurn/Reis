@@ -157,8 +157,8 @@ class Parameter(models.Model):
         return "/constructor" #reverse('constructor', kwargs={'pk': self.pk})
 
 class Category(models.Model):
-    name = models.CharField(max_length=255, default='')#, unique=True)
-    name_ru = models.CharField(max_length=255, default='')    
+    name = models.CharField(max_length=1024, default='')#, unique=True)
+    name_ru = models.CharField(max_length=1024, default='')    
     comment = models.CharField(max_length=255, default='', blank=True)
     point = models.CharField(max_length=20, default='', blank=True, null=True)
     categories = models.ManyToManyField("self", related_name='childs', symmetrical=False, blank=True, null=True)
@@ -176,6 +176,9 @@ class SearchForm(models.Model):
     is_default = models.BooleanField(default=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     categories = models.ManyToManyField(Category, blank=True, null=True)
+    formula_rate = models.CharField(max_length=255, null=True)
+    formula_amount = models.CharField(max_length=255, null=True)
+    formula = models.CharField(max_length=255, null=True)
     
     def get_absolute_url(self):
         return "/constructor"
@@ -246,7 +249,6 @@ class FormulaParameterCategory(models.Model):
     formula = models.CharField(max_length=255, default='')
     parameter = models.ForeignKey(Parameter, on_delete=models.CASCADE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
-
 
 class RateClassifier(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)

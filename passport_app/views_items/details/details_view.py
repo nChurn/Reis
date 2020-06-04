@@ -174,7 +174,13 @@ class DetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
             cat_data = self.get_form_category_data(categories, real_property)
 
             self.calc_rating(cat_data)
-            total_rate = sum(float(x['rate']) for x in cat_data) / len(cat_data)
+
+            general_formula = FormulaCategory()
+            general_formula.rate = real_property.search_form.formula_rate
+            general_formula.amount = real_property.search_form.formula_amount
+            general_formula.formula = real_property.search_form.formula
+            total_rate = calc_formula_obj(general_formula, cat_data)
+            
             for c in cat_data:
                 self.create_rate_labels(c)
         except Exception as e:
