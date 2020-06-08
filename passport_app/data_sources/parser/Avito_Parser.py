@@ -24,16 +24,16 @@ class Avito_Parser():
         data = self.__parse("https://www.avito.ru/rossiya/kvartiry/prodam/4-komnatnye-ASgBAQICAUSSA8YQAUDKCBSAWQ?q=" + address)
         result['buy_4_room Avito'] = self.__calc_average_price(data)
 
-        # data = self.__parse("https://www.avito.ru/rossiya/komnaty/sdam-ASgBAgICAUSQA74Q?q=" + address)
-        # result['year_rent_part_apartment Avito'] = self.__calc_average_price(data) * 12
-        # data = self.__parse("https://www.avito.ru/rossiya/kvartiry/sdam/1-komnatnye-ASgBAQICAUSSA8gQAUDMCBSOWQ?q=" + address)
-        # result['year_rent_1_room Avito'] = self.__calc_average_price(data) * 12
-        # data = self.__parse("https://www.avito.ru/rossiya/kvartiry/sdam/2-komnatnye-ASgBAQICAUSSA8gQAUDMCBSOWQ?q=" + address)
-        # result['year_rent_2_room Avito'] = self.__calc_average_price(data) * 12
-        # data = self.__parse("https://www.avito.ru/rossiya/kvartiry/sdam/3-komnatnye-ASgBAQICAUSSA8gQAUDMCBSOWQ?q=" + address)
-        # result['year_rent_3_room Avito'] = self.__calc_average_price(data) * 12
-        # data = self.__parse("https://www.avito.ru/rossiya/kvartiry/sdam/4-komnatnye-ASgBAQICAUSSA8gQAUDMCBSOWQ?q=" + address)
-        # result['year_rent_4_room Avito'] = self.__calc_average_price(data) * 12
+        data = self.__parse("https://www.avito.ru/rossiya/komnaty/sdam-ASgBAgICAUSQA74Q?q=" + address)
+        result['year_rent_part_apartment Avito'] = self.__calc_average_price(data) * 12
+        data = self.__parse("https://www.avito.ru/rossiya/kvartiry/sdam/1-komnatnye-ASgBAQICAUSSA8gQAUDMCBSOWQ?q=" + address)
+        result['year_rent_1_room Avito'] = self.__calc_average_price(data) * 12
+        data = self.__parse("https://www.avito.ru/rossiya/kvartiry/sdam/2-komnatnye-ASgBAQICAUSSA8gQAUDMCBSOWQ?q=" + address)
+        result['year_rent_2_room Avito'] = self.__calc_average_price(data) * 12
+        data = self.__parse("https://www.avito.ru/rossiya/kvartiry/sdam/3-komnatnye-ASgBAQICAUSSA8gQAUDMCBSOWQ?q=" + address)
+        result['year_rent_3_room Avito'] = self.__calc_average_price(data) * 12
+        data = self.__parse("https://www.avito.ru/rossiya/kvartiry/sdam/4-komnatnye-ASgBAQICAUSSA8gQAUDMCBSOWQ?q=" + address)
+        result['year_rent_4_room Avito'] = self.__calc_average_price(data) * 12
 
         return result
         
@@ -55,6 +55,8 @@ class Avito_Parser():
             if page_number > 1:
                 page_query = '&p={}' % page_number
 
+            time.sleep(random.randint(5, 8))
+
             r = requests.get(url + page_query, headers=headers)
             html_doc = html.fromstring(r.text)  
 
@@ -72,7 +74,5 @@ class Avito_Parser():
             check = html_doc.xpath("//span[@data-marker = 'page({page_number})']")
             if check is None or len(check) == 0:
                 page_number = -1
-            else:
-                time.sleep(random.randint(5, 8))
         
         return result

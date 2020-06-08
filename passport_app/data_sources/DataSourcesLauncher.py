@@ -73,13 +73,13 @@ class DataSourcesLauncher():
 
             #     self.__save_data(p.get_result())
 
-            if parser.url == "https://www.avito.ru/":
-                p = Avito_Parser()
-                self.__save_data(p.pase_data(self.__real_estate.address))
-
-            # if parser.url == "https://cian.ru/":
-            #     p = Cian_Parser()
+            # if parser.url == "https://www.avito.ru/":
+            #     p = Avito_Parser()
             #     self.__save_data(p.pase_data(self.__real_estate.address))
+
+            if parser.url == "https://cian.ru/":
+                p = Cian_Parser()
+                self.__save_data(p.pase_data(self.__real_estate))
 
 
     def __save_data(self, data):

@@ -1,35 +1,41 @@
-import requests
-from bs4 import BeautifulSoup
-import time
 import json
 import random
+import time
+
+import requests
+from bs4 import BeautifulSoup
+from lxml import html
+
+from passport_app.models import RealEstate
+
 
 class Cian_Parser():
-    def pase_data(self, address):
+    def pase_data(self, real_estate: RealEstate):
         print("start Cian")
-        result = {}
+        result = {}        
+        address_id = self.__get_address_id(real_estate)
 
-        data = self.__parse("https://www.avito.ru/rossiya/komnaty/prodam-ASgBAgICAUSQA74Q?q=" + address)
+        data = self.__parse("https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&house[0]={address_id}&offer_type=flat&room0=1")
         result['buy_part_apartment Avito'] = self.__calc_average_price(data)
-        data = self.__parse("https://www.avito.ru/rossiya/kvartiry/prodam/1-komnatnye-ASgBAQICAUSSA8gQAUDMCBSOWQ?q=" + address)
-        result['buy_1_room Avito'] = self.__calc_average_price(data)
-        data = self.__parse("https://www.avito.ru/rossiya/kvartiry/prodam/2-komnatnye-ASgBAQICAUSSA8gQAUDMCBSOWQ?q=" + address)
-        result['buy_2_room Avito'] = self.__calc_average_price(data)
-        data = self.__parse("https://www.avito.ru/rossiya/kvartiry/prodam/3-komnatnye-ASgBAQICAUSSA8gQAUDMCBSOWQ?q=" + address)
-        result['buy_3_room Avito'] = self.__calc_average_price(data)
-        data = self.__parse("https://www.avito.ru/rossiya/kvartiry/prodam/4-komnatnye-ASgBAQICAUSSA8gQAUDMCBSOWQ?q=" + address)
-        result['buy_4_room Avito'] = self.__calc_average_price(data)
+        data = self.__parse("https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&house[0]={address_id}&offer_type=flat&room1=1")
+        result['buy_1_room Cian'] = self.__calc_average_price(data)
+        data = self.__parse("https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&house[0]={address_id}&offer_type=flat&room2=1")
+        result['buy_2_room Cian'] = self.__calc_average_price(data)
+        data = self.__parse("https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&house[0]={address_id}&offer_type=flat&room3=1")
+        result['buy_3_room Cian'] = self.__calc_average_price(data)
+        data = self.__parse("https://www.cian.ru/cat.php?deal_type=sale&engine_version=2&house[0]={address_id}&offer_type=flat&room4=1")
+        result['buy_4_room Cian'] = self.__calc_average_price(data)
 
-        data = self.__parse("https://www.avito.ru/rossiya/komnaty/sdam-ASgBAgICAUSQA74Q?q=" + address)
-        result['year_rent_part_apartment Avito'] = self.__calc_average_price(data) * 12
-        data = self.__parse("https://www.avito.ru/rossiya/kvartiry/sdam/1-komnatnye-ASgBAQICAUSSA8gQAUDMCBSOWQ?q=" + address)
-        result['year_rent_1_room Avito'] = self.__calc_average_price(data) * 12
-        data = self.__parse("https://www.avito.ru/rossiya/kvartiry/sdam/2-komnatnye-ASgBAQICAUSSA8gQAUDMCBSOWQ?q=" + address)
-        result['year_rent_2_room Avito'] = self.__calc_average_price(data) * 12
-        data = self.__parse("https://www.avito.ru/rossiya/kvartiry/sdam/3-komnatnye-ASgBAQICAUSSA8gQAUDMCBSOWQ?q=" + address)
-        result['year_rent_3_room Avito'] = self.__calc_average_price(data) * 12
-        data = self.__parse("https://www.avito.ru/rossiya/kvartiry/sdam/4-komnatnye-ASgBAQICAUSSA8gQAUDMCBSOWQ?q=" + address)
-        result['year_rent_4_room Avito'] = self.__calc_average_price(data) * 12
+        data = self.__parse("https://www.cian.ru/cat.php?deal_type=rent&engine_version=2&house[0]={address_id}&offer_type=flat&room0=1")
+        result['year_rent_part_apartment Cian'] = self.__calc_average_price(data) * 12
+        data = self.__parse("https://www.cian.ru/cat.php?deal_type=rent&engine_version=2&house[0]={address_id}&offer_type=flat&room1=1")
+        result['year_rent_1_room Cian'] = self.__calc_average_price(data) * 12
+        data = self.__parse("https://www.cian.ru/cat.php?deal_type=rent&engine_version=2&house[0]={address_id}&offer_type=flat&room2=1")
+        result['year_rent_2_room Cian'] = self.__calc_average_price(data) * 12
+        data = self.__parse("https://www.cian.ru/cat.php?deal_type=rent&engine_version=2&house[0]={address_id}&offer_type=flat&room3=1")
+        result['year_rent_3_room Cian'] = self.__calc_average_price(data) * 12
+        data = self.__parse("https://www.cian.ru/cat.php?deal_type=rent&engine_version=2&house[0]={address_id}&offer_type=flat&room4=1")
+        result['year_rent_4_room Cian'] = self.__calc_average_price(data) * 12
 
         return result
         
@@ -38,20 +44,30 @@ class Cian_Parser():
             return 0
         return sum(float(x['price']) for x in info) / len(info)
 
+    def __get_address_id(self, real_estate):
+        post_data = {
+            'Address': real_estate.address,
+            'Kind': 'house',
+            'Lat': real_estate.latitude,
+            'Lng': real_estate.longitude
+        }
+
+        resp = requests.post("https://www.cian.ru/api/geo/geocoded-for-search/", post_data)
+        json_obj = json.loads(resp.text)
+
+        return [x['id'] for x in json_obj['details'] if x['geoType'] == 'House'][0]
+
     def __parse(self, url):
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36 OPR/68.0.3618.129'
+        }
         run = True
         pagenator = 1
-        while run:          
-            with open('cian.json', 'r', encoding='utf-8') as f:
-                try:
-                    data = json.load(f)
-                except:
-                    data = []
-                f.close()
-                    
+        data = []
+        while run:                      
             print('!_!_!')
-            r = requests.get(f'https://www.cian.ru/cat.php?deal_type=rent&engine_version=3&offer_type=flat&p={pagenator}&region=1&room1=1&room2=1&room3=1&room4=1&room5=1&room6=1&room7=1&room9=1&type=4', headers={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/81.0.4044.138 Safari/537.36 OPR/68.0.3618.129'})
-            print(f'Страница: {pagenator}')
+            time.sleep(random.randint(5,8))
+            r = requests.get(url + '&p={pagenator}', headers=headers)
             html = r.text
             pagenator += 1
             
@@ -67,26 +83,24 @@ class Cian_Parser():
                     title = content.find('div', class_='c6e8ba5398--subtitle--UTwbQ')
                     title = str(title).replace('<div class="c6e8ba5398--subtitle--UTwbQ">', '')
                     title = str(title).replace('</div>', '')
-                    print('was replaced:')
                     
-                    
-                print(title)
-                
-                
                 #-------#
                 price = content.find('div', class_='c6e8ba5398--header--1dF9r')
                 price = str(price).replace('<div class="c6e8ba5398--header--1dF9r">', '')
                 price = str(price).replace('</div>', '')
-                print(price)
-                object = {
+
+                text = price.replace(' ', '')
+                num = re.search(r'\d+', text)
+                obj = {
                     'title': title,
-                    'price': price
+                    'price': float(num.group(0))
                 }
                 
-                data.append(object)
+                data.append(obj)
             
-            with open('cian.json', 'w', encoding='utf-8') as f:
-                json.dump(data, f, ensure_ascii=False, indent=2)
-                
-                f.close()
-            time.sleep(random.randint(5,8))
+            html_doc = html.loads(r.text)
+            check = html_doc.xpath("//div[@data-name = 'Pagination']//span[text() = '{pagenator}']")
+            if check is None or len(check) == 0:
+                run = False
+        
+        return data
