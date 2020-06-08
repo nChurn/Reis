@@ -48,22 +48,22 @@ class DataSourcesLauncher():
             #     p = ReformaGkh_Parser()
             #     p.parse_data(self.__real_estate.address, self.__real_estate)
 
-            if self.__real_estate.owner.name or self.__real_estate.owner.inn:
-                # if parser.url == 'http://bankrot.fedresurs.ru/':
-                #     p = BankrotFedres_Parser(self.__real_estate.owner.name, self.__real_estate.owner.inn, None, self.__real_estate.owner.name)
-                #     self.__save_data(p.get_result())
+            # if self.__real_estate.owner.name or self.__real_estate.owner.inn:
+            #     # if parser.url == 'http://bankrot.fedresurs.ru/':
+            #     #     p = BankrotFedres_Parser(self.__real_estate.owner.name, self.__real_estate.owner.inn, None, self.__real_estate.owner.name)
+            #     #     self.__save_data(p.get_result())
 
-                if parser.url == 'https://pb.nalog.ru/':
-                    p = PbNalog_Parser(self.__real_estate.owner.name, self.__real_estate.owner.inn, None, self.__real_estate.owner.name)
-                    self.__save_data(p.get_result())
+            #     if parser.url == 'https://pb.nalog.ru/':
+            #         p = PbNalog_Parser(self.__real_estate.owner.name, self.__real_estate.owner.inn, None, self.__real_estate.owner.name)
+            #         self.__save_data(p.get_result())
 
-                if parser.url == 'https://kad.arbitr.ru/':
-                    p = KadArbitr_Parser(self.__real_estate.owner.name, self.__real_estate.owner.inn, None, self.__real_estate.owner.name)
-                    self.__save_data(p.get_result())
+            #     if parser.url == 'https://kad.arbitr.ru/':
+            #         p = KadArbitr_Parser(self.__real_estate.owner.name, self.__real_estate.owner.inn, None, self.__real_estate.owner.name)
+            #         self.__save_data(p.get_result())
                     
-                if parser.url == 'http://xn--h1akkl.xn--p1ai/':#фсин
-                    p = Fcin_Parser(self.__real_estate.owner.name, self.__real_estate.owner.inn, None, None)
-                    self.__save_data(p.get_result())
+            #     if parser.url == 'http://xn--h1akkl.xn--p1ai/':#фсин
+            #         p = Fcin_Parser(self.__real_estate.owner.name, self.__real_estate.owner.inn, None, None)
+            #         self.__save_data(p.get_result())
             
             # if parser.url == 'https://dom.gosuslugi.ru/':
             #     p = DomGosuslugi_Parser(self.__real_estate.region_name, self.__real_estate.district, 
@@ -77,9 +77,9 @@ class DataSourcesLauncher():
                 p = Avito_Parser()
                 self.__save_data(p.pase_data(self.__real_estate.address))
 
-            if parser.url == "https://cian.ru/":
-                p = Cian_Parser()
-                self.__save_data(p.pase_data(self.__real_estate.address))
+            # if parser.url == "https://cian.ru/":
+            #     p = Cian_Parser()
+            #     self.__save_data(p.pase_data(self.__real_estate.address))
 
 
     def __save_data(self, data):

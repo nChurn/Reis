@@ -44,7 +44,6 @@
 {% block javascript %}
 <script>
     $(document).ready(function() {
-
         // $(".btn-edit").on("click", function (value) {
 
         //     let id = $(this).attr('value');
@@ -95,33 +94,21 @@
         // });
     });
 
-    ymaps.ready(initYandexMap);
-
-    function initYandexMap(){
-        // Создание карты.
-        var latitudeStr = '{{real_property.latitude}}';
-        var longitudeStr = '{{real_property.longitude}}';
-        var latitude = parseFloat(latitudeStr).toFixed(2);
-        var longitude = parseFloat(longitudeStr).toFixed(2);
-
+    ymaps.ready(function(){
         var myMap = new ymaps.Map("yandex-map", {
-            center: [longitude, latitude],
-            zoom: 7,
+            center: [{{real_property.latitude}},{{real_property.longitude}}],
+            zoom: 15,
             controls: []
         });
+        
+        var myGeoObject = new ymaps.GeoObject({
+            geometry: {
+                type: "Point", 
+                coordinates: [{{real_property.latitude}},{{real_property.longitude}}] 
+            }
+        });
 
-        // var searchControl = new ymaps.control.SearchControl({
-        //     options: {
-        //         // Будет производиться поиск и по топонимам, и по организациям.
-        //         provider: 'yandex#search'
-        //     }
-        // });
-        //
-        // // Добавляем элемент управления на карту.
-        // myMap.controls.add(searchControl);
-        // var result = searchControl.search('Шоколадница');
-        // console.log(result);
-    };
-
+        myMap.geoObjects.add(myGeoObject); 
+    });
 </script>
 {% endblock %}
