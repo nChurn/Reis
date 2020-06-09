@@ -60,15 +60,18 @@ class SearchFormSearch(LoginRequiredMixin, View):
         return HttpResponse(html)
 
 class ViewFormSearch(LoginRequiredMixin, View):
-    def get_category_view_data(self, categories):
+    def get_category_view_data(self, search_form, categories):
         view_data = {}
         view_data['categories'] = []
         
         if categories.exists():
             for form_cat_item in categories.all():
-                formula_list = FormulaCategory.objects.filter(category = form_cat_item)
+                if form_cat_item not in search_form.categories.all():
+                    continue
+
+                formula_list = FormulaCategory.objects.filter(category = form_cat_item, search_form = search_form)
                 formula_parametrs = FormulaParameterCategory.objects.filter(category = form_cat_item)
-                child_categories =  self.get_category_view_data(form_cat_item.categories. \
+                child_categories =  self.get_category_view_data(search_form, form_cat_item.categories. \
                     extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
                     order_by('int_point'))
                 category_data = { 
@@ -85,16 +88,16 @@ class ViewFormSearch(LoginRequiredMixin, View):
         pk = self.kwargs['pk']
         search_form = get_object_or_404(SearchForm, id=pk)
         form = FormSearchForm(instance=search_form) 
-        categories = Category.objects.filter(parent_categories = None). \
-            extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
-            order_by('int_point') 
-        form_categories = search_form.categories. \
-            extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
-            order_by('int_point') 
+        # categories = Category.objects.filter(parent_categories = None). \
+        #     extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
+        #     order_by('int_point') 
+        # form_categories = search_form.categories. \
+        #     extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
+        #     order_by('int_point') 
         view_category = search_form.categories.filter(parent_categories = None). \
             extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
             order_by('int_point')     
-        view_data = self.get_category_view_data(view_category)
+        view_data = self.get_category_view_data(search_form, view_category)
         
         html = render_to_string('search_form/view_form_content.html', {
             'form': form, 
@@ -106,11 +109,12 @@ class ViewFormSearch(LoginRequiredMixin, View):
         }, request=request)
         return HttpResponse(html)
 
-    def set_category_view_data(self, params, categories):        
+    def set_category_view_data(self, search_form, params, categories):        
         if categories.exists():
             for form_cat_item in categories.all():
                 #create data
                 new_formula = FormulaCategory()
+                new_formula.search_form = search_form
                 new_formula.category = form_cat_item
                 val_name = "formula_rate_create_%i" % (form_cat_item.id)
                 rate = params.get(val_name, None)
@@ -174,7 +178,7 @@ class ViewFormSearch(LoginRequiredMixin, View):
         search_form.formula = request.POST.get('general_formula')
         search_form.save()
         
-        self.set_category_view_data(request.POST, view_category)
+        self.set_category_view_data(search_form, request.POST, view_category)
 
         return redirect("/constructor")
 

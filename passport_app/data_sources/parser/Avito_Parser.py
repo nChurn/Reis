@@ -51,6 +51,7 @@ class Avito_Parser():
 
         page_number = 1
         while page_number != -1:  
+            print("page: " + str(page_number))
             page_query = ''
             if page_number > 1:
                 page_query = '&p={}' % page_number

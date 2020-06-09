@@ -1,0 +1,9 @@
+<form action="{% url 'passport_app:rate_classifier.delete' pk=pk %}" method="POST">
+    {% csrf_token %}
+
+    <p>Действительно хотите удалить классификатор "{{ obj.label }}"?</p>
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Да</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+    </div>
+</form>

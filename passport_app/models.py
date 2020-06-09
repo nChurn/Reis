@@ -239,6 +239,7 @@ class FormulaCategory(models.Model):
     amount = models.CharField(max_length=255, default='')
     formula = models.CharField(max_length=255, default='')
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    search_form = models.ForeignKey(SearchForm, on_delete=models.CASCADE)
     
 class FormulaParameterCategory(models.Model):
     value_label = models.CharField(max_length=15, default='', unique=True)

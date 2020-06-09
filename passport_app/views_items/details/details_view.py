@@ -120,6 +120,10 @@ class DetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
             if categories.exists():
                 for cat in categories.extra(select={'int_point': "CAST(replace(point, '.', '') AS INTEGER)"}). \
                     order_by('int_point').all():
+                    if real_estate.search_form:
+                        if cat not in real_estate.search_form.categories.all():
+                            continue
+
                     cat_data = {}
                     cat_data['category'] = cat
                     cat_data['point'] = cat.point
@@ -176,9 +180,14 @@ class DetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
             self.calc_rating(cat_data)
 
             general_formula = FormulaCategory()
-            general_formula.rate = real_property.search_form.formula_rate
-            general_formula.amount = real_property.search_form.formula_amount
-            general_formula.formula = real_property.search_form.formula
+            if real_property.search_form is not None:
+                general_formula.rate = real_property.search_form.formula_rate
+                general_formula.amount = real_property.search_form.formula_amount
+                general_formula.formula = real_property.search_form.formula 
+            else:
+                general_formula.formula = 'avrg(1-8)'
+            print(general_formula.formula)
+
             total_rate = calc_formula_obj(general_formula, cat_data)
             
             for c in cat_data:
@@ -215,8 +224,7 @@ class DetailsView(LoginRequiredMixin, PermissionRequiredMixin, View):
             return False
 
         for param in category['parameters']:
-            if param['data']['value'] == '' or \
-                param['data']['value'] == 0:
+            if param['data']['value'] == '' or param['data']['value'] == 0 or param['data']['value'] == '0':
                 return False
 
         return True

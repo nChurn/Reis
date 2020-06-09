@@ -1,23 +1,23 @@
 # from django.conf.urls import url
-from django.urls import path
-
-#from . import views
-from passport_app.views import *
-from django.conf.urls import url, include
-from django.contrib.auth.models import User
+from django.conf.urls import include, url
 from django.contrib.auth import views as auth_views
-from passport_app.views_items.search_settings import *
-from passport_app.views_items.property_types.subsubsubtypeofrealestate import *
-from passport_app.views_items.category.category_view import *
-from passport_app.views_items.parameters.parameters_view import *
-from passport_app.views_items.unit.unit_view import *
-from passport_app.views_items.parser.parser_parameter_view import *
-from passport_app.views_items.search_form.search_form import *
-from passport_app.views_items.parser.parser_type_view import *
-from passport_app.views_items.type_of_value.type_of_value_view import *
-from passport_app.views_items.parameter_data.parameter_data_view import *
-from passport_app.views_items.details.details_view import *
+from django.contrib.auth.models import User
+from django.urls import path
 from django_select2.forms import *
+
+from passport_app.views import *
+from passport_app.views_items.category.category_view import *
+from passport_app.views_items.details.details_view import *
+from passport_app.views_items.parameter_data.parameter_data_view import *
+from passport_app.views_items.parameters.parameters_view import *
+from passport_app.views_items.parser.parser_parameter_view import *
+from passport_app.views_items.parser.parser_type_view import *
+from passport_app.views_items.property_types.subsubsubtypeofrealestate import *
+from passport_app.views_items.search_form.search_form import *
+from passport_app.views_items.search_settings import *
+from passport_app.views_items.type_of_value.type_of_value_view import *
+from passport_app.views_items.unit.unit_view import *
+from passport_app.views_items.rate_classifier.rate_classifier import *
 
 app_name = 'passport_app'
 
@@ -125,4 +125,10 @@ urlpatterns = [
     path('parameterdata/<int:pk>/<int:pk_d>/', ParameterDataUpdate.as_view(), name='parameterdata-update'),
 
     path('select2_widget', TemplateFormView.as_view(), name='select2_widget'),
+
+    #rate classifier
+    path(r'rate-classifier/', RateClassifierListView.as_view(), name='rate_classifier.list'),
+    path(r'rate-classifier/create/', RateClassifierCreateView.as_view(), name='rate_classifier.create'),
+    path(r'rate-classifier/<int:pk>/update/', RateClassifierUpdateView.as_view(), name='rate_classifier.update'),
+    path(r'rate-classifier/<int:pk>/delete/', RateClassifierDeleteView.as_view(), name='rate_classifier.delete')
 ]

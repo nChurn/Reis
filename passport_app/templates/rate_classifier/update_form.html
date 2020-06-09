@@ -1,0 +1,10 @@
+{% load crispy_forms_tags %}
+
+<form action="{% url 'passport_app:rate_classifier.update' pk=pk %}" method="POST">
+    {% csrf_token %} 
+    {{ form|crispy }}
+    <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Добавить</button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+    </div>
+</form>

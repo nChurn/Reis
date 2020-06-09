@@ -15,6 +15,8 @@
                 aria-controls="v-pills-category" aria-selected="false">Справочник элементов</a>
             <a class="nav-link" id="v-pills-parameter-tab" data-toggle="pill" href="#v-pills-parameter" role="tab"
                 aria-controls="v-pills-parameter" aria-selected="false">Справочник параметров</a>
+            <a class="nav-link" id="v-pills-classifier-tab" data-toggle="pill" href="#v-pills-rate-classifier" role="tab"
+                aria-controls="v-rate-classifier" aria-selected="false">Справочник классификатора рейтинга</a>
             <a class="nav-link" id="v-pills-unit-tab" data-toggle="pill" href="#v-pills-unit" role="tab"
                 aria-controls="v-pills-unit" aria-selected="false">Единицы измерения</a>
             <a class="nav-link" id="v-pills-typeofvalue-tab" data-toggle="pill" href="#v-pills-typeofvalue" role="tab"
@@ -36,6 +38,9 @@
             </div>
             <div class="tab-pane fade" id="v-pills-parameter" role="tabpanel" aria-labelledby="v-pills-parameter-tab">
                 {% include 'parameter/parameter_container.html' %}
+            </div>
+            <div class="tab-pane fade" id="v-pills-rate-classifier" role="tabpanel" aria-labelledby="v-pills-classifier-tab">
+                {% include 'rate_classifier/classifier_container.html' %}
             </div>
             <div class="tab-pane fade" id="v-pills-unit" role="tabpanel" aria-labelledby="v-pills-unit-tab">
                 {% include 'unit/unit_container.html' %}
@@ -135,6 +140,20 @@
         });
     }
 
+    function updateClassifier(){
+        $.ajax({
+            url: "{% url 'passport_app:rate_classifier.list' %}",
+            type: "GET",
+            success: function (data) {
+                $('#v-pills-rate-classifier').html(data);
+                $("#v-pills-classifier-tab").tab('show')
+            },
+            error: function (xhr, errmsg, err) {
+
+            }
+        });
+    }
+
     $(document).ready(function () {
         updateFormsList();
 
@@ -160,6 +179,10 @@
 
         $('#v-pills-parser-parameters-tab').on('click', function (e) {
             updateParserTypesList();
+        });
+
+        $("#v-pills-classifier-tab").on('click', function(e){
+            updateClassifier();
         });
 
         let selectedTab = window.location.hash;

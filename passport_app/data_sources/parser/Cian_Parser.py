@@ -1,6 +1,7 @@
 import json
 import random
 import time
+import re
 
 import requests
 from bs4 import BeautifulSoup
@@ -64,7 +65,7 @@ class Cian_Parser():
         run = True
         pagenator = 1
         data = []
-        while run:                      
+        while run:      
             print('!_!_!')
             time.sleep(random.randint(5,8))
             r = requests.get(url + '&p={pagenator}', headers=headers)

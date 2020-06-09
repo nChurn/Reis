@@ -1,0 +1,102 @@
+{% load crispy_forms_tags %}
+
+<div class="col-11">
+    <form>
+        {% csrf_token %}
+
+        <div class="form-group row">
+            <div class="col">
+                <input class="form-control" type="text" name="form_name" id="form_name" />
+            </div>
+            <button class="btn btn-light"><i class="fa fa-search"></i></i></button>
+            <a class="btn btn-success pull-right button-orange m-1" id="btn-add-classifier">
+                <i class="fa fa-plus"></i>                
+            </a>
+        </div>
+    </form>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th style="width: 5%;"></th>
+                <th style="width: 5%;"></th>
+                <th style="width: 20%">Категория</th>
+                <th style="width: 10%">Мин. рейтинг</th>
+                <th style="width: 10%">Макс. рейтинг</th>
+                <th>Текст</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in object_list %}
+            <tr>
+                <td>
+                    <button class="btn btn-light btn-edit" data-id="{{item.id}}"><i class="fa fa-pencil"></i></button>
+                </td>
+                <td>
+                    <button class="btn btn-light btn-delete" data-id="{{item.id}}"><i class="fa fa-trash"></i></button>
+                </td>
+                <td>{{ item.category.name_ru}}</td>
+                <td>{{ item.min_rate}}</td>
+                <td>{{ item.max_rate}}</td>
+                <td>{{ item.label}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="modal" tabindex="-1" role="dialog" id="add-classifier-modal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Добавить классификатор рейтинга</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form action="{% url 'passport_app:rate_classifier.create' %}", method="POST">
+            {% csrf_token %}
+            <div class="modal-body">
+                {{ form|crispy }}
+            </div>
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Добавить</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+{% block javascript %}
+    <script>    
+        $('body').on('click', "#btn-add-classifier", function(e){
+            $("#add-classifier-modal").modal('show')
+        })
+
+        $(".btn-edit").click(function(){
+            $.ajax({
+                url: "{% url 'passport_app:rate_classifier.update' pk=0 %}".replace('0',
+                    $(this).data('id')),
+                success: function(data){
+                    $("#modal-title").text("Изменить классификатор рейтинга")
+                    $("#modal-body").html(data)
+                    $("#modal-form").modal('show')
+                }
+            })
+        })
+
+        $(".btn-delete").click(function(){
+            $.ajax({
+                url: "{% url 'passport_app:rate_classifier.delete' pk=0 %}".replace('0',
+                    $(this).data('id')),
+                success: function(data){
+                    $("#modal-title").text("Подтвердите действие")
+                    $("#modal-body").html(data)
+                    $("#modal-form").modal('show')
+                }
+            })
+        })
+    </script>
+{% endblock %}

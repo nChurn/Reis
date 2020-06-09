@@ -379,10 +379,6 @@ class ParserParametersListForm(forms.Form):
 
 
 class FormSearchForm(forms.ModelForm):
-
-    # categories = CategoryModelMultipleChoiceField(queryset = Category.objects.all(), widget = forms.CheckboxSelectMultiple,
-    #                                                     label = "Категории")
-
     class Meta:
         model = SearchForm
         fields = ('name', 'name_ru', 'categories', 'user')
