@@ -172,17 +172,36 @@
 
     function history(){
         $.ajax({
-            url : "/history/", // the endpoint
+            url :"/history/" , // the endpoint
             type : "GET", // http method
 
             // handle a successful response
             success : function(data) {
+                $('#history-result').empty();
                 $('#history-result').html(data);
             },
 
             // handle a non-successful response
             error : function(xhr,errmsg,err) {
 
+
+            }
+        });
+    }
+    function history_obj(obj_){
+           $.ajax({
+            url :"/history/" , // the endpoint
+            data:obj_,
+            type : "GET", // http method
+
+            // handle a successful response
+            success : function(data) {
+                $('#history-result').empty();
+                $('#history-result').html(data);
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
 
             }
         });
@@ -196,13 +215,32 @@
         }
 
         $('.nav-tabs a').on('shown.bs.tab', function (e) {
-            window.location.hash = e.target.hash;            
-            if (e.target.hash =="#profile")
-            {
-                history();
+            window.location.hash = e.target.hash;
+            if (e.target.hash == "#profile") {
+                //Если есть поисковые данные
+                name_ = localStorage.getItem('realestate_id');
+                if (name_ != null) {
+                    obj = { 'id': name_ };
+                    history_obj(obj);
+                    localStorage.removeItem('realestate_id');
+                    {% comment %} $.ajax({
+                        url: "/history/", // the endpoint
+                        data: obj,
+                        type: "POST", // http method
+                        // handle a successful response
+                        success: function (data) {
+                            $('#history-result').html(data);
+                        },
+                        // handle a non-successful response
+                        error: function (xhr, errmsg, err) {
+
+                        }
+                    }); {% endcomment %}
+                }
+                else
+                    history();
             }
-            else
-            {
+            else {
                 $('#history-result').empty();
             }
         })

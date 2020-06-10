@@ -34,10 +34,39 @@
 {% block javascript %}
 <script>
     $(document).ready(function() {
-        $('#manage_type_of_value').find('#btn-add').on('click', function(event){
+        $('#manage_type_of_value').find('#btn-add').on('click', function (event) {
 
             $('#type_of_value-modal').modal('show');
         });
+        //Обработчик кнопки поиска
+        $('#manage_type_of_value').find('.btn-light').on('click', function (event) {
+
+            SearchTypeList();
+        });
+        function SearchTypeList() {
+            text_ = document.getElementById('typeofvalue_name').value;
+            obj = { 'input_str': text_ };
+            $.ajax({
+                url: "typeofvalue_container/", //"form_view_list/", // the endpoint
+                data: obj,
+                type: "GET", // http method request
+
+                // handle a successful response
+                success: function (data) {
+                    //$('#div-form-list-table').html(data);
+                    $('#v-pills-typeofvalue').html(data);
+                    localStorage.setItem('typeofvalue', data);
+                    localStorage.setItem('typeofvalue_name', text_);
+                },
+
+                // handle a non-successful response
+                error: function (xhr, errmsg, err) {
+                    alert(errmsg);
+                    alert(err);
+                    alert(xhr);
+                }
+            });
+        }
     });
 </script>
 {% endblock %}

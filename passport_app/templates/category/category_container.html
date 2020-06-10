@@ -5,7 +5,7 @@
     <form>
         {% csrf_token %}
 
-        <div class="form-group row">
+        <!-- <div class="form-group row">
             <div class="col">
                 <input class="form-control" type="text" name="form_name" id="form_name" />
             </div>
@@ -14,6 +14,14 @@
                 <i class="fa fa-plus"></i>
                 Создать справочник
             </a>
+        </div> -->
+
+        <div class="form-group row">
+            <div class="col">
+                <input class="form-control" type="text" name="form_name" id="category_name_" />
+            </div>
+            <button class="btn btn-light" id="category_name" onclick="SearchCategoryList(this)"><i class="fa fa-search"></i></i></button>
+            <a class="btn btn-success pull-right m-1 button-orange" id="btn-new"><i class="fa fa-plus"></i> Создать справочник</a>
         </div>
     </form>
     <div role="tablist" aria-multiselectable="true">
@@ -179,4 +187,42 @@
         });
     });
 </script>
+
+<script>
+    function Click_(index, list_) {
+    item = GetLinkByRef(list_[index]);
+    if (item != null) {
+        item.click();
+        index++;
+        if (index < list_.length)
+            Click_(index, list_);
+    }
+}
+
+function SearchCategoryList() {
+    text_ = document.getElementById('category_name_').value;
+    alert(text_);
+    obj = { 'input_str': text_ };
+    $.ajax({
+        url: "category_container/", //"form_view_list/", // the endpoint
+        data: obj,
+        type: "GET", // http method request
+        // handle a successful response
+        success: function(data) {
+            //$('#div-form-list-table').html(data);
+            alert('yes');
+            $('#table_').html(data);
+            localStorage.setItem('category', data);
+            localStorage.setItem('category_name', text_);
+        },
+
+        // handle a non-successful response
+        error: function(xhr, errmsg, err) {
+            alert(errmsg);
+            alert(err);
+            alert(xhr);
+        }
+    });
+}     
+ </script>
 {% endblock %}

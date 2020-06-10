@@ -3,3 +3,10 @@ static/
 logs/
 __pycache__/
 .vscode/
+.idea/.gitignore
+.idea/misc.xml
+.idea/modules.xml
+.idea/property_passport.iml
+.idea/vcs.xml
+.idea/inspectionProfiles/profiles_settings.xml
+property_passport.zip

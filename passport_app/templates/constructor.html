@@ -61,83 +61,319 @@
 
 {% block javascript %}
 <script>
+    
     function updateParserTypesList() {
+       {% comment %} text_='yandex_transport';
+        obj={'input_str':text_};
         $.ajax({
-            url: "parsertypes/",
-            type: "GET",
-            success: function (data) {
+            url : "parser_container/", //"form_view_list/", // the endpoint
+            data:obj,
+            type : "GET", // http method request
+
+            // handle a successful response
+            success : function(data) {
+                alert('123');
+                //$('#div-form-list-table').html(data);
                 $('#v-pills-parser-parameters').html(data);
             },
-            error: function (xhr, errmsg, err) {
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+
+            }
+        });{% endcomment %}
+        obj=localStorage.getItem('parser');
+        obj_name=localStorage.getItem('parser_name');
+        alert(obj);
+        alert(obj_name);
+        //alert(obj_name);
+       // alert(obj);
+        if((obj!=null)&&(obj_name!=null)){
+            $('#v-pills-parser-parameters').html(obj);
+            obj_text=document.getElementById('parser_name');
+            obj_text.value=obj_name;
+            localStorage.removeItem('parser');
+            localStorage.removeItem('parser_name');
+        }
+        else{
+            $.ajax({
+            url : "parsertypes/", // the endpoint
+            type : "GET", // http method request
+
+            // handle a successful response
+            success : function(data) {
+                $('#v-pills-parser-parameters').html(data);
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
 
             }
         });
+        }
+
     }
 
     function updateUnitList() {
-        $.ajax({
-            url: "units/",
-            type: "GET",
-            success: function (data) {
+        obj=localStorage.getItem('units');
+        obj_name=localStorage.getItem('units_name');
+        if((obj!=null)&&(obj_name!=null))
+        {
+            //alert(obj);
+             $('#v-pills-unit').html(obj);
+             obj_text=document.getElementById('units_name');
+            obj_text.value=obj_name;
+            localStorage.removeItem('units');
+            localStorage.removeItem('units_name');
+        }
+        else{
+            $.ajax({
+            url : "units/", // the endpoint
+            type : "GET", // http method request
+
+            // handle a successful response
+            success : function(data) {
                 $('#v-pills-unit').html(data);
             },
-            error: function (xhr, errmsg, err) {
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
 
             }
         });
+        }
+
     }
 
     function updateFormsList() {
         $.ajax({
-            url: "forms/",
-            type: "GET",
-            success: function (data) {
+            url : "forms/", //"form_view_list/", // the endpoint
+            type : "GET", // http method request
+
+            // handle a successful response
+            success : function(data) {
                 //$('#div-form-list-table').html(data);
                 $('#v-pills-home').html(data);
             },
-            error: function (xhr, errmsg, err) {
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
 
             }
         });
-    }
+    }    
 
     function updateTypesOfValuesList() {
+       /* text_='Число';
+        obj={'input_str':text_};
         $.ajax({
-            url: "typesofvalues/",
-            type: "GET",
-            success: function (data) {
+            url : "typeofvalue_container/", //"form_view_list/", // the endpoint
+            data:obj,
+            type : "GET", // http method request
+
+            // handle a successful response
+            success : function(data) {
+                //$('#div-form-list-table').html(data);
                 $('#v-pills-typeofvalue').html(data);
             },
-            error: function (xhr, errmsg, err) {
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+                alert(errmsg);
+                alert(err);
+                alert(xhr);
+            }
+        });*/
+        obj=localStorage.getItem('typeofvalue');
+        obj_name=localStorage.getItem('typeofvalue_name');
+        //alert(obj_name);
+       // alert(obj);
+        if((obj!=null)&&(obj_name!=null))
+        {
+            //alert(obj);
+             $('#v-pills-typeofvalue').html(obj);
+             obj_text=document.getElementById('typeofvalue_name');
+            obj_text.value=obj_name;
+            localStorage.removeItem('typeofvalue');
+            localStorage.removeItem('typeofvalue_name');
+        }
+        else{
+            $.ajax({
+            url : "typesofvalues/", //"form_view_list/", // the endpoint
+            type : "GET", // http method request
+
+            // handle a successful response
+            success : function(data) {
+                $('#v-pills-typeofvalue').html(data);
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
 
             }
         });
+        }
+
+
+    }
+      function GetLinkByRef(id_ref){
+    links=document.getElementsByTagName('a');
+    var elem=null;
+    console.debug(id_ref);
+    for(var i=0;i<links.length;i++)
+    {
+        index_=links[i].href.indexOf(id_ref);
+        if(index_!=-1){
+            elem=links[i];
+            break;
+        }
     }
 
-    function updateCategory() {
+    return elem;
+}
+    function LoadPage(){
+        obj=localStorage.getItem('list_categories');
+       //alert(obj);
+        index_=0;
+        if (obj!=null){
+            list_ = JSON.parse(obj);
+            item = GetLinkByRef(list_[0]);
+            if (item != null)
+                item.click();
+        }
+    }
+    function LoadCategoryPage() {
+        obj=localStorage.getItem('list_categories');
+       //alert(obj);
+        index_=0;
+        if (obj!=null) {
+            list_ = JSON.parse(obj);
+            item = GetLinkByRef(list_[0]);
+            if (item != null)
+                item.click();
+               for(index=1;index<list_.length;index++)
+            {
+            item = GetLinkByRef(list_[index]);
+            if (item != null)
+            {
+                tokens_=list_[index].trim().split('-');
+                parent_id=tokens_[1];
+                if (parent_id=="")
+                    parent_id="-";
+                category_id=tokens_[2];
+                $.ajax({
+                    headers: { "X-CSRFToken": '{{csrf_token}}' },
+                    url : "/constructor/categories/"+category_id+"/", // the endpoint
+                    type : "GET", // http method request
+
+                    success : function(data) {
+                        $('#child-categories-'+parent_id+'-'+category_id).html(data);
+                    },
+                    // handle a non-successful response
+                    error : function(xhr,errmsg,err) {
+
+                    }
+                });
+                console.log(list_[index]);
+            }
+            else
+                break;
+            }
+
+            if(index==list_.length-1)
+            {
+                localStorage.removeItem('list_categories');
+                localStorage.setItem('index_',0);
+            }
+
+
+        }
+
+
+
+    }
+    function updateCategory(){
+        {% comment %}obj={'input_str':'апт'};
         $.ajax({
-            url: "categories/",
-            type: "GET",
-            success: function (data) {
+            url : "category_container/", // the endpoint
+            data:obj,
+            type : "GET", // http method request
+
+            // handle a successful response
+            success : function(data) {
                 $('#v-pills-category').html(data);
             },
-            error: function (xhr, errmsg, err) {
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
 
             }
-        });
+        });{% endcomment %}
+        obj=localStorage.getItem('category');
+        obj_name=localStorage.getItem('category_name');
+        alert(obj);
+        if((obj!=null)&&(obj_name!=null))
+        {
+            //alert(obj);
+             $('#v-pills-category').html(obj);
+             obj_text=document.getElementById('category_name_');
+            obj_text.value=obj_name;
+            localStorage.removeItem('category_name');
+            localStorage.removeItem('category');
+        }
+        else{
+            $.ajax({
+            url : "categories/", // the endpoint
+            type : "GET", // http method request
+
+            // handle a successful response
+            success : function(data) {
+                $('#v-pills-category').html(data);
+                //LoadCategoryPage();
+
+            },
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
+
+            }});
+        }
+
+
     }
 
-    function updateParameterList() {
-        $.ajax({
-            url: "parameters/",
-            type: "GET",
-            success: function (data) {
+    function updateParameterList(){
+
+        obj=localStorage.getItem('params');
+        obj_name=localStorage.getItem('params_name');
+        //alert(obj_name);
+       // alert(obj);
+        if((obj!=null)&&(obj_name!=null))
+        {
+            //alert(obj);
+             $('#v-pills-parameter').html(obj);
+             obj_text=document.getElementById('params_name');
+            obj_text.value=obj_name;
+            localStorage.removeItem('params_name');
+            localStorage.removeItem('params');
+        }
+        else{
+            $.ajax({
+            url : "parameters/", // the endpoint
+            type : "GET", // http method request
+
+            // handle a successful response
+            success : function(data) {
                 $('#v-pills-parameter').html(data);
             },
-            error: function (xhr, errmsg, err) {
+
+            // handle a non-successful response
+            error : function(xhr,errmsg,err) {
 
             }
         });
+        }
+
     }
 
     function updateClassifier(){

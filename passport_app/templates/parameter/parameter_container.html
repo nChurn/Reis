@@ -41,6 +41,35 @@
         $('#manage_parameters').find('#btn-add').on('click', function (event) {
             $('#parametr-modal').modal('show');
         });
+
+        
+        $('#manage_parameters').find('.btn-light').on('click', function (event) {
+            SearchParamsList();
+        });
+        
+        function SearchParamsList() {
+            text_ = document.getElementById('params_name').value;
+            obj = { 'input_str': text_ };
+
+            $.ajax({
+                url: "parameters_container/", //"form_view_list/", // the endpoint
+                data: obj,
+                type: "GET", // http method request
+
+                // handle a successful response
+                success: function (data) {
+                    //$('#div-form-list-table').html(data);
+                    $('#v-pills-parameter').html(data);
+                    localStorage.setItem('params', data);
+                    localStorage.setItem('params_name', text_);
+                },
+
+                // handle a non-successful response
+                error: function (xhr, errmsg, err) {
+
+                }
+            });
+        }
     });
 </script>
 {% endblock %}

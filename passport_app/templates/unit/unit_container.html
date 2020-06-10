@@ -33,11 +33,44 @@
 
 {% block javascript %}
 <script>
-    $(document).ready(function() {
-        $('#manage_units').find('#btn-add').on('click', function(event){
+    $(document).ready(function () {
+        $('#manage_units').find('#btn-add').on('click', function (event) {
             $(".modal-title").text('Добавить единицу измерения');
             $('#unit-modal').modal('show');
         });
+
+        //Обработчик кнопки поиска
+        $('#manage_units').find('.btn-light').on('click', function (event) {
+
+            SearchUnitsList();
+        });
+        function SearchUnitsList() {
+            text_ = document.getElementById('units_name').value;
+            obj = { 'input_str': text_ };
+            //alert('Единицы измерений '+text_);
+            //localStorage.setItem('units','1');
+            $.ajax({
+                url: "unit_container/", //"form_view_list/", // the endpoint
+                data: obj,
+                type: "GET", // http method request
+
+                // handle a successful response
+                success: function (data) {
+                    //alert('yes');
+                    //$('#div-form-list-table').html(data);
+                    $('#v-pills-unit').html(data);
+                    localStorage.setItem('units', data);
+                    localStorage.setItem('units_name', text_);
+                    //$('#units_body').html(data);
+
+                },
+
+                // handle a non-successful response
+                error: function (xhr, errmsg, err) {
+                    alert('no');
+                }
+            });
+        }
     });
 </script>
 {% endblock %}

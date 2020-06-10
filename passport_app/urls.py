@@ -2,10 +2,13 @@
 from django.conf.urls import include, url
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.models import User
+# from django.conf.urls import url
 from django.urls import path
 from django_select2.forms import *
 
+from passport_app.users_funcs import *
 from passport_app.views import *
+from passport_app.my_views import *
 from passport_app.views_items.category.category_view import *
 from passport_app.views_items.details.details_view import *
 from passport_app.views_items.parameter_data.parameter_data_view import *
@@ -13,17 +16,32 @@ from passport_app.views_items.parameters.parameters_view import *
 from passport_app.views_items.parser.parser_parameter_view import *
 from passport_app.views_items.parser.parser_type_view import *
 from passport_app.views_items.property_types.subsubsubtypeofrealestate import *
+from passport_app.views_items.rate_classifier.rate_classifier import *
 from passport_app.views_items.search_form.search_form import *
 from passport_app.views_items.search_settings import *
 from passport_app.views_items.type_of_value.type_of_value_view import *
 from passport_app.views_items.unit.unit_view import *
-from passport_app.views_items.rate_classifier.rate_classifier import *
 
 app_name = 'passport_app'
 
 urlpatterns = [
     path('', IndexView.as_view(), name='home'),
     path('constructor/', ConstructorView.as_view(), name="constructor"),
+    
+    path('constructor/constructor_container/', TConstructorContainerView.as_view()),
+    path('constructor/form_container/',TFormsContainerView.as_view(),name='form_container'),
+    path('constructor/parameters_container/', TParamsContainerView.as_view()),
+    path('constructor/unit_container/', TUnitContainerView.as_view()),
+    path('constructor/typeofvalue_container/', TTypeOfValueContainerView.as_view()),
+    path('constructor/parser_container/', TParserContainerView.as_view()),
+    path('constructor/category_container/', TCategoryContainerView.as_view()),
+    path('constructor/get_parents_id/', TCategoryGetParentsId.as_view()),
+    path('constructor/get_units_id/', TGetUnitById.as_view()),
+    path('constructor/get_users_id/', TGetUserById.as_view()),
+    path('constructor/get_typeofvalues_id/', TGetTypeOfValueById.as_view()),
+    path('constructor/get_params_id/', TGetParameterById.as_view()),
+    path('constructor/get_realstates_id/', TGetRealEstatesById.as_view()),
+    #Старая логика
     # path('classifiers_list/', ClassifierView.as_view()),
     # path('fields_list/', FieldsView.as_view()),
     # path('typeofrealestates_list/', TypeOfRealEstatesView.as_view()),
@@ -59,6 +77,7 @@ urlpatterns = [
     # path('constructor/subsubsubtypes/add/', SubsubsubTypesConstructorCreate.as_view()),
     # path('constructor/subsubsubtypes/edit/<int:pk>/', SubsubsubTypesConstructorUpdate.as_view()),
 
+    path('users_list/find_user/', TFormsUsersFindListView.as_view()),
     path('users_list/register/', NewUserProfileView.as_view(), name='register_user'),
     path('search_settings/', SearchSettingsView.as_view()),
     path('users_list/edit/<int:pk>/', EditUserProfileView.as_view(), name="userslist_edit"),

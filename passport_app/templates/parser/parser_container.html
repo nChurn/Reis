@@ -24,6 +24,36 @@
         $('#manage_parser_parameters').find('#btn-add').on('click', function (event) {
             $('#parser-type-modal').modal('show');
         });
+
+        $('#manage_parser_parameters').find('.btn-light').on('click', function(event){
+            // alert('yes');
+            SearchParserTypesList();
+        });
+        function SearchParserTypesList() {
+
+            text_ = document.getElementById('parser_name').value;
+            alert(text_);
+            obj = { 'input_str': text_ };
+            $.ajax({
+                url: "parser_container/", //"form_view_list/", // the endpoint
+                data: obj,
+                type: "GET", // http method request
+
+                // handle a successful response
+                success: function (data) {
+                    //$('#div-form-list-table').html(data);
+                    $('#v-pills-parser-parameters').html(data);
+                    localStorage.setItem('parser', data);
+                    localStorage.setItem('parser_name', text_);
+                },
+
+                // handle a non-successful response
+                error: function (xhr, errmsg, err) {
+                    alert(errmsg);
+                }
+            });
+
+        }
     });
 </script>
 {% endblock %}
