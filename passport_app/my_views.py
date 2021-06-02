@@ -48,6 +48,8 @@ from passport_app.data_sources.data_sources_manager import start_search_info
 from passport_app.print_exception import *
 from passport_app.RealEstate_funcs import *
 from passport_app.users_funcs import *
+
+
 #Классы поиска по формам
 class TConstructorContainerView(LoginRequiredMixin, FormView):
     def get(self, request, *args, **kwargs):
